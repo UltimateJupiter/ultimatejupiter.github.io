@@ -26,7 +26,7 @@ __Dissecting Hessian: Understanding Common Structure of Hessian in Neural Networ
 
 [Yikai Wu*](https://yikai-wu.github.io), __Xingyu Zhu*__, [Chenwei Wu](https://users.cs.duke.edu/~cwwu/), Annie Wang, [Rong Ge](https://users.cs.duke.edu/~rongge/)
 
-ArXiv preprint https://arxiv.org/abs/2010.04261
+ArXiv preprint [2010.04261](https://arxiv.org/abs/2010.04261)
 
 __Understanding Edge-of-Stability Training Dynamics with a Minimalist Example.__
 
