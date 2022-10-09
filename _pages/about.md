@@ -1,6 +1,6 @@
 ---
 permalink: /
-title: "Xingyu Zhu (朱星宇)"
+title: "Xingyu Zhu 朱星宇"
 excerpt: "About me"
 author_profile: true
 redirect_from: 
@@ -13,3 +13,5 @@ I am currently an undergraduate student at Duke University double majoring in Ma
 Research Interests
 ======
 My research interest primarily lies on the field of machine learning and optimization. In particular, I am interetsed in understanding how modern machine learning algorithms works from a theoretical perspective and designing learning algorithms with theoretical guarantees. I am also broadly interested in theoretical computer science and computer systems.
+
+__This site is still under construction__
