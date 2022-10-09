@@ -10,6 +10,7 @@ redirect_from:
 {% include base_path %}
 
 ---
+
 Education
 ======
 * <p style="text-align:left;">B.S. in Mathematics and Computer Science, Duke University<span style="float:right;">2022 (Expected) </span></p>
@@ -17,6 +18,7 @@ Education
   * GPA 3.972 / 4.0
 
 ---
+
 Publications & Pre-prints
 ======
 
@@ -35,6 +37,7 @@ __Xingyu Zhu\*__, Zixuan Wang\*, [Xiang Wang](https://users.cs.duke.edu/~xwang/)
 ArXiv preprint, to be released
 
 ---
+
 Teaching
 ======
 * CS330 (Design and Analysis of Algorithms), TA
@@ -45,6 +48,7 @@ Teaching
   * Leading Recitations, Holding Office Hours, Grading Exams
 
 ---
+
 Work experience
 ======
 * Research Intern in video group, [Megvii Research](https://en.megvii.com/megvii_research)
