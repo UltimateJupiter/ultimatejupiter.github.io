@@ -7,3 +7,5 @@ venue: "Duke University, Department of Computer Science"
 date: 2022-01-08
 location: "Durham, NC, USA"
 ---
+
+Responsible for holding office hours and grading.
