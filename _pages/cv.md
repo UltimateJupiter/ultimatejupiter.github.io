@@ -7,20 +7,19 @@ redirect_from:
   - /resume
 ---
 
-{% include base_path %}
+
 
 ---
 
-Education
-======
+## Education
+
 * <p style="text-align:left;">B.S. in Mathematics and Computer Science, Duke University<span style="float:right;">2022 (Expected) </span></p>
 
   * GPA 3.972 / 4.0
 
 ---
 
-Publications & Pre-prints
-======
+## Publications & Pre-prints
 
 \* denotes equal contribution
 
@@ -38,8 +37,8 @@ ArXiv preprint, to be released
 
 ---
 
-Teaching
-======
+## Teaching
+
 * CS330 (Design and Analysis of Algorithms), TA
   * Spring 2022 & Fall 2022
   * Leading Recitations, Holding Office Hours, Grading Exams
@@ -49,8 +48,8 @@ Teaching
 
 ---
 
-Work experience
-======
+## Work experience
+
 * Research Intern in video group, [Megvii Research](https://en.megvii.com/megvii_research)
   * Mentored by [Chi Zhang Ph.D.](https://www.researchgate.net/profile/Chi-Zhang-19)
   * Dec 2017 - July 2018
