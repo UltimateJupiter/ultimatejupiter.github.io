@@ -33,7 +33,7 @@ __Understanding Edge-of-Stability Training Dynamics with a Minimalist Example.__
 
 __Xingyu Zhu\*__, Zixuan Wang\*, [Xiang Wang](https://users.cs.duke.edu/~xwang/), [Mo Zhou](https://users.cs.duke.edu/~mz159/), [Rong Ge](https://users.cs.duke.edu/~rongge/)
 
-ArXiv preprint, to be released
+ArXiv preprint [2210.03294](https://arxiv.org/pdf/2210.03294) (Submitted to ICLR 2023)
 
 ---
 
@@ -54,3 +54,9 @@ ArXiv preprint, to be released
   * Mentored by [Chi Zhang Ph.D.](https://www.researchgate.net/profile/Chi-Zhang-19)
   * Dec 2017 - July 2018
   * June 2019 - Aug 2019
+
+---
+
+## Skills
+
+Programming Languages: C, C++, CUDA, Fortran, Mathematica, Python, a bit of {Java, Lisp, Matlab, RISCV & x86 Assembly}
