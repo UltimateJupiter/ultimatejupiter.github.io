@@ -8,14 +8,17 @@ redirect_from:
 ---
 
 
-
 ---
 
 ## Education
 
-* <p style="text-align:left;">B.S. in Mathematics and Computer Science, Duke University<span style="float:right;">2022 (Expected) </span></p>
+* B.S. in Mathematics and Computer Science, Duke University
+
+  * Aug 2018 - Dec 2022 (Expected)
 
   * GPA 3.972 / 4.0
+
+  * Graduation with Highest Distinction from Computer Science
 
 ---
 
@@ -52,7 +55,7 @@ ArXiv preprint [2210.03294](https://arxiv.org/pdf/2210.03294) (Submitted to ICLR
 
 * Research Intern in video group, [Megvii Research](https://en.megvii.com/megvii_research)
   * Mentored by [Chi Zhang Ph.D.](https://www.researchgate.net/profile/Chi-Zhang-19)
-  * Dec 2017 - July 2018
+  * Jan 2018 - Aug 2018
   * June 2019 - Aug 2019
 
 ---

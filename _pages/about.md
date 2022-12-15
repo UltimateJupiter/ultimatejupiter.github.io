@@ -12,8 +12,6 @@ I am currently an undergraduate student at Duke University double majoring in Ma
 
 Research Interests
 ======
-My research interest primarily lies on the field of theoretical machine learning and optimization. In particular, I am interetsed in understanding how modern machine learning algorithms works from a theoretical perspective and designing better learning algorithms leveraging the insights from the theoretical understandings. I am also broadly interested in theoretical computer science, control theory, robotics, and computer architectures.
+My research interest primarily lies on the field of theoretical machine learning and optimization. In particular, I am interested in understanding how modern machine learning algorithms works from a theoretical perspective and designing better learning algorithms leveraging the insights from the theoretical understandings. I am also broadly interested in theoretical computer science, empirical and applied machine learning, and robotics.
 
 Outside of academics, I play the electric guitar and do competitive cycling.
-
-__This site is still under construction__
