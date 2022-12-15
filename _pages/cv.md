@@ -7,6 +7,7 @@ redirect_from:
   - /resume
 ---
 
+A more complete PDF version: [Curriculum Vitae](https://ultimatejupiter.github.io/files/Xingyu_Zhu_CV.pdf)
 
 ---
 
