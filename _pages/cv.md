@@ -37,7 +37,13 @@ __Understanding Edge-of-Stability Training Dynamics with a Minimalist Example.__
 
 __Xingyu Zhu\*__, Zixuan Wang\*, [Xiang Wang](https://users.cs.duke.edu/~xwang/), [Mo Zhou](https://users.cs.duke.edu/~mz159/), [Rong Ge](https://users.cs.duke.edu/~rongge/)
 
-ArXiv preprint [2210.03294](https://arxiv.org/pdf/2210.03294) (Submitted to ICLR 2023)
+Poster @ ICLR 2023 (https://arxiv.org/pdf/2210.03294) 
+
+__Fairness in the Assignment Problem with Uncertain Priorities.__
+
+Zeyu Shen, Zhiyi Wang, __Xingyu Zhu__, Brandon Fain, Kamesh Munagala
+
+Full Paper @ AAMAS 2023 (https://arxiv.org/pdf/2301.13804.pdf)
 
 ---
 
