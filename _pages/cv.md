@@ -7,10 +7,6 @@ redirect_from:
   - /resume
 ---
 
-A more complete PDF version: [Curriculum Vitae](https://ultimatejupiter.github.io/files/Xingyu_Zhu_CV.pdf)
-
----
-
 ## Education
 
 * B.S. in Mathematics and Computer Science, Duke University
@@ -21,7 +17,7 @@ A more complete PDF version: [Curriculum Vitae](https://ultimatejupiter.github.i
 
   * Graduation with Highest Distinction from Computer Science
 
-  * Magna Cumma Laude
+  * Magna Cum Laude
 
   * Elected to Phi Beta Kappa academic honor society
 
@@ -31,11 +27,11 @@ A more complete PDF version: [Curriculum Vitae](https://ultimatejupiter.github.i
 
 \* denotes equal contribution
 
-__Dissecting Hessian: Understanding Common Structure of Hessian in Neural Networks.__
+__Fairness in the Assignment Problem with Uncertain Priorities.__
 
-[Yikai Wu*](https://yikai-wu.github.io), __Xingyu Zhu*__, [Chenwei Wu](https://users.cs.duke.edu/~cwwu/), Annie Wang, [Rong Ge](https://users.cs.duke.edu/~rongge/)
+Zeyu Shen, Zhiyi Wang, __Xingyu Zhu__, Brandon Fain, Kamesh Munagala
 
-ArXiv preprint [2010.04261](https://arxiv.org/abs/2010.04261)
+Full Paper @ AAMAS 2023 (https://arxiv.org/pdf/2301.13804.pdf)
 
 __Understanding Edge-of-Stability Training Dynamics with a Minimalist Example.__
 
@@ -43,11 +39,11 @@ __Xingyu Zhu\*__, Zixuan Wang\*, [Xiang Wang](https://users.cs.duke.edu/~xwang/)
 
 Poster @ ICLR 2023 (https://arxiv.org/pdf/2210.03294) 
 
-__Fairness in the Assignment Problem with Uncertain Priorities.__
+__Dissecting Hessian: Understanding Common Structure of Hessian in Neural Networks.__
 
-Zeyu Shen, Zhiyi Wang, __Xingyu Zhu__, Brandon Fain, Kamesh Munagala
+[Yikai Wu*](https://yikai-wu.github.io), __Xingyu Zhu*__, [Chenwei Wu](https://users.cs.duke.edu/~cwwu/), Annie Wang, [Rong Ge](https://users.cs.duke.edu/~rongge/)
 
-Full Paper @ AAMAS 2023 (https://arxiv.org/pdf/2301.13804.pdf)
+ArXiv preprint [2010.04261](https://arxiv.org/abs/2010.04261)
 
 ---
 
