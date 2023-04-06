@@ -15,11 +15,15 @@ A more complete PDF version: [Curriculum Vitae](https://ultimatejupiter.github.i
 
 * B.S. in Mathematics and Computer Science, Duke University
 
-  * Aug 2018 - Dec 2022 (Expected)
+  * Aug 2018 - Dec 2022
 
-  * GPA 3.972 / 4.0
+  * GPA 3.973 / 4.0
 
   * Graduation with Highest Distinction from Computer Science
+
+  * Magna Cumma Laude
+
+  * Elected to Phi Beta Kappa academic honor society
 
 ---
 
@@ -57,7 +61,7 @@ Full Paper @ AAMAS 2023 (https://arxiv.org/pdf/2301.13804.pdf)
   * Leading Recitations, Holding Office Hours, Grading Exams
 
 ---
-
+<!-- 
 ## Work experience
 
 * Research Intern in video group, [Megvii Research](https://en.megvii.com/megvii_research)
@@ -65,7 +69,7 @@ Full Paper @ AAMAS 2023 (https://arxiv.org/pdf/2301.13804.pdf)
   * Jan 2018 - Aug 2018
   * June 2019 - Aug 2019
 
----
+--- -->
 
 ## Skills
 
