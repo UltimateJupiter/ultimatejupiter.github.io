@@ -10,7 +10,7 @@ redirect_from:
 
 <!-- [Curriculum Vitae (PDF)](https://ultimatejupiter.github.io/files/Xingyu_Zhu_CV.pdf) -->
 
-I am an incoming PhD student at Princeton University. In Dec. 2022
+I am an incoming PhD student in Computer Science at Princeton University. In Dec. 2022
 I graduated from Duke University with double major in Mathematics and Computer Science. At Duke, I was beyond fortunate to be supervised by Professor [Rong Ge](https://users.cs.duke.edu/~rongge/).
 
 Research Interests
