@@ -9,6 +9,10 @@ redirect_from:
 
 ## Education
 
+* Ph.D. in Computer Science, Princeton University
+
+  * Aug 2023 - 
+
 * B.S. in Mathematics and Computer Science, Duke University
 
   * Aug 2018 - Dec 2022
@@ -18,6 +22,8 @@ redirect_from:
   * Graduation with Highest Distinction from Computer Science
 
   * Magna Cum Laude
+
+  * Alex Vasilos Memorial Award
 
   * Elected to Phi Beta Kappa academic honor society
 

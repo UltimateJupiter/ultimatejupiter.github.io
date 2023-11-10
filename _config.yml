@@ -82,12 +82,12 @@ analytics:
 author:
   name             : "Xingyu Zhu"
   avatar           : "profile.jpg"
-  bio              : "Undergraduate Student at Duke University"
-  location         : "Durham, NC, USA"
+  bio              : "PhD Student at Princeton University"
+  location         : "Princeton, NC, USA"
   employer         :
   pubmed           : 
   googlescholar    : "https://scholar.google.com/citations?user=Dlya3HMAAAAJ&hl=en"
-  email            : "xingyu.zhu@duke.edu"
+  email            : "xingyu.zhu@princeton.edu"
   researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :
   bitbucket        :
