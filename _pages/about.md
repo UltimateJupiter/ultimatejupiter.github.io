@@ -10,7 +10,7 @@ redirect_from:
 
 <!-- [Curriculum Vitae (PDF)](https://ultimatejupiter.github.io/files/Xingyu_Zhu_CV.pdf) -->
 
-I am a first year PhD student in Computer Science at Princeton University, and I am fortunate to be advised by Professor [Sanjeev Arora](https://www.cs.princeton.edu/~arora/). In Dec. 2022
+I am a second year PhD student in Computer Science at Princeton University, and I am fortunate to be advised by Professor [Sanjeev Arora](https://www.cs.princeton.edu/~arora/). In Dec. 2022
 I graduated from Duke University with double major in Mathematics and Computer Science. At Duke I was fortunate to be advised by Professor [Rong Ge](https://users.cs.duke.edu/~rongge/).
 
 Research Interests
