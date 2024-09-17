@@ -15,6 +15,6 @@ I graduated from Duke University with double major in Mathematics and Computer S
 
 Research Interests
 ======
-My current interests spans broadly across the field of machine learning, both theoretically and empirically. Recently I am especially interested in understanding the power of large language models through a semi-theoretical perspective. During my undergraduate experiences, my research interest primarily lies on the field of optimization (especially non-convex optimization). In particular, I was interested in understanding how modern gradient-based algorithms works from a theoretical perspective and designing better algorithms leveraging the insights from such theoretical understandings. I am also broadly interested in theoretical computer science and algorithmic fairness.
+My current interests spans broadly across theoretical and empirical ML. Recently I am especially interested in understanding the power of LLMs through a semi-theoretical perspective. During my undergraduate experiences, my research interest primarily lies on the field of optimization (especially non-convex optimization). In particular, I was interested in understanding how modern gradient-based algorithms works from a theoretical perspective and designing better algorithms leveraging the insights from such theoretical understandings. I am also broadly interested in theoretical computer science and algorithmic fairness.
 
 Outside of academics, I play the electric guitar and do competitive cycling.
