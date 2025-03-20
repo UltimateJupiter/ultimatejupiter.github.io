@@ -5,8 +5,6 @@ date: 2025-03-14
 authors:
   - admin
 tags:
-  - Hugo
-  - Hugo Blox
   - Markdown
 ---
 See paper for the [DeLTa Workshop](https://openreview.net/forum?id=b9JlhTrSOG) and the [DATA-FM Workshop](https://openreview.net/forum?id=CdoARvplnE).
