@@ -57,7 +57,7 @@ education:
     # button:
     #   text: 'Read Thesis'
     #   url: 'https://example.com'
-  - area: B.S. in Mathematics and Computer Science
+  - area: B.S. in Math & CS
     institution: Duke University
     date_start: 2018-08-26
     date_end: 2022-12-22
