@@ -35,11 +35,7 @@ sections:
       title: '📚 My Research'
       subtitle: ''
       text: |-
-        Use this area to speak to your mission. I'm a research scientist in the Moonshot team at DeepMind. I blog about machine learning, deep learning, and moonshots.
-
-        I apply a range of qualitative and quantitative methods to comprehensively investigate the role of science and technology in the economy.
-        
-        Please reach out to collaborate 😃
+        My current interests spans broadly across the field of machine learning, both theoretically and empirically. Recently I am especially interested in understanding the power of large language models through a semi-theoretical perspective.I have also worked on optimization dynamics of neural nets. In particular, I was interested in understanding how modern gradient-based algorithms works from a theoretical perspective and designing better algorithms leveraging the insights from such theoretical understandings. I am also broadly interested in theoretical computer science and algorithmic fairness.
     design:
       columns: '1'
   - block: collection
