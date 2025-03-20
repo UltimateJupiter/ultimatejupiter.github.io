@@ -50,7 +50,7 @@ interests:
 education:
   - area: Ph.D. in Computer Science
     institution: Princeton University
-    date_start: 2023
+    date_start: 2023-08-25
     date_end: 
     # summary: |
     #   Thesis on _Why LLMs are awesome_. Supervised by [Prof Joe Smith](https://example.com). Presented papers at 5 IEEE conferences with the contributions being published in 2 Springer journals.
@@ -59,11 +59,10 @@ education:
     #   url: 'https://example.com'
   - area: B.S. in Mathematics and Computer Science
     institution: Duke University
-    date_start: 2018
-    date_end: 2022
+    date_start: 2018-08-26
+    date_end: 2022-12-22
     summary: |
-      GPA: 3.973/4.0
-      - lorem ipsum dolor sit amet, consectetur adipiscing elit
+      GPA: 3.973/4.0, Magna Cum Laude
 # work:
 #   - position: Director of Cloud Infrastructure
 #     company_name: GenCoin
@@ -163,8 +162,4 @@ education:
 ---
 
 ## About Me
-I am a second year PhD student in Computer Science at Princeton University, and I am fortunate to be advised by Professor [Sanjeev Arora](https://www.cs.princeton.edu/~arora/). I did my undergrad at Duke, where I was fortunate to be advised by Professor [Rong Ge](https://users.cs.duke.edu/~rongge/).
-
-My current interests spans broadly across the field of machine learning, both theoretically and empirically. Recently I am especially interested in understanding the power of large language models through a semi-theoretical perspective. I have also worked on optimization dynamics of neural nets (especially non-convex optimization). Besides, I am broadly interested in theoretical computer science and algorithmic fairness.
-
-Outside of academics, I play the electric guitar and do competitive cycling.
+I am a second year PhD student in Computer Science at Princeton University working on theoretical machine learning and language modeling. I am fortunate to be advised by Professor [Sanjeev Arora](https://www.cs.princeton.edu/~arora/). I did my undergrad at Duke, where I was fortunate to be advised by Professor [Rong Ge](https://users.cs.duke.edu/~rongge/).
