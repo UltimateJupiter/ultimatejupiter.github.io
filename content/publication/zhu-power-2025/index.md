@@ -1,8 +1,8 @@
 ---
 title: On the Power of Context-Enhanced Learning in LLMs
 authors:
-- Xingyu Zhu
-- Abhishek Panigrahi
+- Xingyu Zhu*
+- Abhishek Panigrahi*
 - Sanjeev Arora
 date: '2025-03-01'
 publishDate: '2025-03-20T18:48:19.577736Z'
@@ -21,6 +21,14 @@ abstract: We formalize a new concept for LLMs, context-enhanced learning. It inv
   signal. We also experimentally demonstrate that it appears hard to detect or recover
   learning materials that were used in the context during training. This may have
   implications for data security as well as copyright.
+
+# Display this page in the Featured widget?
+featured: true
+image:
+  caption: 'Sample efficiency of context-enhanced learning'
+  focal_point: ""
+  preview_only: false
+
 tags:
 - Computer Science - Machine Learning
 links:

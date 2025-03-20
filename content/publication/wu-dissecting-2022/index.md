@@ -1,8 +1,8 @@
 ---
 title: 'Dissecting Hessian: Understanding Common Structure of Hessian in Neural Networks'
 authors:
-- Yikai Wu
-- Xingyu Zhu
+- Yikai Wu*
+- Xingyu Zhu*
 - Chenwei Wu
 - Annie Wang
 - Rong Ge

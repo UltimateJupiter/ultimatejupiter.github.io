@@ -10,7 +10,7 @@ date: '2023-01-01'
 publishDate: '2025-03-20T18:48:19.570045Z'
 publication_types:
 - manuscript
-publication: '*arXiv*'
+publication: 'AAMAS 2023'
 abstract: 'In the assignment problem, a set of items must be allocated to unit-demand
   agents who express ordinal preferences (rankings) over the items. In the assignment
   problem with priorities, agents with higher priority are entitled to their preferred

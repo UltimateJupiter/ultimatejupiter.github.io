@@ -1,8 +1,8 @@
 ---
 title: Understanding Edge-of-Stability Training Dynamics with a Minimalist Example
 authors:
-- Xingyu Zhu
-- Zixuan Wang
+- Xingyu Zhu*
+- Zixuan Wang*
 - Xiang Wang
 - Mo Zhou
 - Rong Ge
@@ -10,7 +10,7 @@ date: '2023-02-01'
 publishDate: '2025-03-20T18:48:19.562486Z'
 publication_types:
 - manuscript
-publication: '*arXiv*'
+publication: 'ICLR 2023'
 abstract: "Recently, researchers observed that gradient descent for deep neural networks
   operates in an ``edge-of-stability'' (EoS) regime: the sharpness (maximum eigenvalue
   of the Hessian) is often larger than stability threshold $2/eta$ (where $eta$ is
@@ -24,6 +24,14 @@ abstract: "Recently, researchers observed that gradient descent for deep neural 
   has sharpness close to $2/eta$. Globally we observe that the training dynamics for
   our example has an interesting bifurcating behavior, which was also observed in
   the training of neural nets."
+
+# Display this page in the Featured widget?
+featured: true
+image:
+  caption: 'GD trajectory on EoS for a minimalist model'
+  focal_point: ""
+  preview_only: false
+
 tags:
 - Computer Science - Machine Learning
 - I.2.6
