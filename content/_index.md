@@ -35,7 +35,7 @@ sections:
       title: 'Research Interests'
       subtitle: ''
       text: |-
-        My current interests spans broadly across the field of machine learning, both theoretically and empirically. Recently I am especially interested in understanding the power of large language models through a semi-theoretical lens. I have also worked on optimization dynamics of deep neural nets. I am also broadly interested in theoretical computer science and algorithmic fairness.
+        My interest spans across both theoretical and empirical ML. Recently I am especially interested in understanding the power of large language models through a semi-theoretical lens. I have also worked on optimization dynamics of deep neural nets. Besides, I am also broadly interested in theoretical computer science and algorithmic fairness.
     design:
       columns: '1'
   - block: collection
