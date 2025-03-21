@@ -38,7 +38,7 @@ outputs:
   home: [HTML, RSS, headers, redirects, backlinks]
   section: [HTML, RSS]
 imaging:
-  resampleFilter: MitchellNetravali
+  resampleFilter: linear
   quality: 100
   anchor: smart
 timeout: 600000
