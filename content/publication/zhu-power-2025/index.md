@@ -8,7 +8,7 @@ date: '2025-03-01'
 publishDate: '2025-03-20T18:48:19.577736Z'
 publication_types:
 - manuscript
-publication: '*arXiv*'
+publication: 'ICML 2025 **(Spotlight)**'
 doi: 10.48550/arXiv.2503.01821
 abstract: We formalize a new concept for LLMs, context-enhanced learning. It involves
   standard gradient-based learning on text except that the context is enhanced with
