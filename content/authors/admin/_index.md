@@ -162,4 +162,4 @@ education:
 ---
 
 ## About Me
-I am a second year PhD student in Computer Science at Princeton University working on theoretical machine learning and language modeling. I am fortunate to be advised by Professor [Sanjeev Arora](https://www.cs.princeton.edu/~arora/). I did my undergrad at Duke, where I was fortunate to be advised by Professor [Rong Ge](https://users.cs.duke.edu/~rongge/).
+I am a third year PhD Candidate in Computer Science at Princeton University working on theoretical machine learning and language modeling. I am fortunate to be advised by Professor [Sanjeev Arora](https://www.cs.princeton.edu/~arora/). I did my undergrad at Duke, where I was fortunate to be advised by Professor [Rong Ge](https://users.cs.duke.edu/~rongge/).
