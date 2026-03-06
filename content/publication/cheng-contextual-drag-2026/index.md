@@ -13,7 +13,7 @@ publication: '*arXiv*'
 doi: 10.48550/arXiv.2602.04288
 abstract: Central to many self-improvement pipelines for large language models (LLMs)
   is the assumption that models can improve by reflecting on past mistakes. We study
-  a phenomenon termed contextual drag: the presence of failed attempts in the context
+  a phenomenon termed contextual drag - the presence of failed attempts in the context
   biases subsequent generations toward structurally similar errors. Across evaluations
   of 11 proprietary and open-weight models on 8 reasoning tasks, contextual drag induces
   10-20% performance drops, and iterative self-refinement in models with severe contextual

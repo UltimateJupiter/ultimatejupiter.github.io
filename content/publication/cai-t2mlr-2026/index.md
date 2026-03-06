@@ -21,7 +21,7 @@ abstract: We introduce Transformers with Temporal Middle-Layer Recurrence (T2MLR
   and multi-hop reasoning finetuning, T2MLR consistently outperforms parameter-matched
   Transformer baselines at the same inference compute. Moreover, we find that looping
   only a middle-layer block (as little as 20% of all layers) often outperforms full-layer
-  looping. This offers a new perspective on latent reasoning in Transformers: effective
+  looping. This offers a new perspective on latent reasoning in Transformers - effective
   iterative refinement does not necessarily require full-stack recurrence. It can
   instead be achieved more effectively through targeted middle-layer recurrence.
 tags:
