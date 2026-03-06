@@ -24,6 +24,13 @@ abstract: Central to many self-improvement pipelines for large language models (
   such as fallback-behavior fine-tuning and context denoising yield partial improvements,
   they fail to fully restore baseline performance, positioning contextual drag as
   a persistent failure mode in current reasoning architectures.
+
+featured: true
+image:
+  caption: 'Having incorrect attempts in the context significantly biases reasoning models toward similar errors.'
+  focal_point: ""
+  preview_only: false
+
 tags:
 - Computer Science - Computation and Language
 - Computer Science - Artificial Intelligence

@@ -24,6 +24,13 @@ abstract: We introduce Transformers with Temporal Middle-Layer Recurrence (T2MLR
   looping. This offers a new perspective on latent reasoning in Transformers - effective
   iterative refinement does not necessarily require full-stack recurrence. It can
   instead be achieved more effectively through targeted middle-layer recurrence.
+
+featured: true
+image:
+  caption: 'T2MLR relaxes the information bottleneck in transformer inference by passing representation from a deeper layer at the previous token position to a shallower layer of the current token position.'
+  focal_point: ""
+  preview_only: false
+
 tags:
 - Latent Reasoning
 - Middle Layer
