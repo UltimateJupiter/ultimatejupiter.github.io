@@ -25,11 +25,13 @@ import { profile } from '../data/profile';
         {profile.links.map((l) => <li><a href={l.url}>{l.label}</a></li>)}
       </ul>
     </div>
-    <p class="caption mono" aria-hidden="true">
-      <span class="fig">Fig. 0</span> Noisy heavy-ball descent into a slowly drifting, curved valley.
-      <span class="hint">Move to raise a hill, click to drop a particle.</span>
-    </p>
   </div>
+  <p class="caption mono" aria-hidden="true">
+    <span class="fig">Fig. 0</span><span class="long">Noisy heavy-ball descent into a slowly drifting, curved valley</span><span
+      class="short">Noisy descent into a drifting valley</span><span class="hint"
+      ><span class="sep">·</span>move to raise a hill, click to drop a particle</span
+    >
+  </p>
 </section>
 
 <style>
@@ -39,7 +41,7 @@ import { profile } from '../data/profile';
     display: flex;
     align-items: flex-end;
     padding-top: 6rem;
-    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+    padding-bottom: clamp(5rem, 9vw, 7rem);
     overflow: hidden;
     cursor: crosshair;
   }
@@ -61,11 +63,10 @@ import { profile } from '../data/profile';
   }
   .hero-inner {
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 40rem) 1fr;
-    align-items: end;
-    gap: 2rem;
     cursor: auto;
+  }
+  .intro {
+    max-width: 40rem;
   }
   .intro > * {
     animation: rise 1.1s var(--ease) both;
@@ -161,32 +162,43 @@ import { profile } from '../data/profile';
     color: var(--ink);
     border-color: var(--ink);
   }
+  /* one-line figure caption, centred on the bottom edge of the hero */
   .caption {
-    justify-self: end;
-    text-align: right;
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 1.5rem;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: var(--muted);
     font-size: 0.66rem;
-    max-width: 16rem;
-    margin: 0;
     animation: rise 1.4s 0.5s var(--ease) both;
   }
   .caption .fig {
     color: var(--ink);
-    margin-right: 0.4em;
+    margin-right: 0.75em;
   }
   .hint {
-    display: block;
-    margin-top: 0.35rem;
     color: var(--faint);
   }
+  .sep {
+    margin: 0 0.75em;
+  }
+  .short {
+    display: none;
+  }
+  @media (max-width: 560px) {
+    .long {
+      display: none;
+    }
+    .short {
+      display: inline;
+    }
+  }
   @media (max-width: 860px) {
-    .hero-inner {
-      grid-template-columns: 1fr;
-    }
-    .caption {
-      justify-self: start;
-      text-align: left;
-    }
     .field,
     .dots {
       -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0.15) 75%);
