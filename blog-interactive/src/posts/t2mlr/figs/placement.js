@@ -43,7 +43,7 @@
   Object.keys(R).forEach(function (k) {
     const r = R[k];
     r.id = k;
-    if (r.kind === 't2') { r.D = r.e - r.s + 1; r.name = 'T2MLR (' + r.s + ',' + r.e + ')'; }
+    if (r.kind === 't2') { r.D = r.e - r.s + 1; r.name = 'T²MLR (' + r.s + ',' + r.e + ')'; }
   });
   const GROUPS = {
     vary:  { name: 'vary the span', secs: [{ rows: ['r1_30', 'r5_26', 'r9_22', 'r13_18', 'r15_16'] }] },
@@ -51,7 +51,7 @@
       { t: 'blocks of 6 layers', st: 'D=6', rows: ['r1_6', 'r13_18', 'r25_30'] },
       { t: 'blocks of 14 layers', st: 'D=14', rows: ['r1_14', 'r9_22', 'r17_30'] }] },
     other: { name: 'other ways to add compute', secs: [
-      { t: 'T2MLR', st: 'T2MLR', rows: ['r9_22', 'r13_18'] },
+      { t: 'T²MLR', st: 'T²MLR', rows: ['r9_22', 'r13_18'] },
       { t: 'pause and looped (extra inference compute)', st: 'pause/looped', rows: ['pause', 'loopF', 'loopM'] }] },
     all:   { name: 'all', pos: true, secs: [
       { t: 'vary the span', st: 'span', rows: ['r1_30', 'r5_26', 'r9_22', 'r13_18', 'r15_16'] },

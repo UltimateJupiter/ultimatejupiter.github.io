@@ -2,7 +2,7 @@
    An exact computation on the dataflow graph of Eqs 2.1–2.2 (L = 30, SmolLM2-135M).
    Serial depth d(t, l) = number of layer applications on the longest dependency path into h_t^(l):
      Transformer            d(t, l) = l
-     T2MLR(ls, le)          d(1, l) = l;  for t ≥ 2: d(t, l) = l (l < ls),  l + (t−1)·D (l ≥ ls),  D = le − ls + 1
+     T²MLR(ls, le)          d(1, l) = l;  for t ≥ 2: d(t, l) = l (l < ls),  l + (t−1)·D (l ≥ ls),  D = le − ls + 1
      Looped ×K over [bs,be] per-token layer applications and output depth L + (K−1)·D, constant in t
                             (full looping: bs = 1, be = L, so K·L; paper Table 5)
    The closed form was checked against a dynamic program over every attention and recurrence edge. */
@@ -59,7 +59,7 @@
     'loop2': {kind:'loop', K:2, bs:1, be:30, opt:'Full-looped ×2', name:'Full-looped ×2'},
     'mloop3':{kind:'loop', K:3, bs:9, be:22, opt:'Middle-looped ×3 (9–22)', name:'Middle-looped ×3 (layers 9–22)'}
   };
-  const GROUPS=[['Transformer',['tr']],['T2MLR',['1-30','5-26','9-22','13-18','15-16','custom']],['Looped (Table 2)',['loop2','mloop3']]];
+  const GROUPS=[['Transformer',['tr']],['T²MLR',['1-30','5-26','9-22','13-18','15-16','custom']],['Looped (Table 2)',['loop2','mloop3']]];
   const IN=['A','Quick','Fox','Jumps','Over','The'], OUT=['Quick','Fox','Jumps','Over','The','Lazy'];
   const TMAX=32;
 
@@ -71,7 +71,7 @@
   const K=()=>C().K||1;
   function perTok(){ return kind()==='loop'?L+(K()-1)*Dsz():L; }                     // layer applications per token
   function depthOut(t){ const k=kind(); return k==='t2'?L+(t-1)*Dsz():k==='loop'?L+(K()-1)*Dsz():L; }
-  const t2depth=(t,D)=>L+(t-1)*D;                                                    // T2MLR output depth
+  const t2depth=(t,D)=>L+(t-1)*D;                                                    // T²MLR output depth
   function cellDepths(t,l){
     const k=kind();
     if(k==='tr') return [l];
@@ -81,7 +81,7 @@
     if(l>b[1]) return [l+(K()-1)*D];
     const a=[]; for(let q=0;q<K();q++) a.push(l+q*D); return a;
   }
-  function name(){ const k=kind(); return k==='t2'?'T2MLR('+st.ls+','+st.le+')':k==='loop'?C().name:'Transformer'; }
+  function name(){ const k=kind(); return k==='t2'?'T²MLR('+st.ls+','+st.le+')':k==='loop'?C().name:'Transformer'; }
   function shortName(){ const k=kind(); return k==='loop'?C().opt.replace(/ \(.*\)$/,''):name(); }
   function band(l){
     const b=blk(); if(!b) return 'n';
@@ -190,7 +190,7 @@
     }
     // left axis ticks
     drawTicks();
-    // recurrence arrows (T2MLR) or loop returns (looped)
+    // recurrence arrows (T²MLR) or loop returns (looped)
     const deco=el('g',{},svg), pathG=el('g',{},svg), chips=el('g',{},svg);
     if(k==='t2'){
       const yA=yT(st.le)-0.5, yB=yT(st.ls)+M.ph-0.5;
@@ -331,7 +331,7 @@
     // [{v:(t)=>value, cls, label, lbCls, main}]
     const k=kind(), out=[];
     const trS={v:()=>L,cls:'s-tr',label:'Transformer',lb:'lb-tr',dot:'d-tr',key:'Transformer'};
-    const ctx={v:t=>t2depth(t,6),cls:'s-ctx',label:'T2MLR(13,18)',lb:'lb-tr',dot:'d-tr',key:'T2MLR(13,18)'};
+    const ctx={v:t=>t2depth(t,6),cls:'s-ctx',label:'T²MLR(13,18)',lb:'lb-tr',dot:'d-tr',key:'T²MLR(13,18)'};
     if(k==='t2'){ const D=Dsz(); out.push(trS,{v:t=>t2depth(t,D),cls:'s-sel',label:name(),lb:'lb-sel',dot:'d-sel',main:true,key:name()}); }
     else if(k==='loop'){ const v=perTok(); out.push(trS,ctx,{v:()=>v,cls:'s-loop',label:shortName(),lb:'lb-sel',dot:'d-sel',main:true,key:shortName()}); }
     else out.push(ctx,{v:()=>L,cls:'s-sel',label:'Transformer',lb:'lb-sel',dot:'d-sel',main:true,key:'Transformer'});

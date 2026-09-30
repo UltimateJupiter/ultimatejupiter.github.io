@@ -1,5 +1,5 @@
 ---
-title: 'T2MLR: Transformer with Temporal Middle-Layer Recurrence'
+title: 'T²MLR: Transformer with Temporal Middle-Layer Recurrence'
 authors:
 - Ziyang Cai*
 - Xingyu Zhu*
@@ -10,7 +10,7 @@ date: '2026-03-02'
 venue: LIT Workshop @ ICLR 2026
 featured: true
 image: ./featured.png
-caption: T2MLR relaxes the information bottleneck in transformer inference by passing representation
+caption: T²MLR relaxes the information bottleneck in transformer inference by passing representation
   from a deeper layer at the previous token position to a shallower layer of the current token
   position.
 links:
@@ -18,13 +18,13 @@ links:
   url: https://openreview.net/forum?id=fQbk1EQWBO
 - name: Interactive post
   url: /blog/t2mlr/
-abstract: We introduce Transformers with Temporal Middle-Layer Recurrence (T2MLR), a generalized
+abstract: We introduce Transformers with Temporal Middle-Layer Recurrence (T²MLR), a generalized
   Transformer architecture that integrates attention and recurrence by routing a lightweight
   temporal pathway through the middle layers. Motivated by latent-reasoning and looped-Transformer
-  lines of work, T2MLR injects intermediate representations from deeper layers of the previous
+  lines of work, T²MLR injects intermediate representations from deeper layers of the previous
   token into earlier layers of the current token via a gated recurrent pathway, enabling iterative
   latent computation while preserving dense, token-level supervision. Across natural-language
-  pretraining and multi-hop reasoning finetuning, T2MLR consistently outperforms parameter-matched
+  pretraining and multi-hop reasoning finetuning, T²MLR consistently outperforms parameter-matched
   Transformer baselines at the same inference compute. Moreover, we find that looping only
   a middle-layer block (as little as 20% of all layers) often outperforms full-layer looping.
   This offers a new perspective on latent reasoning in Transformers - effective iterative

@@ -1,4 +1,4 @@
-/* T2MLR: post-specific styles (the Jacobi training steps and the small result tables). Tokens only. */
+/* T²MLR: post-specific styles (the Jacobi training steps and the small result tables). Tokens only. */
 
 /* Algorithm 1 as a numbered list */
 ol.algo{list-style:none;counter-reset:algo;margin:14px 0 18px;padding:12px 0 12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}

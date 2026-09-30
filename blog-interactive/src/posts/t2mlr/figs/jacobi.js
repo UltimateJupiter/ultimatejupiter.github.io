@@ -1,5 +1,5 @@
 /* Figure 2 · Jacobi approximation of the recurrent cache (fx-jacobi).
-   A toy T2MLR middle block with random weights: Eq. 2.3 (fusion), Eq. 2.4 (cache update) and
+   A toy T²MLR middle block with random weights: Eq. 2.3 (fusion), Eq. 2.4 (cache update) and
    Algorithm 1 (temporal-parallel Jacobi iterations), compared with the exact sequential recurrence.
    Left: relative error of R<k> at each position t (heatmap). Right: max over t against k (log scale). */
 (function () {
