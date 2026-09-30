@@ -3,7 +3,7 @@
 interface Props {
   index: string;
   title: string;
-  shape?: 'circle' | 'triangle' | 'square' | 'hexagon' | 'diamond';
+  shape?: 'circle' | 'triangle' | 'square' | 'hexagon' | 'diamond' | 'pentagon';
   id?: string;
 }
 const { index, title, shape = 'square', id } = Astro.props;
@@ -13,6 +13,7 @@ const shapes: Record<string, string> = {
   square: '<rect x="3" y="3" width="10" height="10"/>',
   hexagon: '<polygon points="8,1.8 13.4,4.9 13.4,11.1 8,14.2 2.6,11.1 2.6,4.9"/>',
   diamond: '<polygon points="8,1.5 14.5,8 8,14.5 1.5,8"/>',
+  pentagon: '<polygon points="8,1.8 14,6.2 11.7,13.3 4.3,13.3 2,6.2"/>',
 };
 ---
 

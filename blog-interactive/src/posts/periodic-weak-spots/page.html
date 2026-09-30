@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Periodic Weak Spots</title>
+<meta name="description" content="Chunked KV-cache compression gives every token a phase, and models that use it retrieve worse at some phases than others.">
+<script src="../shared/theme-init.js"></script>
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="post.css">
+<link rel="stylesheet" href="../shared/fx.css">
+<link rel="stylesheet" href="../shared/select.css">
+<link rel="stylesheet" href="figures.css">
+<link rel="stylesheet" href="../shared/site-theme.css">
+<script src="../shared/mathjax-config.js"></script>
+<script defer src="../shared/vendor/mathjax/tex-svg.min.js"></script>
+</head>
+<body>
+<div class="site-bar"><div class="in">
+  <a class="brand" href="/" aria-label="Xingyu Zhu, home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5 3.8 16.8V7.2Z"/><path d="M12 2.5 7.6 14.6h8.8Z M7.6 14.6 3.8 7.2 M16.4 14.6 20.2 7.2 M7.6 14.6 12 21.5 16.4 14.6 M3.8 16.8 7.6 14.6 M20.2 16.8 16.4 14.6"/><circle cx="12" cy="2.5" r="1.6"/></svg><span>Xingyu Zhu</span></a>
+  <nav aria-label="Site"><ul><li><a href="/publications/">Publications</a></li><li><a href="/talks/">Talks</a></li><li><a href="/blog/" aria-current="page">Blog</a></li><li><a href="/news/">News</a></li><li><a href="/uploads/Xingyu_Zhu_CV_PhD.pdf">CV</a></li></ul></nav>
+</div></div>
+<nav class="toc" aria-label="Contents"><ol><li><a href="#summary">Summary</a></li><li><a href="#a-coordinate-created-by-compression">A coordinate created by compression</a></li><li><a href="#weak-spots-in-deepseek-v4">Weak spots in DeepSeek-V4</a></li><li><a href="#controlled-pretraining">Controlled pretraining</a></li><li><a href="#phase-specialization">Phase specialization</a></li><li><a href="#why-compression-concentrates">Why compression concentrates</a></li><li><a href="#related-work">Related work</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#references">References</a></li></ol></nav>
+
+<main>
+<header>
+  <h1>Periodic Weak Spots: Phase Sensitivity from Chunked KV-Cache Compression</h1>
+  <ul class="authors" aria-label="Authors">
+    <li><a href="https://ultimatejupiter.github.io/" target="_blank" rel="noopener">Xingyu Zhu</a><sup>1,2*</sup></li>
+    <li><a href="https://y553546436.github.io/" target="_blank" rel="noopener">Pu (Luke) Yi</a><sup>1,3*</sup></li>
+    <li><a href="https://alexczh1.github.io/" target="_blank" rel="noopener">Ziheng Cheng</a><sup>1,4*</sup></li>
+    <li><a href="https://trestad.github.io/" target="_blank" rel="noopener">Ang Lv</a><sup>1*</sup></li>
+    <li><a href="https://jing-liu.com/" target="_blank" rel="noopener">Jing Liu</a><sup>1</sup></li>
+    <li><a href="https://web.stanford.edu/~lexing/" target="_blank" rel="noopener">Lexing Ying</a><sup>1</sup></li>
+    <li><a href="https://scholar.google.com/citations?user=OyRt02oAAAAJ" target="_blank" rel="noopener">Yiyuan Ma</a><sup>1†</sup></li>
+    <li><a href="https://simonxin.com/" target="_blank" rel="noopener">Xin Dong</a><sup>1†</sup></li>
+  </ul>
+  <p class="affils"><span><sup>1</sup>ByteDance Seed</span><span><sup>2</sup>Princeton University</span><span><sup>3</sup>Stanford University</span><span><sup>4</sup>University of California, Berkeley</span></p>
+  <p class="notes"><span><sup>*</sup>Core contributors. Work done during internship at ByteDance Seed.</span><span><sup>†</sup>Corresponding authors.</span></p>
+  <div class="links">
+    <a class="pill" href="https://arxiv.org/abs/2609.36322"><span class="k">arXiv</span>2609.36322</a>
+    <a class="pill" href="https://arxiv.org/pdf/2609.36322">PDF</a>
+    <a class="pill" href="#cite">Cite</a>
+    <button type="button" class="pill theme" id="theme-btn">◐<span class="t"> Dark</span></button>
+  </div>
+  <nav class="toc-inline" aria-label="Contents"><a href="#summary">Summary</a> <span>·</span> <a href="#a-coordinate-created-by-compression">A coordinate created by compression</a> <span>·</span> <a href="#weak-spots-in-deepseek-v4">Weak spots in DeepSeek-V4</a> <span>·</span> <a href="#controlled-pretraining">Controlled pretraining</a> <span>·</span> <a href="#phase-specialization">Phase specialization</a> <span>·</span> <a href="#why-compression-concentrates">Why compression concentrates</a> <span>·</span> <a href="#related-work">Related work</a> <span>·</span> <a href="#limitations">Limitations</a> <span>·</span> <a href="#references">References</a></nav>
+</header>
+
+<h2 id="summary">Summary</h2>
+<ul>
+  <li>Chunked KV compression gives every token a phase, its position modulo the compression stride \(S\). A model is phase sensitive when its accuracy depends on the phase of the information it has to retrieve.</li>
+  <li>DeepSeek-V4 and DeepSeek-V4.1, which compress their KV caches in chunks, are phase sensitive. At 128K tokens, needle retrieval accuracy differs by up to 40 points across target positions, with a period equal to the stride. When the text before a line of code from DeepSeek-V4's own FP8 kernel is lengthened one token at a time, DeepSeek-V4-Flash-Base alternates between two completions of that line, with a period of four tokens, equal to its stride.</li>
+  <li>Small models pretrained from scratch, which differ from full-attention baselines substantially only in their chunked compression, are also phase sensitive, while the baselines are not.</li>
+  <li>In the trained models, knocking out some KV heads lowers accuracy at only a few phases, and some learned compression gates put most of their weight on the same slots of every window. In an idealized model, theory shows that such concentration is optimal and that training makes it the same for every input. The theory also suggests why the heads may fail to cover every phase.</li>
+</ul>
+
+<h2 id="a-coordinate-created-by-compression">A coordinate created by compression</h2>
+<p>Many long-context designs keep a compressed memory of past tokens&nbsp;<span class="cite">[<a href="#ref-1">1</a>, <a href="#ref-2">2</a>, <a href="#ref-3">3</a>, <a href="#ref-4">4</a>]</span>, including the compressed sparse attention of DeepSeek-V4&nbsp;<span class="cite">[<a href="#ref-5">5</a>]</span>. A chunked compressor reads the context in windows of \(W\) tokens that start every \(S\) tokens and writes one cache entry per window. Write \(\mathbf h_{j,i}\) for the hidden state at offset \(i\), its slot \(0,\dots,W-1\) within window \(j\). A gate turns logits into scores over the window, and the scores weight payloads \(\mathbf C_i\mathbf h_{j,i}\). Each offset \(i\) has its own gate parameters \(\mathbf Z_i\) and \(\mathbf b_i\) and its own linear payload map \(\mathbf C_i\):</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \mathbf s_{j,i}=\mathbf Z_i\mathbf h_{j,i}+\mathbf b_i,\)</span><span class="eq">\(\displaystyle \boldsymbol\alpha_{j,i}=\frac{\exp(\mathbf s_{j,i})}{\sum_{u=0}^{W-1}\exp(\mathbf s_{j,u})},\)</span><span class="eq">\(\displaystyle \widehat{\mathbf K}_j=\sum_{i=0}^{W-1}\boldsymbol\alpha_{j,i}\odot\mathbf C_i\mathbf h_{j,i}.\)</span></div>
+<p>The score \(\boldsymbol\alpha_{j,i}\) can be one scalar per offset or one score per channel, hence the elementwise product. Values are compressed the same way. Later queries attend over these entries together with a short local window of exact recent tokens. An entry is written before any later query exists, so it must retain whatever a later query might need. Because windows start every \(S\) tokens, each token at position \(t\) also has a phase:</p>
+<div class="math-block">\[\phi(t)=t \bmod S.\]</div>
+<p>Three related terms recur below. The <i>offset</i> is a token's slot within one window, the <i>phase</i> is its position modulo the stride, and a <i>residue</i> is its position modulo a multiple of \(S\), which lets models with different strides share one axis. With non-overlapping windows (\(S=W\)) offset and phase coincide. With overlapping windows (\(S&lt;W\)) a token appears at several offsets, but its phase is still fixed. With non-overlapping windows, a token at phase \(S-1\) is the last of its window, so the token after it falls into the next entry, and we call \(S-1\) the <i>boundary phase</i>. Shifting the input by a few tokens changes which tokens share an entry without changing their content or order, so if retrieval depends on \(\phi\), that dependence is a property of the model, not of the data.</p>
+<figure class="ill" id="fig-cmp">
+  <div class="ill-controls cmp-controls">
+    <div class="cmp-seg" role="group" aria-label="Shift the input by prepending tokens" id="cmp-shift"><span class="lab">prepend</span></div>
+    <div class="cmp-seg" role="group" aria-label="Gate">
+      <button type="button" id="cmp-learn" aria-pressed="true">learned gate</button>
+      <button type="button" id="cmp-uni" aria-pressed="false">uniform</button>
+    </div>
+  </div>
+  <div class="cmp-strip-wrap"><div class="cmp-strip" id="cmp-strip" role="group" aria-label="Tokens; click one to follow it"></div></div>
+  <div class="ill-status" id="cmp-readout" aria-live="polite"></div>
+  <div class="cmp-pipe" id="cmp-pipe" aria-hidden="true">
+    <div class="cp-step" style="grid-column:1"><b>window</b></div>
+    <div class="cp-step" style="grid-column:2 / 7"><b>1</b> score<span class="wide-only"> each token</span></div>
+    <div class="cp-step" style="grid-column:7"><b>2</b> normalize</div>
+    <div class="cp-step" style="grid-column:8 / 11"><b>3</b> gather<span class="wide-only"> into one entry</span></div>
+    <div class="cp-h" style="grid-column:1">token<br>&nbsp;</div>
+    <div class="cp-h r sm-hide" style="grid-column:2">content<br>\(\mathbf Z_i\mathbf h_i\)</div>
+    <div class="cp-h r sm-hide" style="grid-column:4">bias<br>\(\mathbf b_i\)</div>
+    <div class="cp-h r" style="grid-column:6">logit<br>\(s_i\)</div>
+    <div class="cp-h" style="grid-column:7">score<br>\(\alpha_i\)</div>
+    <div class="cp-h" style="grid-column:8">payload<br>\(\mathbf C_i\mathbf h_i\)</div>
+    <div class="cp-h" style="grid-column:10;text-align:center">entry<br>\(\widehat{\mathbf K}_j\)</div>
+  </div>
+  <figcaption>Illustration with \(W=S=4\), so a token's offset \(i\) in its window is also its phase, and colors mark offsets. <b>1</b> Each token in the window gets a logit: a content term \(\mathbf Z_i\mathbf h_i\) that depends on the token, plus a bias \(\mathbf b_i\) that belongs to the offset, not the token. <b>2</b> A softmax over the window turns the four logits into scores that sum to one. <b>3</b> Each token's payload \(\mathbf C_i\mathbf h_i\) is scaled by its score and summed into a single cache entry. Each stacked bar shows how much of one channel comes from each offset. This gate's bias favors offset 2. Click a token to follow it (outlined). Prepending tokens moves every token to a new offset without changing any content, and the followed token's score changes with its new offset. The small bars on the prepend buttons show that score for each shift, and dashed chips are padding. With a uniform gate every offset gets \(1/4\). The numbers are illustrative, and only keys are drawn.</figcaption>
+</figure>
+
+<h2 id="weak-spots-in-deepseek-v4">Weak spots in DeepSeek-V4</h2>
+<p>DeepSeek-V4 comes in a smaller model, Flash, and a larger one, Pro. The suffix <code>-Base</code> marks a pretrained checkpoint, and <code>-0731</code> and <code>-0813</code> mark post-trained ones.</p>
+<h3>A flipping completion</h3>
+<p>We ask DeepSeek-V4-Flash-Base to complete a line of its own FP8 quantization kernel, with the cursor after <code>T.Cast(FP</code>. The correct continuation is <code>8</code>, since <code>32</code> would duplicate an outer cast. We prepend a docstring and lengthen it one token at a time. The code does not change, but the top prediction switches between <code>8</code> and <code>32</code> every two tokens, so the pattern repeats every four tokens (Figure 1). Four is the stride of DeepSeek-V4's compressed sparse attention (\(W=8, S=4\))&nbsp;<span class="cite">[<a href="#ref-5">5</a>]</span>. Across four families of filler text with 16 lengths each, 60 of 64 rankings follow this pattern. Under several filler sweeps, the post-trained DeepSeek-V4-Flash-0731 (\(S=4\)) and DeepSeek-V4.1-Flash (\(S=2\))&nbsp;<span class="cite">[<a href="#ref-6">6</a>]</span> also switch periodically between <code>8</code> and <code>32</code>. DeepSeek-V3.1-Base, which has no chunked compression, prefers <code>32</code> on only 4 of the same 64 inputs, each by a probability margin below 0.07.</p>
+<figure class="ill" id="fig-fp8">
+  <div class="ill-controls" role="group" aria-label="Number of equal signs in the docstring">
+    <button type="button" id="fp8-minus" aria-label="Remove one equal sign">&minus; =</button>
+    <input type="range" id="fp8-n" min="9" max="24" step="1" value="15" aria-label="Number of equal signs">
+    <button type="button" id="fp8-plus" aria-label="Add one equal sign">+ =</button>
+    <span class="ill-readout" id="fp8-readout" aria-live="polite"></span>
+  </div>
+  <div class="fp8-grid">
+    <pre class="fp8-code" id="fp8-code"></pre>
+    <div class="fp8-side">
+      <div class="fp8-h">next-token probability</div>
+      <div class="fp8-bar good"><span class="k">8</span><span class="track"><b id="fp8-b8"></b></span><span class="v" id="fp8-v8"></span></div>
+      <div class="fp8-bar bad"><span class="k">32</span><span class="track"><b id="fp8-b32"></b></span><span class="v" id="fp8-v32"></span></div>
+      <div class="fp8-pred" id="fp8-pred"></div>
+      <div class="fp8-h">\(P(8)\) at all 16 lengths \(L\) (click to jump)</div>
+      <div class="fp8-strip" id="fp8-strip"></div>
+      <div class="fp8-legend"><span><i class="good"></i>8 on top</span><span><i class="mut"></i>32 on top</span><span>height = \(P(8)\)</span></div>
+    </div>
+  </div>
+  <figcaption>Figure 1. DeepSeek-V4-Flash-Base completes <code>T.Cast(FP</code> in its own FP8 kernel. The filler length \(L\) counts every docstring token before the code. The docstring's opening sentence is 15 tokens, and each added <code>=</code> sign adds one token, so 15 signs give \(L=30\). The code below never changes. It only shifts by one position per added sign. The model prefers the correct <code>8</code> when \(L \bmod 4\in\{2,3\}\) and <code>32</code> otherwise, a period of four that matches its compression stride. Probabilities are measured values, and dashed lines in the strip separate cycles of four.</figcaption>
+</figure>
+
+<h3>A position-matched needle test</h3>
+<p>Each prompt holds 128K tokens with 16,000 four-token key–value records, and asks for the value of one target key near the middle of the context. Let \(t_K\) be the position of the target key. We group prompts by the residue \(r=t_K \bmod 8\), which covers two stride cycles for DeepSeek-V4 and four for DeepSeek-V4.1, and write \(A(r)\) for the answer accuracy on group \(r\). Filler lengths are chosen so that the query position is fixed and</p>
+<div class="math-block">\[\mathbb E[t_K\mid r]\ \text{and}\ \operatorname{Var}[t_K\mid r]\ \text{are the same for every } r,\]</div>
+<p>so the groups differ in phase but not in these position statistics. Each group has 256 prompts for each of the four DeepSeek-V4 models (Flash-Base, Flash-0731, Pro-Base, and Pro-0813). DeepSeek-V4.1-Flash was evaluated in a separate, larger run with 2,560 prompts per group.</p>
+<!--FX:niah-->
+<p>The accuracy pattern repeats with the stride. For the four DeepSeek-V4 models, the mean of \(|A(r)-A(r+4)|\) over \(r\in\{0,1,2,3\}\) is 1.1 to 2.0 points, small next to gaps of 15 to 40 points. DeepSeek-V4.1-Flash compresses with \(S=2\), and all four of its even residues stay above all four odd ones. Post-training raises accuracy and narrows the gap, but it keeps the period.</p>
+
+<h2 id="controlled-pretraining">Controlled pretraining</h2>
+<p>DeepSeek-V4 differs from a plain transformer in many ways besides compression, so we pretrain our own models. The backbone is Qwen3-0.6B&nbsp;<span class="cite">[<a href="#ref-7">7</a>]</span> (28 layers, width 1,024, 16 query heads, head dimension 128). Every model is trained from scratch on 100B tokens, with chunked compression as the only substantial architectural change from the full-attention baselines. We name each model by its signature attributes. W8/S8 · 1 KV has window \(W=8\), stride \(S=8\), and one KV head per layer, and anything else that differs is appended, as in W8/S8 · 1 KV · no RoPE. Unless its name says otherwise, a compressed model has learned scalar gates, separate key and value branches, and RoPE, and it attends jointly to compressed history and a 16-token local window of exact tokens. W8/S8 · 1 KV also has three extra seeds (43, 44, and 45), and without a seed the name means seed 42. Across the sweep, we vary \(W\) and \(S\) independently, the number of KV heads, and these attributes:</p>
+<ul>
+  <li><i>vector gates</i>: one gate score per channel rather than one scalar per offset.</li>
+  <li><i>tied K/V</i>: values reuse the normalized, rotated keys instead of their own branch.</li>
+  <li><i>no gate bias</i>: the offset biases \(\mathbf b_i\) are removed.</li>
+  <li><i>no Q/K norm</i>: queries and keys skip RMSNorm.</li>
+  <li><i>no RoPE</i> or <i>RoPE on 16 dims</i>: no rotary embedding, or one on 16 of the 128 head dimensions.</li>
+  <li><i>uncompressed tail</i>: raw tokens are kept only for the current incomplete window, instead of a fixed 16-token window.</li>
+  <li><i>DeepSeek-style kernel</i>: W8/S4 with vector gates, tied K/V, and RoPE on 16 dimensions, which matches DeepSeek-V4's compression kernel. A variant with <i>scalar gates</i> gives each token one score instead of one per channel.</li>
+  <li><i>uniform averaging</i>: every offset gets weight \(\boldsymbol\alpha_{j,i}=1/W\), with no learned gate.</li>
+  <li><i>post-norm</i>: a normalization after the payload projection.</li>
+</ul>
+<p>The evaluation is an animal-to-name lookup. Each prompt lists 64 records, each a single-token animal key followed directly by a single-token name, and ends with eight demonstrations and a target animal. The model must output that animal's name, the token right after its key. We report full-vocabulary top-1 accuracy, grouped by the target key's position modulo 24, a common multiple of all tested strides.</p>
+<p><i>Prefix padding</i> shifts all records together. <i>In-sequence padding</i> varies the gaps between records, so that distractor phases do not move in lockstep with the target. Both hold the query position and the first two moments of the target position fixed.</p>
+<!--FX:acc-->
+<div class="tablewrap"><table>
+<thead><tr><th>Model</th><th>val. loss</th><th>mean</th><th>worst</th><th>gap</th></tr></thead>
+<tbody>
+<tr><td>Full attention · 1 KV</td><td>2.466</td><td>18.8</td><td>17.2</td><td>3.1</td></tr>
+<tr><td>Full attention · 8 KV</td><td>2.437</td><td>61.1</td><td>58.4</td><td>4.3</td></tr>
+<tr><td>W8/S8 · 1 KV · seed 42</td><td>2.478</td><td>50.6</td><td class="lo">5.7</td><td>75.3</td></tr>
+<tr><td>W8/S8 · 8 KV</td><td>2.431</td><td>59.4</td><td class="lo">9.9</td><td>71.1</td></tr>
+<tr><td>W8/S4 · 1 KV</td><td>2.467</td><td>66.9</td><td class="lo">46.2</td><td>39.8</td></tr>
+<tr><td>W12/S12 · 1 KV</td><td>2.487</td><td>33.0</td><td class="lo">5.0</td><td>63.2</td></tr>
+<tr><td>W8/S8 · 1 KV · no RoPE</td><td>2.504</td><td>29.4</td><td class="lo">5.0</td><td>40.9</td></tr>
+<tr><td>W8/S8 · 1 KV · uniform averaging</td><td>2.497</td><td>12.5</td><td class="lo">4.7</td><td>19.2</td></tr>
+</tbody></table></div>
+<p class="note">Selected runs, prefix padding, final checkpoint. Accuracies are in percent, and gap is best minus worst residue in percentage points.</p>
+<ul>
+  <li>Every compressed model's accuracy is periodic in the target key's position, and the period follows the stride: \(S\in\{4,6,8,12\}\) give periods of about 4, 6, 8, and 12, whether or not windows overlap (Figure 2).</li>
+  <li>Under prefix padding, full-attention baselines stay within 6.1 points across residues, while gaps in compressed models reach 78 points across the whole sweep (all 23 runs are in Figure 2).</li>
+  <li>Phase sensitivity persists without RoPE, and with uniform averaging in place of learned gates.</li>
+  <li>Mean accuracy can hide phase sensitivity. W8/S8 · 8 KV nearly matches Full attention · 8 KV in mean accuracy and validation loss, yet its worst residue is 9.9% against 58.4%.</li>
+  <li>The window boundary alone does not explain phase sensitivity. In W8/S8 · 1 KV, the boundary phase is \(S-1=7\), where the name after a key lands in the next entry. Yet accuracy varies by more than 50 points among phases 0 to 6, where a key and its name share an entry.</li>
+</ul>
+
+<h2 id="phase-specialization">Phase specialization</h2>
+<h3>Knockouts</h3>
+<p>To see which heads matter at which phase, we knock out one KV head at a time&nbsp;<span class="cite">[<a href="#ref-8">8</a>, <a href="#ref-9">9</a>]</span> by mean replacement&nbsp;<span class="cite">[<a href="#ref-10">10</a>]</span>. At the final position \(T_x\) of prompt \(x\), the outputs \(\mathbf z_{\ell,a,T_x}\) of the query heads \(a\in\mathcal Q(h)\) that read KV head \(h\) in layer \(\ell\) are replaced by their mean over \(N_{\mathrm{cal}}\) prompts from a disjoint calibration set, and nothing else changes:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \tilde{\mathbf z}_{\ell,a,T_x}(x)=\boldsymbol\mu_{\ell,a}\)</span><span class="eq cont">\(\displaystyle {}=\frac1{N_{\mathrm{cal}}}\sum_{n=1}^{N_{\mathrm{cal}}}\mathbf z_{\ell,a,T_{x^{(n)}}}\big(x^{(n)}\big),\)</span><span class="eq">\(\displaystyle a\in\mathcal Q(h).\)</span></div>
+<figure class="ill" id="fig-ko">
+  <div class="ill-controls" role="group" aria-label="Choose a layer to knock out" id="ko-buttons"><span class="lab">knock out</span></div>
+  <div class="ill-status" id="ko-readout" aria-live="polite"></div>
+  <div class="ko-grid">
+    <div class="ko-netwrap">
+      <div class="ko-lab" aria-hidden="true">W8/S8 · 1 KV, 28 layers</div>
+      <div class="ko-net" id="ko-net" tabindex="0" role="slider" aria-label="Layer to knock out" aria-valuemin="0" aria-valuemax="27"></div>
+    </div>
+    <div class="ko-chart" aria-hidden="true">
+      <div class="ko-lab">relative accuracy change by phase <span class="ko-muted">(measured)</span></div>
+      <div class="ko-plot"><div class="ko-bars" id="ko-bars"></div><div class="ko-yaxis"><span style="top:5.8px">+25%</span><span style="top:34.6px">0</span><span style="top:92.3px">−50%</span><span style="top:150px">−100%</span></div></div>
+      <div class="ko-xt"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span></div>
+      <div class="ko-xlab">phase of the target key (position mod 8)</div>
+    </div>
+  </div>
+  <figcaption>Illustration of the knockout in W8/S8 · 1 KV. Each row of the grid is a layer and each column a token position. The rightmost column is the final position, where the answer is predicted. Knocking out a layer's KV head replaces the outputs of the query heads that read it at the final position, \(\mathbf z\), with their calibration mean \(\boldsymbol\mu\) (red cell). Every other computation runs as usual, so the change reaches the answer only through the later layers at that position (tinted). The bars are the measured changes in accuracy relative to the clean run, by phase (prefix padding, the same values as this model's map in Figure 3): layer 0 matters at every phase, while layers 9, 10, and 14, examined below, each matter at a few adjacent phases. Select any layer: click it, use the arrow keys, or use the buttons.</figcaption>
+</figure>
+
+<p>A drop in accuracy at phase \(r\) means that the head's prompt-specific output contributes to retrieval at that phase. In full attention, knocking out an important layer lowers accuracy at all phases about equally (Figure 3, left). Under compression, some heads' losses concentrate on a few phases, and different heads cover different phases. With several KV heads per layer, knocking out some single heads still lowers accuracy at only one or two phases, so phase specialization occurs in single heads, not only in whole layers. In DeepSeek-V4-Flash-Base, we replace a whole layer's attention output at the query tokens at the end of the prompt, instead of one head at one position. Its knockout map shows phase-dependent losses repeating with period four.</p>
+<!--FX:ko-->
+
+<h3>Static and input-dependent gates</h3>
+<p>We next examine the gate, which sets how much each offset contributes to an entry. A head can read back from compressed memory only what its gate kept. Because gate scores depend on the input, a gate can concentrate in two ways. It can favor the same offsets in every window, or offsets that change with content. Only the first ties a head to fixed phases. With \(H(\cdot)\) the Shannon entropy and \(\boldsymbol\alpha\in\mathbb R^W\) one window's gate scores, we measure the two kinds of concentration with effective numbers of offsets, from 1 (one-hot) to \(W\) (uniform), called static and per window:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \underbrace{\exp\!\big(H(\mathbb E[\boldsymbol\alpha])\big)}_{\text{static}}\)</span><span class="eq">\(\displaystyle \text{and}\qquad\underbrace{\mathbb E\big[\exp(H(\boldsymbol\alpha))\big]}_{\text{per window}}.\)</span></div>
+<!--FX:conc-->
+<p>In Figure 4, we place every key gate in this plane. A gate that gives each offset the same score in every window lies on the dashed diagonal, where the two measures agree. The farther below the diagonal a gate falls, the more its scores change from window to window. The three traced gates start near the upper right at step 1, with little concentration of either kind. By the end of pretraining, the key gates of W8/S8 · 1 KV have split. Most sit at the right edge. Averaged over windows their scores are uniform, yet a single window can still concentrate on a few offsets, with per-window values anywhere from about 1.4 to 7.6. Such gates favor offsets that change with the content, so they are not tied to any phase. A few, including those in layers 9, 10, and 14, instead move down along the diagonal and become statically concentrated, favoring the same offsets in every window.</p>
+<p>The same split appears across the sweep. With more KV heads per layer, the most concentrated heads reach further toward the lower left. With overlapping windows, including the DeepSeek-style kernel, many gates sit left of the right edge but below the diagonal: they favor some offsets across windows while still varying with the input.</p>
+<p>Static preferences line up with the knockouts (Figure 5). In W8/S8 · 1 KV, the key gates of layers 9, 10, and 14 peak late, in the middle, and early in the window, respectively, and each value gate peaks about one offset later, so the head keeps a token together with its successor. Their knockout losses concentrate on those phases. With four KV heads per layer, many of the most concentrated heads narrow to a single offset and lose accuracy at a single phase.</p>
+<!--FX:gate-->
+
+<h3>Moving the weak spots</h3>
+<p>If static gate preferences help decide which phases are retrieved well, moving them should move the accuracy pattern. In models with \(W=S\), we cycle (circularly shift) the offset-specific gate parameters by \(\delta\) offsets and keep the payload maps fixed. With \(A_\delta(r)\) the accuracy at phase \(r\) after a cycle by \(\delta\), the prediction is</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \tilde{\mathbf Z}_i=\mathbf Z_{(i-\delta)\bmod W},\quad \tilde{\mathbf b}_i=\mathbf b_{(i-\delta)\bmod W}\)</span><span class="eq">\(\displaystyle \Longrightarrow\qquad A_\delta(r)\approx A_0\big((r-\delta)\bmod S\big).\)</span></div>
+<p>We test five models, W12/S12 · 1 KV, W12/S12 · 4 KV, and W8/S8 · 1 KV with seeds 42, 43, and 44, with \(\delta\in\{\pm1,\pm2,\pm3\}\). Accuracy at phases other than the boundary phase largely follows the prediction (Figure 6). Excluding the boundary phase, the \(R^2\) of observed against predicted accuracy changes lies between 0.66 and 1.00, closest for the two W12/S12 models and lowest for seeds 43 and 44 of W8/S8 · 1 KV. The boundary phase \(S-1\) stays weak under every cycle, so cycling relocates the weak within-window phases but does not remove the weakness at the boundary.</p>
+<!--FX:cyc-->
+<p>We conjecture that the observed phase sensitivity combines two asymmetries. The window boundary separates key–name pairs that share an entry from pairs that straddle two. Within-window asymmetries separate phases inside a window, and static gates can shape them when the parameterization allows it. The boundary cannot account for the spread among within-window phases. Learned gates do not account for all of it either: uniform averaging, which has no gate preferences, still varies across within-window phases, possibly because the payload maps \(\mathbf C_i\) differ by offset, so even equal weights need not preserve every offset equally well.</p>
+
+<h2 id="why-compression-concentrates">Why compression concentrates</h2>
+<p>We study an induction task in an idealized model. A context holds \(L\) chunks of \(S\) distinct tokens drawn from a vocabulary of \(N\) embeddings. In this section \(L\) counts chunks, \(\ell\) indexes a chunk rather than a layer, and \(r\in\{1,\dots,S\}\) is a position within a chunk, so position \(r\) is offset \(r-1\). After compression, a query repeats a token at a nonfinal position and asks for its successor&nbsp;<span class="cite">[<a href="#ref-8">8</a>, <a href="#ref-11">11</a>]</span>. Each of \(m&lt;S\) heads compresses chunk \(\ell\) with coefficient vectors \(p^K_{h,\ell}\) and \(p^V_{h,\ell}\), probability distributions over the \(S\) positions that are chosen before the query is seen:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \mathbf k_{h,\ell}=\sum_{r=1}^{S}p^{K}_{h,\ell}(r)\,\mathbf x_{\ell,r},\)</span><span class="eq">\(\displaystyle \mathbf v_{h,\ell}=\sum_{r=1}^{S}p^{V}_{h,\ell}(r)\,\mathbf x_{\ell,r},\)</span><span class="eq">\(\displaystyle \big|\mathbf x^\top\mathbf x'-\kappa-\mathbf 1\{\mathbf x=\mathbf x'\}\big|\le\varepsilon .\)</span></div>
+<p>The last condition makes embeddings nearly equiangular: two distinct tokens have inner product \(\kappa\), and a token has \(\kappa+1\) with itself, up to an error \(\varepsilon\). The shared component \(\kappa\) reflects the anisotropy of token representations&nbsp;<span class="cite">[<a href="#ref-12">12</a>, <a href="#ref-13">13</a>, <a href="#ref-14">14</a>]</span>. Heads attend over chunks with a softmax at scale \(\gamma\), their outputs are summed and unembedded at scale \(\beta\), and the loss is the population cross-entropy of predicting the successor. Under exact geometry (\(\varepsilon=0\)), a head's evidence for the target is its attention on the right chunk times its value weight on the answer, which favors putting key weight on some position \(r\) and value weight on \(r+1\).</p>
+<div class="thm" role="note" aria-label="Theorem 1"><p class="thm-h"><span class="thm-k">Theorem 1</span><span class="thm-i">informal</span></p><p class="t">Optimal compression is concentrated.</p>
+<p>For sufficiently large \(N\) and small \(\varepsilon\), every global minimizer over all query-independent coefficient rules sets \(p^K_{h,\ell}=e_r\) and \(p^V_{h,\ell}=e_{r+1}\), where \(e_r\) is the one-hot vector at position \(r\) and \(r\) may depend on the context, chunk, and head. At \(\varepsilon=0\), the optimal assignments are exactly those with distinct positions across heads.</p></div>
+<div class="thm" role="note" aria-label="Theorem 2"><p class="thm-h"><span class="thm-k">Theorem 2</span><span class="thm-i">informal</span></p><p class="t">Gradient flow makes the concentration static.</p>
+<p>Take log-linear gates \(p^B_{h,\ell}(r)\propto\exp\langle\mathbf c^B_{h,r},\mathbf x_{\ell,r}\rangle\) for \(B\in\{K,V\}\), shared across inputs, with \(\varepsilon=0\) and a random initialization in a small ball of radius \(\rho\). For fixed scales \(\gamma\) and \(\beta\) and \(N\) sufficiently large relative to \(\log(e/\rho)\), with high probability gradient flow gives each head a single position \(r_h\) with \(p^K_{h,\ell}(r_h),\,p^V_{h,\ell}(r_h+1)\to1\) uniformly over contexts and chunks. Different heads may select the same position.</p></div>
+<p>In the language of the experiments, both effective numbers of offsets tend to one, the lower-left corner of Figure 4. The theory also suggests why coverage can fail. Distinct positions lower the loss only through the output normalizer, by at most an amount of order \(1/N\), and our dynamics analysis has no term that pushes heads toward distinct positions. A position that no head selects receives no target evidence in any window, so in this model retrieval depends on phase unless the heads cover all \(S-1\) nonfinal positions. The model queries only pairs within a chunk, so it addresses phase sensitivity among within-window phases, not at the boundary phase.</p>
+
+<h2 id="related-work">Related work</h2>
+<p><b>Compressed memories.</b> Compressive Transformer summarizes past activations&nbsp;<span class="cite">[<a href="#ref-1">1</a>]</span>, LoMA trains models to use compressed KV representations&nbsp;<span class="cite">[<a href="#ref-2">2</a>]</span>, Activation Beacon replaces raw activations with the KV entries of regularly spaced learned tokens&nbsp;<span class="cite">[<a href="#ref-3">3</a>]</span>, and CAT lets later chunks attend to compressed vectors of earlier chunks&nbsp;<span class="cite">[<a href="#ref-4">4</a>]</span>. Sparse attention&nbsp;<span class="cite">[<a href="#ref-15">15</a>, <a href="#ref-16">16</a>, <a href="#ref-17">17</a>, <a href="#ref-5">5</a>]</span> and cache eviction&nbsp;<span class="cite">[<a href="#ref-18">18</a>, <a href="#ref-19">19</a>]</span> impose related block or token structure on memory. Sparse Transformer already defines a strided head whose visibility depends on position modulo a stride&nbsp;<span class="cite">[<a href="#ref-15">15</a>]</span>. Hybrids that keep an exact branch over distant tokens, such as NSA&nbsp;<span class="cite">[<a href="#ref-16">16</a>]</span>, could mask a failure of the compressed branch alone. DeepSeek-V4 keeps exact tokens only in its local window&nbsp;<span class="cite">[<a href="#ref-5">5</a>]</span>.</p>
+<p><b>Position-dependent failures.</b> Retrieval quality depends on where relevant information appears in a long context&nbsp;<span class="cite">[<a href="#ref-20">20</a>]</span>, easy needle tests can overstate usable context length&nbsp;<span class="cite">[<a href="#ref-21">21</a>]</span>, and aggregate scores can hide method-specific failures of KV cache compression&nbsp;<span class="cite">[<a href="#ref-22">22</a>]</span>. In gist-based compression, quality degrades near generation-segment boundaries&nbsp;<span class="cite">[<a href="#ref-23">23</a>]</span>. Phase is a different coordinate: it recurs every compression stride and is distinct from depth in the context or the query's position within a segment.</p>
+<p><b>Heads and training dynamics.</b> Retrieval heads are heads whose ablation impairs long-context retrieval&nbsp;<span class="cite">[<a href="#ref-9">9</a>]</span>, and cache policies such as RazorAttention and DuoAttention keep full caches only for such heads&nbsp;<span class="cite">[<a href="#ref-24">24</a>, <a href="#ref-25">25</a>]</span>. Under compression, a head's contribution also depends on phase. On the theory side, gradient descent can turn softmax attention into hard token selectors&nbsp;<span class="cite">[<a href="#ref-26">26</a>, <a href="#ref-27">27</a>]</span>, and multi-head training can allocate tasks across heads&nbsp;<span class="cite">[<a href="#ref-28">28</a>, <a href="#ref-29">29</a>]</span>. The analysis here instead concerns compression chosen before the query is known.</p>
+
+<h2 id="limitations">Limitations</h2>
+<p class="note">The mechanistic evidence is strongest in the controlled models. The DeepSeek knockouts act on whole layers rather than single heads. Gate cycling moves the within-window pattern but does not repair the boundary phase. The theory is an idealized model that explains why phase sensitivity arises, not how large it is in trained networks.</p>
+
+<h2 id="references">References</h2>
+<ol class="refs">
+<li id="ref-1">Rae et al. <a href="https://openreview.net/forum?id=SylKikSYDH">Compressive Transformers for Long-Range Sequence Modelling</a>. <i>International Conference on Learning Representations</i>, 2020.</li>
+<li id="ref-2">Wang and Xiao. <a href="https://arxiv.org/abs/2401.09486">LoMA: Lossless Compressed Memory Attention</a>. <i>arXiv preprint arXiv:2401.09486</i>, 2024.</li>
+<li id="ref-3">Zhang et al. <a href="https://arxiv.org/abs/2401.03462">Long Context Compression with Activation Beacon</a>. <i>International Conference on Learning Representations</i>, 2025.</li>
+<li id="ref-4">Prakash et al. <a href="https://arxiv.org/abs/2511.05313">Controllably Efficient Language Models</a>. <i>arXiv preprint arXiv:2511.05313</i>, 2025.</li>
+<li id="ref-5">DeepSeek-AI. <a href="https://arxiv.org/abs/2606.19348">DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence</a>. <i>arXiv preprint arXiv:2606.19348</i>, 2026.</li>
+<li id="ref-6">DeepSeek-AI. <a href="https://arxiv.org/abs/2609.19969">DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression</a>. <i>arXiv preprint arXiv:2609.19969</i>, 2026.</li>
+<li id="ref-7">Qwen Team. <a href="https://arxiv.org/abs/2505.09388">Qwen3 Technical Report</a>. <i>arXiv preprint arXiv:2505.09388</i>, 2025.</li>
+<li id="ref-8">Olsson et al. <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html">In-Context Learning and Induction Heads</a>. <i>Transformer Circuits Thread</i>, 2022.</li>
+<li id="ref-9">Wu et al. <a href="https://arxiv.org/abs/2404.15574">Retrieval Head Mechanistically Explains Long-Context Factuality</a>. <i>International Conference on Learning Representations</i>, 2025.</li>
+<li id="ref-10">Wang et al. <a href="https://arxiv.org/abs/2211.00593">Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 Small</a>. <i>International Conference on Learning Representations</i>, 2023.</li>
+<li id="ref-11">Bietti et al. <a href="https://arxiv.org/abs/2306.00802">Birth of a Transformer: A Memory Viewpoint</a>. <i>Advances in Neural Information Processing Systems</i>, 2023.</li>
+<li id="ref-12">Gao et al. <a href="https://openreview.net/forum?id=SkEYojRqtm">Representation Degeneration Problem in Training Natural Language Generation Models</a>. <i>International Conference on Learning Representations</i>, 2019.</li>
+<li id="ref-13">Razzhigaev et al. <a href="https://aclanthology.org/2024.findings-eacl.58/">The Shape of Learning: Anisotropy and Intrinsic Dimensions in Transformer-Based Models</a>. <i>Findings of the Association for Computational Linguistics: EACL 2024</i>, 2024.</li>
+<li id="ref-14">Queipo-de-Llano et al. <a href="https://proceedings.iclr.cc/paper_files/paper/2026/hash/1734b19d9afe7d2c7f1154954eaf0d5a-Abstract-Conference.html">Attention Sinks and Compression Valleys in LLMs are Two Sides of the Same Coin</a>. <i>International Conference on Learning Representations</i>, 2026.</li>
+<li id="ref-15">Child et al. <a href="https://arxiv.org/abs/1904.10509">Generating Long Sequences with Sparse Transformers</a>. <i>arXiv preprint arXiv:1904.10509</i>, 2019.</li>
+<li id="ref-16">Yuan et al. <a href="https://aclanthology.org/2025.acl-long.1126/">Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention</a>. <i>Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)</i>, 2025.</li>
+<li id="ref-17">Lu et al. <a href="https://arxiv.org/abs/2502.13189">MoBA: Mixture of Block Attention for Long-Context LLMs</a>. <i>Advances in Neural Information Processing Systems</i>, 2025.</li>
+<li id="ref-18">Zhang et al. <a href="https://arxiv.org/abs/2306.14048">H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models</a>. <i>Advances in Neural Information Processing Systems</i>, 2023.</li>
+<li id="ref-19">Li et al. <a href="https://arxiv.org/abs/2404.14469">SnapKV: LLM Knows What You Are Looking for Before Generation</a>. <i>Advances in Neural Information Processing Systems</i>, 2024.</li>
+<li id="ref-20">Liu et al. <a href="https://aclanthology.org/2024.tacl-1.9/">Lost in the Middle: How Language Models Use Long Contexts</a>. <i>Transactions of the Association for Computational Linguistics</i>, 2024.</li>
+<li id="ref-21">Hsieh et al. <a href="https://arxiv.org/abs/2404.06654">RULER: What&#x27;s the Real Context Size of Your Long-Context Language Models?</a> <i>First Conference on Language Modeling</i>, 2024.</li>
+<li id="ref-22">Chen et al. <a href="https://aclanthology.org/2026.acl-long.1926/">The Pitfalls of KV Cache Compression</a>. <i>Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)</i>, 2026.</li>
+<li id="ref-23">Deng et al. <a href="https://aclanthology.org/2025.acl-long.241/">A Silver Bullet or a Compromise for Full Attention? A Comprehensive Study of Gist Token-based Context Compression</a>. <i>Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)</i>, 2025.</li>
+<li id="ref-24">Tang et al. <a href="https://arxiv.org/abs/2407.15891">RazorAttention: Efficient KV Cache Compression Through Retrieval Heads</a>. <i>International Conference on Learning Representations</i>, 2025.</li>
+<li id="ref-25">Xiao et al. <a href="https://arxiv.org/abs/2410.10819">DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads</a>. <i>International Conference on Learning Representations</i>, 2025.</li>
+<li id="ref-26">Tarzanagh et al. <a href="https://arxiv.org/abs/2308.16898">Transformers as Support Vector Machines</a>. <i>arXiv preprint arXiv:2308.16898</i>, 2023.</li>
+<li id="ref-27">Tarzanagh et al. <a href="https://arxiv.org/abs/2306.13596">Max-Margin Token Selection in Attention Mechanism</a>. <i>Advances in Neural Information Processing Systems</i>, 2023.</li>
+<li id="ref-28">Chen et al. <a href="https://proceedings.mlr.press/v247/siyu24a.html">Training Dynamics of Multi-Head Softmax Attention for In-Context Learning: Emergence, Convergence, and Optimality (extended abstract)</a>. <i>Conference on Learning Theory</i>, 2024.</li>
+<li id="ref-29">Yüksel et al. <a href="https://arxiv.org/abs/2602.19143">Incremental Learning of Sparse Attention Patterns in Transformers</a>. <i>International Conference on Machine Learning</i>, 2026.</li>
+</ol>
+
+<footer id="cite">
+<pre class="bib">@article{zhu2026periodic,
+  title   = {Periodic Weak Spots: Phase Sensitivity from Chunked KV-Cache Compression},
+  author  = {Zhu, Xingyu and Yi, Pu and Cheng, Ziheng and Lv, Ang and Liu, Jing
+             and Ying, Lexing and Ma, Yiyuan and Dong, Xin},
+  journal = {arXiv preprint arXiv:2609.36322},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2609.36322}
+}</pre>
+</footer>
+</main>
+
+<script src="data.js"></script>
+<script src="illustrations.js"></script>
+<script src="figures.js"></script>
+<script src="../shared/select.js"></script>
+<script src="../shared/toc.js"></script>
+<script src="../shared/theme.js"></script>
+</body>
+</html>

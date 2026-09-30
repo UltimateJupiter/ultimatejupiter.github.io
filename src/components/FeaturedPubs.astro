@@ -6,12 +6,14 @@ interface Props {
   pubs: Publication[];
 }
 const { pubs } = Astro.props;
+// With an odd number of cards, the newest spans the full row (figure beside the text).
+const lead = pubs.length % 2 === 1;
 ---
 
 <div class="featured">
   {
     pubs.map((p, i) => (
-      <a class="card" href={`/publications/${p.id}/`}>
+      <a class:list={['card', { lead: lead && i === 0 }]} href={`/publications/${p.id}/`}>
         <figure>
           <div class="frame">
             {p.data.image ? (
@@ -57,6 +59,21 @@ const { pubs } = Astro.props;
   }
   .card:hover {
     color: inherit;
+  }
+  @media (min-width: 761px) {
+    .card.lead {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 2.25rem;
+      align-items: center;
+    }
+    .card.lead .meta {
+      margin-top: 0;
+    }
+    .card.lead h3 {
+      font-size: 1.55em;
+    }
   }
   figure {
     margin: 0;

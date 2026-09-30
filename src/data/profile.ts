@@ -43,4 +43,4 @@ export const profile = {
 };
 
 // How many items the home page shows before linking to the full list.
-export const homeLimits = { news: 5, talks: 5, publications: 12 };
+export const homeLimits = { news: 5, talks: 5, publications: 12, posts: 3 };

@@ -5,7 +5,8 @@ import { z } from 'astro/zod';
 // Folder name becomes the id, e.g. publications/zhu-power-2025/index.md -> "zhu-power-2025".
 const folderId = ({ entry }: { entry: string }) => entry.replace(/\/index\.mdx?$/, '');
 
-const link = z.object({ name: z.string(), url: z.string().url() });
+// Absolute URLs, or site-relative paths such as /blog/<post>/
+const link = z.object({ name: z.string(), url: z.string().regex(/^(https?:\/\/|\/)/, 'absolute URL or /path') });
 
 const publications = defineCollection({
   loader: glob({ pattern: '*/index.md', base: './src/content/publications', generateId: folderId }),
@@ -53,4 +54,26 @@ const news = defineCollection({
   }),
 });
 
-export const collections = { publications, talks, news };
+// Blog posts: either `blog/<slug>.md` or, when a post has images, `blog/<slug>/index.md`.
+const blog = defineCollection({
+  loader: glob({
+    pattern: ['*.md', '*/index.md'],
+    base: './src/content/blog',
+    generateId: ({ entry }) => entry.replace(/(\/index)?\.md$/, ''),
+  }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
+    // One or two sentences shown in listings, RSS and link previews.
+    description: z.string(),
+    tags: z.array(z.string()).default([]),
+    // Drafts are visible in `npm run dev` only.
+    draft: z.boolean().default(false),
+    // For a standalone page (e.g. an interactive post built by blog-interactive/), where the
+    // listing should link instead of rendering this entry's Markdown body.
+    href: z.string().optional(),
+  }),
+});
+
+export const collections = { publications, talks, news, blog };

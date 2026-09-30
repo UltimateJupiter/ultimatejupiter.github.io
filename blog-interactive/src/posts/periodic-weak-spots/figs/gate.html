@@ -1,0 +1,32 @@
+<figure class="fx" id="fx-gate">
+  <div class="fx-bar">
+    <label class="lab" for="fx-gate-model">model</label>
+    <select class="fx-select" id="fx-gate-model"></select>
+    <span class="lab" id="fx-gate-maplab">map</span>
+    <div class="fx-seg" id="fx-gate-map" role="group" aria-labelledby="fx-gate-maplab">
+      <button type="button" data-gate="k" aria-pressed="true">key gate</button>
+      <button type="button" data-gate="v" aria-pressed="false">value gate</button>
+    </div>
+  </div>
+  <div class="fxg-over" id="fx-gate-over" tabindex="0" role="group" aria-roledescription="head selector" aria-label="KV heads by layer. Up and down arrow keys select a head; left and right arrow keys step through phases.">
+    <svg class="fx-svg" id="fx-gate-osvg" role="img" aria-label="Gate concentration, mean gate scores, and knockout maps"></svg>
+  </div>
+  <div class="fxg-keys" id="fx-gate-keys">
+    <div class="fx-scale fxg-gs"><span>1 = uniform</span><i></i><span class="fxg-smax">8×</span></div>
+    <div class="fx-scale fxg-ks"><span>−100%</span><i></i><span>+100%</span></div>
+  </div>
+  <p class="fx-note fxg-note" id="fx-gate-note"></p>
+  <div class="fxg-detail" id="fx-gate-detail">
+    <div class="fxg-picks"><span class="lab" id="fx-gate-picklab">in the text</span><div class="fx-seg" id="fx-gate-picks" role="group" aria-labelledby="fx-gate-picklab"></div></div>
+    <p class="fx-ptitle fxg-title" id="fx-gate-title"></p>
+    <div class="fx-legend fxg-leg" aria-hidden="true">
+      <span><svg class="fxg-sw" width="24" height="10" viewBox="0 0 24 10"><line class="k" x1="1" y1="5" x2="23" y2="5"/><circle class="k" cx="12" cy="5" r="3"/></svg>key gate at r</span>
+      <span><svg class="fxg-sw" width="24" height="10" viewBox="0 0 24 10"><line class="v" x1="1" y1="5" x2="23" y2="5"/><circle class="v" cx="12" cy="5" r="3"/></svg>value gate at r + 1</span>
+      <span><svg class="fxg-sw" width="24" height="10" viewBox="0 0 24 10"><line class="u" x1="1" y1="5" x2="23" y2="5"/></svg>1 = uniform</span>
+      <span><i class="fxg-pk"></i>key-gate peak</span>
+    </div>
+    <svg class="fx-svg" id="fx-gate-dsvg" role="img" aria-label="Mean gate scores and knockout of the selected head"></svg>
+  </div>
+  <p class="fx-status" id="fx-gate-status" aria-live="polite"></p>
+  <figcaption>Figure 5. Gate preferences line up with knockout losses. Each row is one KV head at the final checkpoint. Left: the static concentration of its key gate, the effective number of offsets \(\exp(H(\mathbb E[\boldsymbol\alpha]))\), from 1 (a single offset) to \(W\) (uniform). Middle: the mean gate score by phase, relative to a uniform share, for the key or the value gate. Right: the head's knockout effect by phase (prefix padding, relative accuracy change, red lost, blue gained). Select a head to compare its key and value scores with its losses. The value scores are shifted back by one offset, so a head that keeps a key together with its successor peaks at the same phase in both. For W8/S4 · 1 KV and the DeepSeek-style kernel, windows overlap and each phase pools two offsets, so the left column counts effective phases, from 1 to \(S\).</figcaption>
+</figure>

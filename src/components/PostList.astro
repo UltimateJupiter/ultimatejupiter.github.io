@@ -1,0 +1,111 @@
+---
+import { fmtDay, groupByYear, isoDate, postUrl, readingTime, type Post } from '../lib/content';
+
+interface Props {
+  posts: Post[];
+  /** Group under year headings (the full blog index) or a flat list (home page). */
+  grouped?: boolean;
+}
+const { posts, grouped = false } = Astro.props;
+const groups = grouped ? groupByYear(posts) : [[null, posts] as const];
+---
+
+<div class="posts">
+  {
+    groups.map(([year, items]) => (
+      <section class:list={['group', { grouped }]}>
+        {year && <h2 class="year mono">{year}</h2>}
+        <ul>
+          {items.map((p) => (
+            <li>
+              <a class="post" href={postUrl(p)}>
+                <span class="meta mono">
+                  <time datetime={isoDate(p.data.date)}>{fmtDay(p.data.date)}</time>
+                  <span aria-hidden="true">·</span>
+                  <span>{p.data.href ? 'Interactive' : `${readingTime(p.body)} min read`}</span>
+                  {p.data.draft && <span class="draft">Draft</span>}
+                </span>
+                <span class="title">{p.data.title}</span>
+                <span class="desc">{p.data.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .group.grouped {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .group.grouped:first-child {
+    border-top: 0;
+  }
+  .year {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding-top: 1.55rem;
+  }
+  .group.grouped:first-child .year {
+    padding-top: 0.35rem;
+  }
+  li + li {
+    border-top: 1px solid var(--rule);
+  }
+  .post {
+    display: block;
+    padding: 1.2rem 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  li:first-child .post {
+    padding-top: 0;
+  }
+  .meta {
+    display: flex;
+    gap: 0.6em;
+    color: var(--muted);
+    font-size: 0.7rem;
+  }
+  .draft {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .title {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 1.3em;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    transition: color 0.2s;
+  }
+  .post:hover .title {
+    color: var(--accent);
+  }
+  .desc {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 520px) {
+    .group.grouped {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .year {
+      padding-top: 1rem;
+    }
+  }
+</style>

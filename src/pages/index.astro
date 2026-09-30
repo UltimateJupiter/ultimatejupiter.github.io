@@ -6,13 +6,19 @@ import NewsList from '../components/NewsList.astro';
 import FeaturedPubs from '../components/FeaturedPubs.astro';
 import PubList from '../components/PubList.astro';
 import TalkList from '../components/TalkList.astro';
+import PostList from '../components/PostList.astro';
 import { profile, homeLimits } from '../data/profile';
-import { getNews, getPublications, getTalks } from '../lib/content';
+import { getNews, getPosts, getPublications, getTalks } from '../lib/content';
 
 const pubs = await getPublications();
 const featured = pubs.filter((p) => p.data.featured);
 const news = await getNews();
 const talks = await getTalks();
+const posts = await getPosts();
+
+// Section numbers are assigned in order, so optional sections (Writing) don't leave gaps.
+let n = 0;
+const next = () => String(++n).padStart(2, '0');
 ---
 
 <Base>
@@ -20,7 +26,7 @@ const talks = await getTalks();
 
   <div class="wrap">
     <section class="section reveal" aria-labelledby="about">
-      <SectionHead index="01" title="Research" shape="circle" id="about" />
+      <SectionHead index={next()} title="Research" shape="circle" id="about" />
       <div class="section-body">
         <p class="lede">{profile.research}</p>
         <div class="facts">
@@ -48,22 +54,36 @@ const talks = await getTalks();
     </section>
 
     <section class="section reveal" aria-labelledby="news">
-      <SectionHead index="02" title="News" shape="diamond" id="news" />
+      <SectionHead index={next()} title="News" shape="diamond" id="news" />
       <div class="section-body">
         <NewsList items={news.slice(0, homeLimits.news)} />
         {news.length > homeLimits.news && <a class="section-more" href="/news/">All news <span>→</span></a>}
       </div>
     </section>
 
+    {
+      posts.length > 0 && (
+        <section class="section reveal" aria-labelledby="writing">
+          <SectionHead index={next()} title="Writing" shape="pentagon" id="writing" />
+          <div class="section-body">
+            <PostList posts={posts.slice(0, homeLimits.posts)} />
+            <a class="section-more" href="/blog/">
+              All posts <span>→</span>
+            </a>
+          </div>
+        </section>
+      )
+    }
+
     <section class="section reveal" aria-labelledby="selected">
-      <SectionHead index="03" title="Selected work" shape="triangle" id="selected" />
+      <SectionHead index={next()} title="Selected work" shape="triangle" id="selected" />
       <div class="section-body wide">
         <FeaturedPubs pubs={featured} />
       </div>
     </section>
 
     <section class="section reveal" aria-labelledby="papers">
-      <SectionHead index="04" title="Publications" shape="square" id="papers" />
+      <SectionHead index={next()} title="Publications" shape="square" id="papers" />
       <div class="section-body">
         <PubList pubs={pubs.slice(0, homeLimits.publications)} />
         <a class="section-more" href="/publications/">
@@ -73,7 +93,7 @@ const talks = await getTalks();
     </section>
 
     <section class="section reveal" aria-labelledby="talks">
-      <SectionHead index="05" title="Talks" shape="hexagon" id="talks" />
+      <SectionHead index={next()} title="Talks" shape="hexagon" id="talks" />
       <div class="section-body">
         <TalkList items={talks.slice(0, homeLimits.talks)} />
         {talks.length > homeLimits.talks && <a class="section-more" href="/talks/">All talks <span>→</span></a>}

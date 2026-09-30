@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fx harness</title>
+<link rel="stylesheet" href="../src/shared/fonts.css">
+<link rel="stylesheet" href="../src/shared/base.css">
+<link rel="stylesheet" href="../src/shared/fx.css">
+<link rel="stylesheet" href="../src/shared/select.css">
+<style>body{padding-block:24px 60px}.hx{font-size:13px;color:var(--muted);font-family:var(--mono)}</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]},svg:{fontCache:"global"},startup:{typeset:false}};</script>
+<script src="../src/shared/vendor/mathjax/tex-svg.min.js"></script>
+</head>
+<body>
+<main id="host">
+<p class="hx" id="hx-label"></p>
+</main>
+<script>
+/* Preview harness. Params:
+   f=<name>        loads <name>.html (figure fragment), <name>.css, data.js, <name>.js
+   theme=dark|light  forces a theme via data-theme on <html>
+   do=<js>         async JS run after the figure initialised (simulate interaction), e.g.
+                   do=const s=document.querySelector('#fx-acc select');s.value='kvc_w8s8_4kv';s.dispatchEvent(new Event('change',{bubbles:true}))
+   ctx=0           omit the dummy paragraphs around the figure
+   dd=1            load the shared custom model menu (_select.css/_select.js), as the built page does
+*/
+window.addEventListener('error',e=>console.error('UNCAUGHT '+e.message+' @ '+(e.filename||'').split('/').pop()+':'+e.lineno));
+window.addEventListener('unhandledrejection',e=>console.error('UNHANDLED '+(e.reason&&e.reason.message||e.reason)));
+(async function(){
+  const q=new URLSearchParams(location.search), f=q.get('f'), P='../src/posts/'+(q.get('post')||'periodic-weak-spots')+'/';
+  if(q.get('theme')) document.documentElement.setAttribute('data-theme',q.get('theme'));
+  document.getElementById('hx-label').textContent='harness · '+f+' · '+(q.get('theme')||'auto')+' · '+innerWidth+'px';
+  const link=document.createElement('link');link.rel='stylesheet';link.href=P+'figs/'+f+'.css?'+Date.now();document.head.appendChild(link);
+  const host=document.getElementById('host');
+  const ctx=q.get('ctx')!=='0';
+  if(ctx) host.insertAdjacentHTML('beforeend','<p>Context paragraph so the figure sits in the 640px text column, exactly as in the blog. Text above.</p>');
+  const html=await (await fetch(P+'figs/'+f+'.html?'+Date.now())).text();
+  host.insertAdjacentHTML('beforeend',html);
+  if(ctx) host.insertAdjacentHTML('beforeend','<p>Text below the figure.</p>');
+  const dd=q.get('dd')!=='0';   // custom menus on by default, as on the page
+  await load(P+'data.js'); await load(P+'figs/'+f+'.js?'+Date.now());
+  if(dd) await load('../src/shared/select.js?'+Date.now());
+  await new Promise(r=>setTimeout(r,120));
+  if(q.get('do')){ try{ await (new Function('return (async()=>{'+q.get('do')+'\n})()'))(); }catch(e){ console.error('DO failed: '+e.message); } }
+  try{ if(window.MathJax&&MathJax.typesetPromise) await MathJax.typesetPromise(); }catch(e){ console.error('MathJax: '+e.message); }
+  setTimeout(()=>{
+    const over=document.documentElement.scrollWidth-innerWidth;
+    const fig=host.querySelector('figure'); const fr=fig?fig.getBoundingClientRect():null;
+    const wide=[...host.querySelectorAll('figure *')].filter(e=>e.getBoundingClientRect().right>innerWidth+1).slice(0,5).map(e=>e.tagName+'.'+(typeof e.className==='string'?e.className:(e.className&&e.className.baseVal)||''));
+    console.log('FX-CHECK width='+innerWidth+' docOverflow='+over+' figure='+(fr?Math.round(fr.width)+'x'+Math.round(fr.height):'none')+(wide.length?' overflowing='+wide.join(','):''));
+  },400);
+})();
+function load(src){return new Promise(res=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>{console.error('LOAD FAIL '+src);res();};document.body.appendChild(s);});}
+</script>
+</body>
+</html>

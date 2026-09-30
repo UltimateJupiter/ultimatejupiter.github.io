@@ -1,0 +1,49 @@
+/* Figure 3 · knockout maps (fx-ko). Everything is scoped to #fx-ko. */
+#fx-ko .fx-ko-tg{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-width:0}
+#fx-ko .fx-ko-ctl{display:inline-flex;align-items:center;gap:8px}
+#fx-ko .fx-ko-model{min-width:0;max-width:100%}
+#fx-ko .fx-ko-model .fx-select{flex:0 1 auto;min-width:0;text-overflow:ellipsis}
+
+/* Panels share row tracks (title, sub, body) so the two maps are always top-aligned. */
+#fx-ko .fx-panels{row-gap:6px}
+#fx-ko .fx-panel{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:6px;align-content:start}
+#fx-ko .fx-ko-body{display:flex;flex-direction:column;gap:0;min-width:0}
+@media (max-width:600px){#fx-ko #fx-ko-rtitle{margin-top:22px}}
+
+#fx-ko .fx-ko-map{min-width:0;line-height:0}
+#fx-ko .fx-ko-map svg{cursor:default;-webkit-tap-highlight-color:transparent}
+#fx-ko #fx-ko-right .fx-ko-map svg{cursor:pointer}
+#fx-ko .fx-ko-map svg:focus{outline:none}
+#fx-ko .fx-ko-map svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+
+/* Overlay: pinned row (solid) and hover row / column (light), drawn just outside the cells. */
+#fx-ko .fx-svg .ov rect{fill:none;stroke:var(--fg);stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+#fx-ko .fx-svg .ov .hv{stroke-opacity:.42}
+#fx-ko .fx-svg .ov .pin{stroke-opacity:.9}
+#fx-ko .fx-svg .per{fill:none;stroke:var(--fg);stroke-opacity:.5;stroke-width:1;stroke-dasharray:3 3;shape-rendering:crispEdges;pointer-events:none}
+#fx-ko .fx-svg .sep{fill:none;stroke:var(--rule);stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+#fx-ko .fx-svg text.pl{fill:var(--fg)}
+#fx-ko .fx-svg text.hide{visibility:hidden}
+
+/* Row profile under the right map. */
+#fx-ko .fx-ko-foot{display:flex;flex-direction:column;gap:2px;min-width:0;padding-top:6px}
+#fx-ko .fx-ko-phead{padding-left:38px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-ko .fx-ko-prof{min-width:0;line-height:0}
+#fx-ko .fx-ko-prof svg{cursor:default}
+#fx-ko .fx-svg .bar{shape-rendering:crispEdges}
+#fx-ko .fx-svg .bar.lo{fill:var(--loss)}
+#fx-ko .fx-svg .bar.hi{fill:var(--accent)}
+#fx-ko .fx-svg .band{fill:var(--fx-band);shape-rendering:crispEdges}
+#fx-ko .fx-svg text.vl{font-size:10px;fill:var(--muted)}
+#fx-ko .fx-svg text.vl.on{fill:var(--fg)}
+
+/* Shared color key: −100% ▬ 0 ▬ +100%, interpolated in OKLab exactly like the cells. */
+#fx-ko .fx-ko-foot .fx-scale{padding-left:38px;gap:7px;line-height:1.4}
+#fx-ko .fx-scale i{flex:0 0 56px;height:8px}
+#fx-ko .fx-ko-foot .fx-note{padding-left:38px;margin:0}
+#fx-ko .fx-scale i.lo{background:linear-gradient(90deg,var(--loss),var(--bg));background:linear-gradient(90deg in oklab,var(--loss),var(--bg))}
+#fx-ko .fx-scale i.hi{background:linear-gradient(90deg,var(--bg),var(--accent));background:linear-gradient(90deg in oklab,var(--bg),var(--accent))}
+
+/* Tooltip details */
+#fx-ko .fx-tip .sw{display:inline-block;width:9px;height:9px;border-radius:1px;margin-right:7px;vertical-align:-1px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 14%,transparent)}
+#fx-ko .fx-tip .v{font-weight:400;color:var(--fg)}

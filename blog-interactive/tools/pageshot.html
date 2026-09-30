@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>page shot</title>
+<style>html,body{margin:0;background:#9aa0a8}iframe{border:0;display:block}</style></head>
+<body><iframe id="fr" title="page"></iframe>
+<script>
+/* Loads a full page in an iframe of w×h px and scrolls it to element #el (after fonts/MathJax settle),
+   then logs overflow checks. params: src (page URL), el (element id), w, h, theme (dark|light), off (px above el) */
+const q=new URLSearchParams(location.search), w=+(q.get('w')||1280), h=+(q.get('h')||1400);
+const fr=document.getElementById('fr'); fr.style.width=w+'px'; fr.style.height=h+'px';
+fr.onload=()=>{
+  const d=fr.contentDocument, W=fr.contentWindow;
+  W.addEventListener('error',e=>console.error('UNCAUGHT '+e.message+' @ '+(e.filename||'').split('/').pop()+':'+e.lineno));
+  if(q.get('theme')) d.documentElement.setAttribute('data-theme',q.get('theme'));
+  setTimeout(()=>{
+    const el=d.getElementById(q.get('el')||'');
+    if(el){ W.scrollTo(0, el.getBoundingClientRect().top + W.scrollY - (+(q.get('off')||16))); }
+    const over=d.documentElement.scrollWidth-W.innerWidth;
+    const wide=[...d.querySelectorAll('main *')].filter(e=>e.getBoundingClientRect().right>W.innerWidth+1 && !e.closest('.tablewrap,.math-block,pre.bib,mjx-container,.cmp-strip-wrap')).slice(0,6).map(e=>e.tagName+'.'+(typeof e.className==='string'?e.className:''));
+    console.log('PAGE-CHECK width='+W.innerWidth+' docOverflow='+over+' mjxErrors='+d.querySelectorAll('mjx-merror').length+(wide.length?' overflowing='+wide.join(','):''));
+    if(q.get('sizes')){ const figs=[...d.querySelectorAll('main figure')].map(f=>{const r=f.getBoundingClientRect();return (f.id||'?')+'='+Math.round(r.width)+'x'+Math.round(r.height);});
+      const fs=[...d.querySelectorAll('main figure *')].reduce((a,e)=>{const v=getComputedStyle(e).fontSize;a[v]=(a[v]||0)+1;return a;},{});
+      console.log('FIG-SIZES '+figs.join(' ')); console.log('FIG-FONTS '+Object.entries(fs).sort().map(([k,v])=>k+':'+v).join(' ')); }
+  }, +(q.get('delay')||2500));
+};
+fr.src=q.get('src');
+</script></body></html>

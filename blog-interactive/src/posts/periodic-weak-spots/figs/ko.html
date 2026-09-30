@@ -1,0 +1,35 @@
+<figure class="fx" id="fx-ko">
+  <div class="fx-bar">
+    <label class="fx-ko-ctl fx-ko-model"><span class="lab">model</span><select class="fx-select" id="fx-ko-model" aria-label="Model shown in the right panel"></select></label>
+    <span class="fx-ko-tg">
+      <span class="fx-ko-ctl"><span class="lab" id="fx-ko-cols-lab">position</span><span class="fx-seg" role="group" aria-labelledby="fx-ko-cols-lab" data-k="cols"><button type="button" aria-pressed="true" data-v="S" aria-label="position modulo the stride S">mod S</button><button type="button" aria-pressed="false" data-v="24" aria-label="position modulo 24">mod 24</button></span></span>
+      <span class="fx-ko-ctl"><span class="lab" id="fx-ko-pad-lab">padding</span><span class="fx-seg" role="group" aria-labelledby="fx-ko-pad-lab" data-k="pad"><button type="button" aria-pressed="true" data-v="pp">prefix</button><button type="button" aria-pressed="false" data-v="ip">in-sequence</button></span></span>
+    </span>
+  </div>
+  <div class="fx-panels">
+    <div class="fx-panel" id="fx-ko-left">
+      <p class="fx-ptitle">Full attention · 1 KV</p>
+      <p class="fx-psub">position mod 8 · prefix padding</p>
+      <div class="fx-ko-body">
+        <div class="fx-ko-map"></div>
+        <div class="fx-ko-foot">
+          <div class="fx-scale" role="img" aria-label="Color scale: red is accuracy lost, blue is accuracy gained, relative to clean accuracy, from −100% to +100%"><span>−100%</span><i class="lo"></i><span>0</span><i class="hi"></i><span>+100%</span></div>
+          <p class="fx-note">accuracy change relative to clean</p>
+        </div>
+      </div>
+    </div>
+    <div class="fx-panel" id="fx-ko-right">
+      <p class="fx-ptitle" id="fx-ko-rtitle">&nbsp;</p>
+      <p class="fx-psub" id="fx-ko-rsub">&nbsp;</p>
+      <div class="fx-ko-body">
+        <div class="fx-ko-map"></div>
+        <div class="fx-ko-foot">
+          <p class="fx-psub fx-ko-phead" id="fx-ko-phead">&nbsp;</p>
+          <div class="fx-ko-prof"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fx-status" id="fx-ko-status" aria-live="polite"></div>
+  <figcaption>Figure 3. Knockout maps. Each row knocks out one KV head (one row per layer when a layer has a single KV head), each column is a target-key position, and color is the accuracy change relative to clean accuracy: red is accuracy lost, blue gained, clipped at ±100%. Left: full attention with one KV head, where knocking out an important layer hurts every position alike. Right: any compressed run under prefix or in-sequence padding, folded to one stride (position mod \(S\)) or shown across all 24 positions, or DeepSeek-V4-Flash-Base, where a whole layer's attention output is replaced (positions mod 8). Click a row, or focus the map and use ↑/↓, to see its changes by position below.</figcaption>
+</figure>

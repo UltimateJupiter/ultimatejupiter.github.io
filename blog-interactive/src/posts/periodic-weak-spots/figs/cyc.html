@@ -1,0 +1,40 @@
+<figure class="fx" id="fx-cyc">
+  <div class="fx-bar">
+    <label class="cyc-ctl"><span class="lab">model</span><select class="fx-select" aria-label="Model"></select></label>
+    <div class="cyc-ctl cyc-dctl">
+      <label class="lab" for="fx-cyc-d">cycle δ</label>
+      <div class="cyc-slider">
+        <div class="cyc-rail" aria-hidden="true"><i class="cyc-fill"></i><i class="cyc-zero"></i></div>
+        <input id="fx-cyc-d" class="cyc-range" type="range" min="-3" max="3" step="any" value="1" aria-valuetext="δ = +1">
+        <div class="cyc-ticks" aria-hidden="true"><span data-v="-3">−3</span><span data-v="-2">−2</span><span data-v="-1">−1</span><span data-v="0">0<small>uncycled</small></span><span data-v="1">+1</span><span data-v="2">+2</span><span data-v="3">+3</span></div>
+      </div>
+      <output class="cyc-dval" for="fx-cyc-d" aria-hidden="true">δ = +1</output>
+    </div>
+  </div>
+  <div class="fx-legend cyc-legend" aria-hidden="true">
+    <span><svg class="cyc-sw" viewBox="0 0 22 10" width="22" height="10"><line class="s-ob" x1="1" y1="5" x2="21" y2="5"/><circle class="s-mk" cx="11" cy="5" r="3.25"/></svg>observed after the cycle</span>
+    <span><svg class="cyc-sw" viewBox="0 0 22 10" width="22" height="10"><line class="s-pr" x1="1" y1="5" x2="21" y2="5"/></svg>predicted: uncycled shifted by δ</span>
+    <span><svg class="cyc-sw" viewBox="0 0 22 10" width="22" height="10"><line class="s-cl" x1="1" y1="5" x2="21" y2="5"/></svg>uncycled</span>
+  </div>
+  <div class="fx-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle">Accuracy by phase (%)</p>
+      <p class="fx-psub" data-sub="acc">&nbsp;</p>
+      <div class="cyc-chart" data-chart="acc"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Predicted vs observed change (pp)</p>
+      <p class="fx-psub" data-sub="sc">&nbsp;</p>
+      <div class="cyc-chart" data-chart="sc"></div>
+    </div>
+  </div>
+  <div class="fx-status" aria-live="polite"></div>
+  <div class="cyc-index">
+    <div class="cyc-index-head">
+      <p class="fx-ptitle">R² excluding the boundary phase</p>
+      <div class="fx-scale" aria-hidden="true"><span>0.5</span><i class="cyc-ramp"></i><span>1.0</span></div>
+    </div>
+    <table class="cyc-grid" aria-label="R² excluding the boundary phase, by model (rows) and cycle δ (columns); select a cell to show that model and cycle"></table>
+  </div>
+  <figcaption>Figure 6. Gate cycling moves the weak spots. Cycling the offset-specific gate parameters by \(\delta\) predicts that the accuracy at phase \(r\) becomes the uncycled accuracy at phase \((r-\delta)\bmod S\) (dashed). Left: observed accuracy after the cycle (solid, with its 95% bootstrap band) and the uncycled model (gray). Right: predicted against observed change for each phase. \(R^2\) is their squared correlation, excluding the boundary phase \(S-1\) (hollow), with a 95% bootstrap interval. The grid gives that \(R^2\) for every model and cycle. Select a cell, or drag the slider to set \(\delta\) (0 shows the uncycled model).</figcaption>
+</figure>

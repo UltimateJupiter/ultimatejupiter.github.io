@@ -6,7 +6,8 @@ authors:
 - Haoyu Zhao
 - Sanjeev Arora
 date: '2026-02-04'
-venue: arXiv
+venue: RSI Workshop @ ICLR 2026
+award: Best Paper
 featured: true
 image: ./featured.png
 caption: Having incorrect attempts in the context significantly biases reasoning models toward

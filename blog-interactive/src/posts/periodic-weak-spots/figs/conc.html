@@ -1,0 +1,30 @@
+<figure class="fx" id="fx-conc">
+  <div class="fx-bar">
+    <label class="lab" for="fx-conc-model">model</label>
+    <select class="fx-select" id="fx-conc-model"></select>
+    <div class="fx-seg fxc-seg" role="group" aria-label="Pretraining paths of three key gates">
+      <button type="button" id="fx-conc-paths" aria-pressed="true">training paths</button>
+      <button type="button" id="fx-conc-replay" aria-label="Replay the training paths">replay</button>
+    </div>
+  </div>
+  <div class="fxc-main" id="fx-conc-main">
+    <div class="fxc-plot" id="fx-conc-plot">
+      <svg class="fx-svg" id="fx-conc-svg" role="img" aria-label="Static against per-window effective number of offsets of every key gate"></svg>
+    </div>
+    <div class="fxc-side" id="fx-conc-side">
+      <div class="fxc-blk">
+        <p class="fxc-h">layer</p>
+        <div class="fx-scale fxc-ramp" aria-hidden="true"><span>0</span><i></i><span>27</span></div>
+      </div>
+      <div class="fxc-blk fxc-key" id="fx-conc-key">
+        <p class="fxc-h">training paths</p>
+        <svg class="fxc-track" id="fx-conc-track" aria-hidden="true"></svg>
+        <div class="fxc-ends" aria-hidden="true"><span>step 1</span><span>step 47,518</span></div>
+        <p class="fxc-na"></p>
+      </div>
+      <p class="fx-note fxc-hint" id="fx-conc-hint"></p>
+    </div>
+  </div>
+  <p class="fx-status" id="fx-conc-status" aria-live="polite"></p>
+  <figcaption>Figure 4. Two ways a gate can concentrate. Each point is one KV head's key gate at the end of pretraining, placed by its static effective number of offsets \(\exp(H(\mathbb E[\boldsymbol\alpha]))\) (horizontal) and its per-window effective number \(\mathbb E[\exp(H(\boldsymbol\alpha))]\) (vertical). Both run from 1 (a single offset) to \(W\) (uniform). On the dashed diagonal, a gate gives each offset the same score in every window. At the right edge, its average over windows is uniform, however concentrated single windows are. For W8/S8 · 1 KV · seed 42, lines trace layers 9, 10, and 14 from step 1 (open circle) to step 47,518 (filled), and replay animates them. Color marks layer depth. Uniform averaging has no learned gate, and vector gates score every channel separately, so those runs are omitted.</figcaption>
+</figure>

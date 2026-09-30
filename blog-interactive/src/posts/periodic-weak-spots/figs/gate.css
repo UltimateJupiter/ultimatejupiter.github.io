@@ -1,0 +1,54 @@
+/* Figure 5 · gate profiles vs knockouts (fx-gate). Everything scoped to #fx-gate. */
+#fx-gate .fxg-over{position:relative;border-radius:2px;outline:none}
+#fx-gate .fxg-over:focus-visible{outline:1px solid var(--accent);outline-offset:6px}
+#fx-gate .fxg-over .fx-svg{cursor:pointer}
+
+/* overview text */
+#fx-gate .fx-svg text.t{font-family:var(--sans);font-size:13px;font-weight:400;fill:var(--fg)}
+#fx-gate .fx-svg text.on{fill:var(--fg)}
+#fx-gate .fx-svg text.off{visibility:hidden}
+
+/* overview marks */
+#fx-gate .fx-svg .grid{fill:var(--fx-band)}
+#fx-gate .fx-svg .nbar{fill:color-mix(in oklab,var(--fx-gate) 80%,var(--bg))}
+#fx-gate .fx-svg .band-hov{fill:color-mix(in srgb,var(--fg) 4%,transparent)}
+#fx-gate .fx-svg .band-sel{fill:color-mix(in srgb,var(--fg) 8%,transparent)}
+#fx-gate .fx-svg .row-hov{fill:none;stroke:var(--fg);stroke-opacity:.35;stroke-width:1}
+#fx-gate .fx-svg .row-sel{fill:none;stroke:var(--fg);stroke-opacity:.85;stroke-width:1}
+#fx-gate .fx-svg .cell-cur{fill:none;stroke:var(--fg);stroke-width:2}
+
+/* legends under the overview */
+#fx-gate .fxg-keys{display:grid;align-items:center;row-gap:8px;margin-top:-6px}
+#fx-gate .fx-bar .fx-select{max-width:calc(100% - 58px)}
+#fx-gate .fx-tip .fxg-tt{display:grid;grid-template-columns:auto auto;column-gap:12px;margin-top:2px}
+#fx-gate .fxg-keys .fx-scale{min-width:0;white-space:nowrap}
+#fx-gate .fxg-keys .fx-scale i{flex:1 1 auto;min-width:36px;max-width:132px}
+#fx-gate .fxg-gs i{background:linear-gradient(in oklab 90deg,var(--bg),var(--fx-gate))}
+#fx-gate .fxg-ks i{background:linear-gradient(in oklab 90deg,var(--loss),var(--bg),var(--accent))}
+#fx-gate .fxg-note{margin:-4px 0 0;min-height:1.5em}
+
+/* detail */
+#fx-gate .fxg-detail{display:flex;flex-direction:column;gap:8px;margin-top:10px;min-width:0}
+#fx-gate .fxg-picks{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:300 12.5px/1.4 var(--mono);color:var(--muted)}
+#fx-gate .fxg-title{font-variant-numeric:tabular-nums}
+#fx-gate .fxg-leg{gap:4px 18px}
+#fx-gate .fxg-leg span{display:inline-flex;align-items:center;gap:6px}
+#fx-gate .fxg-sw{display:block;overflow:visible}
+#fx-gate .fxg-pk{display:block;width:12px;height:12px;background:var(--fx-band);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 6%,transparent)}
+#fx-gate .fxg-sw line{stroke-width:1.75;fill:none}
+#fx-gate .fxg-sw line.k{stroke:var(--fx-gate)}
+#fx-gate .fxg-sw circle.k{fill:var(--fx-gate)}
+#fx-gate .fxg-sw line.v{stroke:var(--accent);stroke-dasharray:4.5 3}
+#fx-gate .fxg-sw circle.v{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+#fx-gate .fxg-sw line.u{stroke:var(--muted);stroke-width:1.25;stroke-dasharray:1.5 2.5}
+
+#fx-gate .fx-svg .kline{fill:none;stroke:var(--fx-gate);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round}
+#fx-gate .fx-svg .vline{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-dasharray:4.5 3;stroke-linejoin:round}
+#fx-gate .fx-svg .kdot{fill:var(--fx-gate);stroke:var(--bg);stroke-width:1}
+#fx-gate .fx-svg .vdot{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+#fx-gate .fx-svg .uref{fill:none;stroke:var(--muted);stroke-width:1.25;stroke-dasharray:1.5 2.5}
+#fx-gate .fx-svg .peak{fill:var(--fx-band)}
+#fx-gate .fx-svg .bar-l{fill:var(--loss)}
+#fx-gate .fx-svg .bar-g{fill:var(--accent)}
+#fx-gate .fx-svg .hit{fill:transparent}
+#fx-gate .fxg-dwrap{position:relative}

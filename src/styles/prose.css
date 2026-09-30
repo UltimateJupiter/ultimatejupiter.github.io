@@ -1,0 +1,199 @@
+/* Long-form text: blog posts and news pages. Scope with a `.prose` wrapper. */
+
+.prose {
+  font-size: 1.06em;
+  line-height: 1.7;
+  color: var(--ink);
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose pre,
+.prose figure,
+.prose table,
+.prose .katex-display {
+  margin: 0 0 1.35em;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-weight: 450;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  scroll-margin-top: 5.5rem;
+}
+.prose h2 {
+  font-size: 1.55em;
+  margin: 2.4em 0 0.7em;
+}
+.prose h3 {
+  font-size: 1.22em;
+  margin: 2em 0 0.6em;
+}
+.prose h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1.6em 0 0.5em;
+}
+
+.prose a {
+  text-decoration-color: var(--accent);
+}
+.prose strong {
+  font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+.prose li {
+  margin: 0.3em 0;
+}
+.prose li::marker {
+  color: var(--muted);
+}
+.prose ul > li::marker {
+  content: '–  ';
+}
+
+.prose blockquote {
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--accent);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--rule);
+  margin: 3em 0;
+}
+
+.prose img,
+.prose video {
+  border-radius: 3px;
+  margin-inline: auto;
+}
+.prose figure img {
+  margin-bottom: 0.6rem;
+}
+.prose figcaption,
+.prose img + em {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-style: normal;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* inline code and blocks */
+.prose :not(pre) > code {
+  font-family: var(--mono);
+  font-size: 0.82em;
+  padding: 0.12em 0.35em;
+  background: var(--bg-raised);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+.prose pre {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.65;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow-x: auto;
+  hyphens: none;
+}
+.prose pre code {
+  font: inherit;
+}
+
+/* Shiki emits both themes as variables (defaultColor: false); pick one per scheme. */
+.prose .astro-code,
+.prose .astro-code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+.prose .astro-code {
+  background-color: var(--bg-raised) !important;
+}
+:root[data-theme='dark'] .prose .astro-code span {
+  color: var(--shiki-dark);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .prose .astro-code span {
+    color: var(--shiki-dark);
+  }
+}
+.prose .astro-code span {
+  background-color: transparent;
+}
+
+/* math */
+.prose .katex {
+  font-size: 1.05em;
+}
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25em 0;
+}
+
+/* tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  text-align: left;
+  padding: 0.45em 0.9em 0.45em 0;
+  border-bottom: 1px solid var(--rule);
+}
+.prose th {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+/* footnotes */
+.prose sup a,
+.prose .data-footnote-backref {
+  font-family: var(--mono);
+  font-size: 0.75em;
+  text-decoration: none;
+  color: var(--accent);
+}
+.prose .footnotes {
+  margin-top: 3.5em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--rule);
+  font-size: 0.88em;
+  color: var(--ink-2);
+}
+.prose .footnotes h2 {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 1em;
+}

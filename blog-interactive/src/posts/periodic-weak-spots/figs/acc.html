@@ -1,0 +1,20 @@
+<figure class="fx" id="fx-acc">
+  <div class="fx-bar">
+    <label class="fxa-ctl fxa-model"><span class="lab">model</span><select class="fx-select" aria-label="Model shown in the right panel"></select></label>
+    <div class="fxa-ctl"><span class="lab" id="fx-acc-padlab">padding</span><div class="fx-seg" role="group" aria-labelledby="fx-acc-padlab"><button type="button" data-pad="pp" aria-pressed="true">prefix</button><button type="button" data-pad="ip" aria-pressed="false">in-sequence</button></div></div>
+  </div>
+  <div class="fx-panels">
+    <div class="fx-panel" data-panel="full">
+      <div class="fxa-head"><p class="fx-ptitle">Full attention</p><p class="fxa-sub"><span class="s">1, 4, and 8 KV heads ·</span> <span class="s">prefix padding</span></p></div>
+      <div class="fxa-plot"></div>
+      <p class="fx-psub"></p>
+    </div>
+    <div class="fx-panel" data-panel="run">
+      <div class="fxa-head"><p class="fx-ptitle">&#8203;</p><p class="fxa-sub">&#8203;</p></div>
+      <div class="fxa-plot"></div>
+      <p class="fx-psub"></p>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 2. Accuracy by target-key position mod 24 at the final checkpoint. Left: full-attention baselines with 1, 4, and 8 KV heads stay flat. Right: any of the 23 compressed runs, under either padding protocol. Dashed vertical lines mark the period boundaries every \(S\) positions, and small triangles under the axis mark the boundary phase \(S-1\). Each compressed line is solid within a period and dotted where it crosses a period boundary. The dashed gray line is full attention with the same number of KV heads, where such a run exists. Bands are 95% intervals: Wilson intervals for full attention, and for compressed runs a bootstrap over key–name mappings, each evaluated at every position. Full-attention runs exist only under prefix padding.</figcaption>
+</figure>

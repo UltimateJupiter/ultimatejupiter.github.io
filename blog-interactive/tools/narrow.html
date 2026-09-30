@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>fx narrow</title>
+<style>html,body{margin:0;background:#9aa0a8}iframe{border:0;display:block}</style></head>
+<body><iframe id="fr" title="harness"></iframe>
+<script>
+/* True phone-width preview: headless Chrome will not make a window narrower than ~500px, so this page
+   loads harness.html inside an iframe of exactly w px (default 375). All harness params pass through. */
+const q=new URLSearchParams(location.search), w=+(q.get('w')||375), h=+(q.get('h')||1800);
+q.delete('w'); q.delete('h');
+const fr=document.getElementById('fr'); fr.style.width=w+'px'; fr.style.height=h+'px';
+fr.src='harness.html?'+q.toString();
+</script></body></html>

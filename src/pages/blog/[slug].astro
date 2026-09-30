@@ -1,0 +1,249 @@
+---
+import 'katex/dist/katex.min.css';
+import '../../styles/prose.css';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { fmtDay, getPosts, isoDate, postUrl, readingTime, type Post } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const all = await getPosts();
+  // standalone pages (href) are served from public/, not rendered here
+  const posts = all.filter((p) => !p.data.href);
+  return posts.map((post) => {
+    const i = all.indexOf(post);
+    // newest first, so the newer post is before this one; standalone pages count too
+    return { params: { slug: post.id }, props: { post, newer: all[i - 1], older: all[i + 1] } };
+  });
+}
+
+const { post, newer, older } = Astro.props as { post: Post; newer?: Post; older?: Post };
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const { title, date, updated, description, tags, draft } = post.data;
+---
+
+<Base title={title} description={description}>
+  <article class="wrap post">
+    <header>
+      <a class="back mono" href="/blog/">← Blog</a>
+      <p class="label meta">
+        <time datetime={isoDate(date)}>{fmtDay(date)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime(post.body)} min read</span>
+        {updated && <span>· Updated {fmtDay(updated)}</span>}
+        {draft && <span class="draft">· Draft</span>}
+      </p>
+      <h1>{title}</h1>
+      <p class="lede">{description}</p>
+      {tags.length > 0 && <p class="tags mono">{tags.map((t) => <span>{t}</span>)}</p>}
+    </header>
+
+    <div class="layout">
+      {
+        toc.length >= 3 && (
+          <nav class="toc" aria-label="On this page">
+            <p class="label">Contents</p>
+            <ol>
+              {toc.map((h) => (
+                <li class={`d${h.depth}`}>
+                  <a href={`#${h.slug}`} data-toc={h.slug}>
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <div class="prose"><Content /></div>
+    </div>
+
+    {
+      (newer || older) && (
+        <nav class="pager" aria-label="More posts">
+          {older ? (
+            <a href={postUrl(older)} class="prev">
+              <span class="label">← Older</span>
+              <span>{older.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {newer && (
+            <a href={postUrl(newer)} class="next">
+              <span class="label">Newer →</span>
+              <span>{newer.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .post {
+    padding-top: clamp(6.5rem, 12vw, 9rem);
+    padding-bottom: 4rem;
+  }
+  header,
+  .prose,
+  .pager {
+    max-width: 42rem;
+  }
+  header,
+  .pager {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .back {
+    font-size: 0.75rem;
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6em;
+    margin-top: 2.5rem;
+  }
+  .draft {
+    color: var(--accent);
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5vw, 3.25rem);
+    font-weight: 380;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    margin: 0.75rem 0 1.1rem;
+  }
+  .lede {
+    font-size: 1.2em;
+    line-height: 1.5;
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 1.25rem 0 0;
+  }
+  .tags span {
+    font-size: 0.66rem;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0.1em 0.5em;
+  }
+
+  .layout {
+    margin-top: 2.75rem;
+    padding-top: 2.75rem;
+    border-top: 1px solid var(--rule);
+  }
+  .prose {
+    margin: 0 auto;
+  }
+
+  /* Table of contents: sticky in the left margin on wide screens, hidden otherwise. */
+  .toc {
+    display: none;
+  }
+  @media (min-width: 1180px) {
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr minmax(0, 42rem) 1fr;
+      column-gap: 3rem;
+    }
+    .layout > .prose {
+      grid-column: 2;
+      margin: 0;
+    }
+    .toc {
+      display: block;
+      grid-column: 1;
+      grid-row: 1;
+      justify-self: end;
+      position: sticky;
+      top: 6rem;
+      align-self: start;
+      max-width: 13rem;
+    }
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  .toc li {
+    margin: 0.45rem 0;
+  }
+  .toc .d3 {
+    padding-left: 0.9rem;
+    font-size: 0.8rem;
+  }
+  .toc a {
+    text-decoration: none;
+    color: var(--muted);
+    display: block;
+    border-left: 1px solid transparent;
+    padding-left: 0.6rem;
+    margin-left: -0.6rem;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .toc a:hover,
+  .toc a.active {
+    color: var(--ink);
+    border-left-color: var(--accent);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    text-decoration: none;
+    line-height: 1.35;
+  }
+  .pager .next {
+    text-align: right;
+    grid-column: 2;
+  }
+  .pager a:hover span:last-child {
+    color: var(--accent);
+  }
+</style>
+
+<script>
+  // Highlight the section currently being read in the table of contents.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+  if (links.length && 'IntersectionObserver' in window) {
+    const byId = new Map(links.map((a) => [a.dataset.toc!, a]));
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          links.forEach((a) => a.classList.remove('active'));
+          byId.get(e.target.id)?.classList.add('active');
+        }
+      },
+      { rootMargin: '0px 0px -70% 0px' },
+    );
+    byId.forEach((_, id) => {
+      const h = document.getElementById(id);
+      if (h) io.observe(h);
+    });
+  }
+</script>

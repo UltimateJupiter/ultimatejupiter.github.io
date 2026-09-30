@@ -1,0 +1,18 @@
+<figure class="fx" id="fx-niah">
+  <div class="fx-bar">
+    <span class="lab" id="fx-niah-xl">x axis</span>
+    <div class="fx-seg" role="group" aria-labelledby="fx-niah-xl">
+      <button type="button" data-fold="0" aria-pressed="true">residue 0–7</button>
+      <button type="button" data-fold="1" aria-pressed="false">fold mod <span class="niah-s">4</span></button>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <div class="niah-plot"></div>
+  <div class="tablewrap niah-tw">
+    <table class="niah-tbl" aria-label="Needle accuracy by model. Choose a row to plot that model.">
+      <thead><tr><th scope="col">Model</th><th scope="col">\(S\)</th><th scope="col">mean</th><th scope="col">worst</th><th scope="col">best</th><th scope="col">gap</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <figcaption>Needle accuracy by residue group. Each group holds 256 prompts at 128K tokens (2,560 for DeepSeek-V4.1-Flash), and bands are 95% Wilson intervals. Select a model in the table to plot it against the others in gray. Dashed vertical lines mark the boundaries between its stride periods, and model lines are dotted where they cross one. “Fold” overlays the periods, the first solid and later ones dashed. Accuracy is in percent, and gap is best minus worst group, in percentage points.</figcaption>
+</figure>

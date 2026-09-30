@@ -1,4 +1,6 @@
 ---
+import 'katex/dist/katex.min.css';
+import '../../styles/prose.css';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { fmtDay, getNews, type News } from '../../lib/content';
@@ -51,11 +53,5 @@ const { Content } = await render(item);
     margin-top: 2rem;
     padding-top: 2rem;
     border-top: 1px solid var(--rule);
-  }
-  .prose :global(blockquote) {
-    margin: 1.5rem 0;
-    padding-left: 1.25rem;
-    border-left: 1px solid var(--accent);
-    color: var(--ink-2);
   }
 </style>

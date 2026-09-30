@@ -1,0 +1,142 @@
+/* Figure 6: gate cycling (fx-cyc). Every selector is scoped to #fx-cyc. */
+#fx-cyc .cyc-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-cyc .cyc-ctl .lab{white-space:nowrap}
+
+/* δ slider: native range (keyboard, touch, a11y) over a hand-drawn rail. --tw = thumb box = hit area. */
+#fx-cyc .fx-bar{align-items:flex-start}
+#fx-cyc .cyc-dctl{align-items:flex-start;gap:10px;flex:1 1 300px}
+#fx-cyc .cyc-dctl .lab,#fx-cyc .cyc-dval{padding-top:5px}
+#fx-cyc .cyc-dval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:4.6em;white-space:nowrap}
+#fx-cyc .cyc-slider{--tw:28px;position:relative;flex:1 1 200px;min-width:170px;max-width:250px;height:49px}
+#fx-cyc .cyc-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-cyc .cyc-fill{position:absolute;top:0;height:2px;left:50%;width:0;border-radius:1px;background:var(--accent)}
+#fx-cyc .cyc-zero{position:absolute;left:50%;top:-3.5px;width:1px;height:9px;margin-left:-.5px;background:var(--muted)}
+#fx-cyc .cyc-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-cyc .cyc-range:focus{outline:none}
+#fx-cyc .cyc-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-cyc .cyc-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-cyc .cyc-range::-moz-range-progress{background:transparent}
+#fx-cyc .cyc-range::-moz-focus-outer{border:0}
+/* 14px ring (bg fill, accent border) painted inside the 28px transparent thumb box */
+#fx-cyc .cyc-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-cyc .cyc-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-cyc .cyc-range:hover::-webkit-slider-thumb,#fx-cyc .cyc-range:active::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-cyc .cyc-range:hover::-moz-range-thumb,#fx-cyc .cyc-range:active::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-cyc .cyc-range:active::-webkit-slider-thumb{cursor:grabbing}
+#fx-cyc .cyc-range:active::-moz-range-thumb{cursor:grabbing}
+#fx-cyc .cyc-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-cyc .cyc-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-cyc .cyc-ticks{position:absolute;left:0;right:0;top:24px;height:25px}
+#fx-cyc .cyc-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 3px 6px;font:400 10.5px/1 var(--mono);color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-cyc .cyc-ticks span:nth-child(1){left:calc(var(--tw) / 2)}
+#fx-cyc .cyc-ticks span:nth-child(2){left:calc(var(--tw) / 2 + (100% - var(--tw)) / 6)}
+#fx-cyc .cyc-ticks span:nth-child(3){left:calc(var(--tw) / 2 + (100% - var(--tw)) * 2 / 6)}
+#fx-cyc .cyc-ticks span:nth-child(4){left:50%}
+#fx-cyc .cyc-ticks span:nth-child(5){left:calc(var(--tw) / 2 + (100% - var(--tw)) * 4 / 6)}
+#fx-cyc .cyc-ticks span:nth-child(6){left:calc(var(--tw) / 2 + (100% - var(--tw)) * 5 / 6)}
+#fx-cyc .cyc-ticks span:nth-child(7){left:calc(100% - var(--tw) / 2)}
+#fx-cyc .cyc-ticks span:hover,#fx-cyc .cyc-ticks span.on{color:var(--fg)}
+#fx-cyc .cyc-ticks small{position:absolute;left:50%;top:13px;transform:translateX(-50%);font:300 9.5px/1 var(--mono);color:var(--muted);white-space:nowrap}
+/* phones: the slider gets a full-width row (stops ≈ 48px apart); label and live value share the line above */
+@media (max-width:400px){
+  #fx-cyc .cyc-dctl{flex-wrap:wrap;justify-content:space-between;row-gap:4px;flex-basis:100%}
+  #fx-cyc .cyc-dctl .lab,#fx-cyc .cyc-dval{padding-top:0}
+  #fx-cyc .cyc-dval{min-width:0;text-align:right}
+  #fx-cyc .cyc-slider{order:3;flex:1 1 100%;max-width:none;min-width:0}
+}
+
+/* legend swatches (decorative inline svg) */
+#fx-cyc .cyc-legend span{display:inline-flex;align-items:center;white-space:nowrap}
+#fx-cyc .cyc-sw{display:inline-block;flex:none;margin-right:6px;overflow:visible}
+#fx-cyc .cyc-sw .s-ob{stroke:var(--accent);stroke-width:1.75}
+#fx-cyc .cyc-sw .s-mk{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-cyc .cyc-sw .s-pr{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3}
+#fx-cyc .cyc-sw .s-cl{stroke:var(--fx-base2);stroke-width:1.5}
+
+#fx-cyc .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-cyc .fx-psub .ob{color:var(--accent)}
+#fx-cyc .fx-status .nw{white-space:nowrap}
+#fx-cyc .cyc-chart{min-width:0;position:relative}
+#fx-cyc .cyc-chart svg{transition:opacity .2s}
+#fx-cyc .cyc-chart svg.enter{opacity:0;transition:none}
+
+/* accuracy-by-phase chart */
+#fx-cyc .fx-svg .bnd{fill:var(--fg);fill-opacity:.045}
+#fx-cyc .fx-svg text.bnd-lab{font-size:10px}
+#fx-cyc .fx-svg .cl-band{fill:var(--fx-base2);fill-opacity:.17}
+#fx-cyc .fx-svg .cl-line{fill:none;stroke:var(--fx-base2);stroke-width:1.25;stroke-linejoin:round}
+#fx-cyc .fx-svg .ob-band{fill:var(--accent);fill-opacity:.16}
+#fx-cyc .fx-svg .ob-line{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round}
+#fx-cyc .fx-svg .pr-line{fill:none;stroke:var(--accent);stroke-width:1.4;stroke-dasharray:4 3;stroke-linejoin:round}
+#fx-cyc .fx-svg .mk{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-cyc .fx-svg .mk.hollow,#fx-cyc .fx-svg .pt.hollow{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+#fx-cyc .fx-svg .mk.on{stroke:var(--fg);stroke-width:1.25}
+#fx-cyc .fx-svg .shift{stroke:var(--muted);stroke-width:1;fill:none}
+#fx-cyc .fx-svg .shift-head{fill:var(--muted)}
+#fx-cyc .fx-svg .hit{fill:transparent;cursor:crosshair}
+#fx-cyc .fx-svg .cl-line{transition:stroke .2s,stroke-width .2s}
+#fx-cyc .fx-svg.unc .cl-line{stroke:var(--fx-base3);stroke-width:1.6}
+
+/* predicted-vs-observed scatter */
+#fx-cyc .fx-svg .diag{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;fill:none}
+#fx-cyc .fx-svg .zero{stroke:var(--line);stroke-opacity:.55;stroke-width:1;shape-rendering:crispEdges}
+#fx-cyc .fx-svg .pt{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-cyc .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1;stroke-opacity:.7;pointer-events:none}
+#fx-cyc .fx-svg text.hl{font-size:13px;fill:var(--fg)}
+#fx-cyc .fx-svg .hl-ci{font-size:10.5px;fill:var(--muted)}
+#fx-cyc .fx-svg text.hl-sub{font-size:10.5px;fill:var(--muted)}
+#fx-cyc .fx-svg .hl-bg{fill:var(--bg);fill-opacity:.85}
+#fx-cyc .fx-svg text.ptlab{font-size:10px}
+#fx-cyc .fx-svg .note-bg{fill:var(--bg)}
+#fx-cyc .fx-svg text.note1{font-size:12px;fill:var(--fg)}
+#fx-cyc .fx-svg text.note2{font-size:10.5px;fill:var(--muted)}
+
+/* tooltip rows */
+#fx-cyc .fx-tip .cyc-tt{display:grid;grid-template-columns:auto auto;gap:0 12px;margin-top:2px}
+#fx-cyc .fx-tip .cyc-tt.c3{grid-template-columns:auto auto auto}
+#fx-cyc .fx-tip .cyc-tt.c3 > :nth-child(3n+2),#fx-cyc .fx-tip .cyc-tt.c3 > :nth-child(3n){text-align:right}
+
+/* R² index grid */
+#fx-cyc .cyc-index{display:flex;flex-direction:column;gap:6px;min-width:0}
+#fx-cyc .cyc-index-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+#fx-cyc .cyc-index-head .fx-scale{font-size:10.5px}
+#fx-cyc .cyc-index-head .fx-scale i{flex-basis:84px;height:7px}
+#fx-cyc .cyc-grid{table-layout:fixed;border-collapse:separate;border-spacing:3px 3px;margin:0 -3px;width:calc(100% + 6px);font:300 12px/1 var(--mono)}
+#fx-cyc .cyc-grid th,#fx-cyc .cyc-grid td{padding:0;border:0;white-space:nowrap}
+#fx-cyc .cyc-grid col.lab{width:23%}
+#fx-cyc .cyc-grid thead th{font:300 11.5px/1 var(--mono);color:var(--muted);text-align:center;padding:0 0 3px}
+#fx-cyc .cyc-grid thead th:first-child{text-align:right;padding-right:8px}
+#fx-cyc .cyc-grid thead th.on{color:var(--fg)}
+#fx-cyc .cyc-grid tbody th{font:300 12px/1 var(--mono);color:var(--muted);text-align:left;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+#fx-cyc .cyc-grid tbody tr.on th{color:var(--fg)}
+#fx-cyc .cyc-grid tbody tr.gap th,#fx-cyc .cyc-grid tbody tr.gap td{padding-top:6px}
+#fx-cyc .cyc-grid tbody tr.grp{display:table-row}
+#fx-cyc .cyc-grid tbody tr.grp th{font:300 10.5px/1 var(--mono);color:var(--muted);padding:7px 0 1px}
+#fx-cyc .cyc-grid tbody tr.grp:first-child th{padding-top:2px}
+#fx-cyc .cyc-grid .mid{padding-left:5px}
+#fx-cyc .cyc-cell{display:block;width:100%;height:27px;margin:0;padding:0;border:0;border-radius:2px;cursor:pointer;
+  font:300 12px/27px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg);text-align:center;
+  background:var(--bg);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 6%,transparent);transition:box-shadow .15s}
+#fx-cyc .cyc-cell:hover{box-shadow:inset 0 0 0 1px var(--line)}
+#fx-cyc .cyc-cell[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px var(--fg);font-weight:400}
+#fx-cyc .cyc-cell:focus-visible{outline:1.5px solid var(--accent);outline-offset:1.5px}
+
+@media (max-width:420px){
+  #fx-cyc .cyc-grid{font-size:11px;border-spacing:2px 3px;margin:0 -2px;width:calc(100% + 4px)}
+  #fx-cyc .cyc-grid col.lab{width:21%}
+  #fx-cyc .cyc-grid .g{display:none}
+  #fx-cyc .cyc-grid tbody tr.grp{display:table-row}
+  #fx-cyc .cyc-grid tbody tr.gap th,#fx-cyc .cyc-grid tbody tr.gap td{padding-top:0}
+  #fx-cyc .cyc-grid tbody th{font-size:11px;padding-right:3px}
+  #fx-cyc .cyc-grid thead th{font-size:11px}
+  #fx-cyc .cyc-grid .mid{padding-left:3px}
+  #fx-cyc .cyc-cell{font-size:11px}
+}

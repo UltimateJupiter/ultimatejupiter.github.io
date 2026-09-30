@@ -1,0 +1,56 @@
+/* Shared styles for the data figures (fx). Every figure uses these; figure-specific CSS lives in <name>.css, scoped by the figure id. */
+:root{
+  --fx-c1:#2f67b8; --fx-c2:#c0503f; --fx-c3:#257552; --fx-c4:#a86f12; --fx-c5:#7a62c9;
+  --fx-base1:#c3c7cd; --fx-base2:#8d939c; --fx-base3:#4c525b;
+  --fx-gate:#7a62c9; --fx-band:color-mix(in srgb,var(--fg) 5%,transparent);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --fx-c1:#8db4ee; --fx-c2:#ee8b7b; --fx-c3:#6fcf9f; --fx-c4:#e6b050; --fx-c5:#a898ec;
+  --fx-base1:#454a52; --fx-base2:#767c86; --fx-base3:#b9bec7; --fx-gate:#a898ec }}
+:root[data-theme="dark"]{
+  --fx-c1:#8db4ee; --fx-c2:#ee8b7b; --fx-c3:#6fcf9f; --fx-c4:#e6b050; --fx-c5:#a898ec;
+  --fx-base1:#454a52; --fx-base2:#767c86; --fx-base3:#b9bec7; --fx-gate:#a898ec }
+
+figure.fx{width:100%;margin:12px 0;display:flex;flex-direction:column;gap:14px;position:relative}
+.fx-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font:300 13px/1.4 var(--mono);color:var(--muted)}
+.fx-bar .lab{color:var(--muted)}
+.fx-select{appearance:none;-webkit-appearance:none;font:300 13px/1.4 var(--mono);color:var(--fg);background-color:transparent;
+  border:1px solid var(--line);border-radius:2px;padding:4px 28px 4px 10px;cursor:pointer;max-width:100%;min-width:0;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.fx-select:hover{border-color:var(--accent)}
+.fx-select:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+.fx-seg{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.fx-seg button{font:300 12.5px/1.4 var(--mono);color:var(--muted);background:transparent;border:0;border-left:1px solid var(--line);padding:4px 10px;cursor:pointer}
+.fx-seg button:first-child{border-left:0}
+.fx-seg button:hover{color:var(--fg)}
+.fx-seg button[aria-pressed="true"]{color:var(--fg);background:color-mix(in srgb,var(--fg) 9%,transparent)}
+.fx-seg button:focus-visible{outline:1px solid var(--accent);outline-offset:-1px}
+.fx-seg button:disabled{opacity:.35;cursor:default}
+.fx-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+@media (max-width:600px){.fx-panels{grid-template-columns:1fr}}
+.fx-panel{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fx-ptitle{font:400 13px/1.35 var(--sans);color:var(--fg);margin:0}
+.fx-psub{font:300 12px/1.45 var(--mono);color:var(--muted);margin:0}
+.fx-psub b{font-weight:400;color:var(--fg)}
+.fx .fx-svg{display:block;width:100%;height:auto;overflow:visible;touch-action:pan-y}
+.fx .fx-svg text{font-family:var(--mono);font-size:10.5px;font-weight:400;fill:var(--muted)}
+.fx .fx-svg .ax{stroke:var(--line);stroke-width:1;fill:none;shape-rendering:crispEdges}
+.fx .fx-svg .gr{stroke:var(--rule);stroke-width:1;fill:none;shape-rendering:crispEdges}
+.fx .fx-svg .hair{stroke:var(--fg);stroke-opacity:.35;stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+.fx-tip{position:absolute;z-index:5;pointer-events:none;opacity:0;transition:opacity .12s;background:var(--bg);color:var(--fg);
+  border:1px solid var(--line);border-radius:3px;padding:6px 9px;font:300 12px/1.5 var(--mono);white-space:nowrap;
+  box-shadow:0 4px 14px color-mix(in srgb,var(--fg) 10%,transparent)}
+.fx-tip.on{opacity:1}
+.fx-tip b{font-weight:400}
+.fx-tip .k{color:var(--muted)}
+.fx-legend{display:flex;flex-wrap:wrap;gap:4px 16px;font:300 12px/1.5 var(--mono);color:var(--muted)}
+.fx-legend .sw{display:inline-block;width:16px;height:0;border-top:2px solid currentColor;vertical-align:middle;margin-right:6px}
+.fx-legend .sw.dash{border-top-style:dashed}
+.fx-legend .box{display:inline-block;width:10px;height:10px;border-radius:1px;vertical-align:-1px;margin-right:6px}
+.fx-status{font:300 12.5px/1.5 var(--mono);color:var(--muted);min-height:1.5em}
+.fx-status b{font-weight:400;color:var(--fg)}
+.fx-note{font:300 11.5px/1.5 var(--mono);color:var(--muted)}
+.fx-scale{display:flex;align-items:center;gap:8px;font:300 11px var(--mono);color:var(--muted)}
+.fx-scale i{display:block;height:8px;flex:0 0 120px;border-radius:1px}
+@media (prefers-reduced-motion: reduce){.fx *{transition:none !important;animation:none !important}}

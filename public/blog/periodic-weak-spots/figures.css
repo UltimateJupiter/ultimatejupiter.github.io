@@ -1,0 +1,470 @@
+/* data figures, bundled from figs/*.css by build.py */
+/* ---- niah ---- */
+/* fx-niah: needle accuracy by residue group (chart + selectable table) */
+:root{
+  --fx-niah-ci:color-mix(in srgb,var(--accent) 15%,transparent);
+  --fx-niah-cyc:color-mix(in srgb,var(--fg) 3.5%,transparent);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --fx-niah-ci:color-mix(in srgb,var(--accent) 21%,transparent);
+  --fx-niah-cyc:color-mix(in srgb,var(--fg) 4.5%,transparent) }}
+:root[data-theme="dark"]{
+  --fx-niah-ci:color-mix(in srgb,var(--accent) 21%,transparent);
+  --fx-niah-cyc:color-mix(in srgb,var(--fg) 4.5%,transparent) }
+
+#fx-niah .fx-status{margin:0}
+#fx-niah .niah-plot{min-width:0}
+#fx-niah .niah-plot .fx-svg{cursor:default;-webkit-tap-highlight-color:transparent}
+#fx-niah .niah-plot .fx-svg.niah-can{cursor:pointer}
+#fx-niah .niah-plot .fx-svg:focus{outline:none}
+#fx-niah .niah-plot .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px;border-radius:2px}
+
+/* chart marks (also used by the small keys in the tooltip) */
+#fx-niah .niah-cyc{fill:none;stroke:var(--muted);stroke-opacity:.6;stroke-width:1;stroke-dasharray:3 3;shape-rendering:crispEdges}
+#fx-niah .fx-svg text.niah-cl{fill:var(--muted)}
+#fx-niah .niah-ci{fill:var(--fx-niah-ci);stroke:none}
+#fx-niah .niah-ln{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round}
+#fx-niah .niah-ln.dsh{stroke-linecap:butt}
+#fx-niah .niah-ctx{fill:none;stroke:var(--fx-base1);stroke-width:1.25;stroke-linejoin:round;stroke-linecap:round}
+#fx-niah .niah-ctx.hl{stroke:var(--fx-base3);stroke-width:1.5}
+#fx-niah .niah-ln.dot{stroke-dasharray:0 4;stroke-linecap:round}
+#fx-niah .niah-ctx .dot{stroke-dasharray:0 3.4;stroke-linecap:round}
+#fx-niah .niah-mk{fill:var(--accent);stroke:var(--bg);stroke-width:1.5}
+#fx-niah .niah-mr{fill:var(--bg);stroke:var(--accent);stroke-width:1.25}
+#fx-niah .niah-mk.pl{stroke:none}
+#fx-niah .niah-gap{fill:none;stroke:var(--muted);stroke-width:1}
+#fx-niah .fx-svg text.niah-gv{fill:var(--fg)}
+#fx-niah .niah-hr{fill:none;stroke:var(--fg);stroke-width:1}
+#fx-niah .niah-hd{fill:var(--fx-base3);stroke:var(--bg);stroke-width:1.5}
+
+/* tooltip */
+#fx-niah .fx-tip .niah-th{display:flex;align-items:center;gap:7px;color:var(--fg)}
+#fx-niah .fx-tip .niah-sw{display:block;flex:none;overflow:visible}
+#fx-niah .fx-tip .niah-tg{display:grid;grid-template-columns:repeat(5,auto);column-gap:10px;align-items:center;margin-top:3px}
+#fx-niah .fx-tip .niah-tg .n{text-align:right}
+
+/* table: rows are a radio group; the key doubles as the radio indicator */
+#fx-niah .niah-tbl tbody tr{cursor:pointer}
+#fx-niah .niah-tbl tbody td{transition:background-color .15s}
+#fx-niah .niah-tbl tbody tr:hover td,
+#fx-niah .niah-tbl tbody tr.peek td{background:color-mix(in srgb,var(--fg) 3.5%,transparent)}
+#fx-niah .niah-tbl tbody tr.on td{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+#fx-niah .niah-tbl td.lo{color:var(--accent)}
+#fx-niah .niah-tbl label{position:relative;display:inline-flex;align-items:center;gap:9px;cursor:pointer}
+#fx-niah .niah-rb{position:absolute;left:0;top:50%;width:1px;height:1px;margin:0;opacity:0;pointer-events:none}
+#fx-niah .niah-key{position:relative;flex:none;width:18px;height:10px}
+#fx-niah .niah-key::before{content:"";position:absolute;left:1px;right:1px;top:4.25px;border-top:1.5px solid var(--fx-base1)}
+#fx-niah tr.on .niah-key::before{top:4px;border-top:2px solid var(--accent)}
+#fx-niah tr.on .niah-key::after{content:"";position:absolute;left:6px;top:2px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+#fx-niah .niah-rb:focus-visible + .niah-key{outline:1px solid var(--accent);outline-offset:3px;border-radius:2px}
+@supports selector(:has(*)){
+  #fx-niah .niah-rb:focus-visible + .niah-key{outline:none}
+  #fx-niah .niah-tbl label:has(.niah-rb:focus-visible){outline:1px solid var(--accent);outline-offset:4px;border-radius:2px}
+}
+
+#fx-niah .niah-nw{display:none}
+@media (max-width:480px){
+  #fx-niah .fx-status{min-height:3em}
+  #fx-niah .niah-ww{display:none}
+  #fx-niah .niah-nw{display:inline}
+  #fx-niah .niah-tbl{font-size:12.5px}
+  #fx-niah .niah-tbl th,#fx-niah .niah-tbl td{padding:7px 5px}
+  #fx-niah .niah-tbl label{gap:7px}
+  #fx-niah .niah-pre{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+@media (prefers-reduced-motion: reduce){#fx-niah .niah-tbl tbody td{transition:none}}
+
+/* ---- acc ---- */
+/* Figure 2 (fx-acc): full-attention baselines (left, fixed) beside one compressed run (right, chosen). */
+#fx-acc{
+  /* grey ramp for 1 / 4 / 8 KV heads (darker = more heads); the dashed ghost reuses its baseline's grey */
+  --fx-acc-k1:var(--fx-base2);
+  --fx-acc-k4:color-mix(in oklab,var(--fx-base2) 50%,var(--fx-base3));
+  --fx-acc-k8:var(--fx-base3);
+}
+#fx-acc .k1{--fx-acc-c:var(--fx-acc-k1)}
+#fx-acc .k4{--fx-acc-c:var(--fx-acc-k4)}
+#fx-acc .k8{--fx-acc-c:var(--fx-acc-k8)}
+#fx-acc .run{--fx-acc-c:var(--accent)}
+
+/* controls */
+/* one row on desktop: the model control takes the remaining width; in columns under ~530px the toggle wraps below */
+#fx-acc .fx-bar{column-gap:12px}
+#fx-acc .fxa-ctl{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}
+#fx-acc .fxa-model{flex:1 1 22em}
+#fx-acc .fxa-model .fx-select{flex:1 1 auto;min-width:0;padding-left:8px;padding-right:26px;text-overflow:ellipsis}
+
+/* panels: side by side, header / chart / numbers share rows (subgrid), so the two charts stay level even when a
+   header wraps; stacked below 600px as in _shared.css */
+#fx-acc .fx-panels{row-gap:30px}
+@media not all and (max-width:600px){
+  #fx-acc .fx-panels{grid-template-rows:auto auto auto;row-gap:6px}
+  #fx-acc .fx-panel{display:grid;grid-row:span 3;grid-template-rows:subgrid;align-content:start}
+}
+#fx-acc .fxa-head{display:flex;flex-direction:column;min-width:0}
+#fx-acc .fxa-sub{margin:0;font:300 12px/1.45 var(--mono);color:var(--muted)}
+#fx-acc .fxa-plot{min-width:0}
+#fx-acc .fx-psub .l{display:block}
+#fx-acc .fx-psub .s,#fx-acc .fxa-sub .s{white-space:nowrap}
+
+/* chart marks */
+#fx-acc .fx-svg{outline:none}
+#fx-acc .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-acc .fxa-line{fill:none;stroke:var(--fx-acc-c);stroke-width:1.25px;stroke-linejoin:round;stroke-linecap:round}
+#fx-acc .fxa-line.run,#fx-acc .fxa-full.on .fxa-line{stroke-width:1.75px}
+#fx-acc .fxa-line.cross{stroke-dasharray:0 4;stroke-width:1.9px}
+#fx-acc .fxa-band{fill:var(--fx-acc-c);fill-opacity:.15;stroke:none}
+#fx-acc .fxa-band.run{fill-opacity:.17}
+#fx-acc .fxa-ghost{fill:none;stroke:var(--fx-acc-c);stroke-width:1.5px;stroke-dasharray:5 3.5;stroke-linecap:butt}
+#fx-acc .fxa-guide{stroke:var(--muted);stroke-opacity:.55;stroke-width:1px;stroke-dasharray:3 3;shape-rendering:crispEdges}
+#fx-acc .fxa-bnd{fill:var(--muted);stroke:none}
+#fx-acc .fx-svg text.fxa-lab{paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-acc .fx-svg .fxa-full.on text.fxa-lab{fill:var(--fg)}
+
+/* hover layer */
+#fx-acc .fxa-hov{visibility:hidden;pointer-events:none}
+#fx-acc .fxa-hov.on{visibility:visible}
+#fx-acc .fxa-dot{fill:var(--fx-acc-c);stroke:var(--bg);stroke-width:2px}
+#fx-acc .fxa-dot.off{display:none}
+
+/* tooltip */
+#fx-acc .fx-tip{left:0;top:0}
+#fx-acc .fxa-th{color:var(--muted);margin-bottom:3px}
+#fx-acc .fxa-th b{color:var(--fg)}
+#fx-acc .fxa-tg{display:grid;grid-template-columns:14px auto auto auto;column-gap:8px;align-items:center}
+#fx-acc .fxa-tg .v{justify-self:end;font-variant-numeric:tabular-nums}
+#fx-acc .fxa-sw{display:block;width:14px;height:0;border-top:2px solid var(--fx-acc-c)}
+#fx-acc .fxa-sw.dot{border-top-style:dashed;border-top-width:2px}
+
+/* status: the selection name is spoken, not shown (the panel title shows it) */
+#fx-acc .fxa-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+
+/* ---- ko ---- */
+/* Figure 3 · knockout maps (fx-ko). Everything is scoped to #fx-ko. */
+#fx-ko .fx-ko-tg{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-width:0}
+#fx-ko .fx-ko-ctl{display:inline-flex;align-items:center;gap:8px}
+#fx-ko .fx-ko-model{min-width:0;max-width:100%}
+#fx-ko .fx-ko-model .fx-select{flex:0 1 auto;min-width:0;text-overflow:ellipsis}
+
+/* Panels share row tracks (title, sub, body) so the two maps are always top-aligned. */
+#fx-ko .fx-panels{row-gap:6px}
+#fx-ko .fx-panel{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:6px;align-content:start}
+#fx-ko .fx-ko-body{display:flex;flex-direction:column;gap:0;min-width:0}
+@media (max-width:600px){#fx-ko #fx-ko-rtitle{margin-top:22px}}
+
+#fx-ko .fx-ko-map{min-width:0;line-height:0}
+#fx-ko .fx-ko-map svg{cursor:default;-webkit-tap-highlight-color:transparent}
+#fx-ko #fx-ko-right .fx-ko-map svg{cursor:pointer}
+#fx-ko .fx-ko-map svg:focus{outline:none}
+#fx-ko .fx-ko-map svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+
+/* Overlay: pinned row (solid) and hover row / column (light), drawn just outside the cells. */
+#fx-ko .fx-svg .ov rect{fill:none;stroke:var(--fg);stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+#fx-ko .fx-svg .ov .hv{stroke-opacity:.42}
+#fx-ko .fx-svg .ov .pin{stroke-opacity:.9}
+#fx-ko .fx-svg .per{fill:none;stroke:var(--fg);stroke-opacity:.5;stroke-width:1;stroke-dasharray:3 3;shape-rendering:crispEdges;pointer-events:none}
+#fx-ko .fx-svg .sep{fill:none;stroke:var(--rule);stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+#fx-ko .fx-svg text.pl{fill:var(--fg)}
+#fx-ko .fx-svg text.hide{visibility:hidden}
+
+/* Row profile under the right map. */
+#fx-ko .fx-ko-foot{display:flex;flex-direction:column;gap:2px;min-width:0;padding-top:6px}
+#fx-ko .fx-ko-phead{padding-left:38px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-ko .fx-ko-prof{min-width:0;line-height:0}
+#fx-ko .fx-ko-prof svg{cursor:default}
+#fx-ko .fx-svg .bar{shape-rendering:crispEdges}
+#fx-ko .fx-svg .bar.lo{fill:var(--loss)}
+#fx-ko .fx-svg .bar.hi{fill:var(--accent)}
+#fx-ko .fx-svg .band{fill:var(--fx-band);shape-rendering:crispEdges}
+#fx-ko .fx-svg text.vl{font-size:10px;fill:var(--muted)}
+#fx-ko .fx-svg text.vl.on{fill:var(--fg)}
+
+/* Shared color key: −100% ▬ 0 ▬ +100%, interpolated in OKLab exactly like the cells. */
+#fx-ko .fx-ko-foot .fx-scale{padding-left:38px;gap:7px;line-height:1.4}
+#fx-ko .fx-scale i{flex:0 0 56px;height:8px}
+#fx-ko .fx-ko-foot .fx-note{padding-left:38px;margin:0}
+#fx-ko .fx-scale i.lo{background:linear-gradient(90deg,var(--loss),var(--bg));background:linear-gradient(90deg in oklab,var(--loss),var(--bg))}
+#fx-ko .fx-scale i.hi{background:linear-gradient(90deg,var(--bg),var(--accent));background:linear-gradient(90deg in oklab,var(--bg),var(--accent))}
+
+/* Tooltip details */
+#fx-ko .fx-tip .sw{display:inline-block;width:9px;height:9px;border-radius:1px;margin-right:7px;vertical-align:-1px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 14%,transparent)}
+#fx-ko .fx-tip .v{font-weight:400;color:var(--fg)}
+
+/* ---- conc ---- */
+/* Figure 4 · two ways a gate can concentrate (fx-conc). Everything scoped to #fx-conc. */
+/* Layer-depth ramp for the points: sand → ochre → umber (light); dim umber → ochre → pale gold (dark).
+   Warm on purpose: blue (--accent) is reserved for the training paths. */
+:root{ --fx-conc-d0:#c6a575; --fx-conc-d1:#a9692e; --fx-conc-d2:#63341e }
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --fx-conc-d0:#74573d; --fx-conc-d1:#c08d50; --fx-conc-d2:#eed59f }}
+:root[data-theme="dark"]{ --fx-conc-d0:#74573d; --fx-conc-d1:#c08d50; --fx-conc-d2:#eed59f }
+
+/* layout: the square plane with a narrow key column beside it (stacked under it when narrow) */
+#fx-conc .fx-bar .fx-select{max-width:calc(100% - 58px)}
+#fx-conc .fxc-seg button.on{color:var(--fg);background:color-mix(in srgb,var(--fg) 9%,transparent)}
+#fx-conc .fxc-main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px 24px;align-items:start}
+#fx-conc .fxc-main.wide{grid-template-columns:minmax(0,1fr) 150px}
+#fx-conc .fxc-plot{position:relative;min-width:0}
+#fx-conc .fxc-side{display:flex;flex-direction:column;gap:22px;min-width:0;padding-top:38px}
+#fx-conc .fxc-main:not(.wide) .fxc-side{flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:14px 24px;padding-top:0}
+#fx-conc .fxc-main:not(.wide) .fxc-blk{flex:1 1 128px;min-width:0;max-width:170px}
+#fx-conc .fxc-main:not(.wide) .fxc-hint{flex:1 0 100%}
+#fx-conc .fxc-blk{min-width:0}
+#fx-conc .fxc-h{margin:0 0 7px;font:300 11.5px/1.3 var(--mono);color:var(--muted)}
+#fx-conc .fxc-ramp{gap:7px}
+#fx-conc .fxc-ramp i{flex:1 1 auto;min-width:48px;height:8px;background:linear-gradient(in oklab 90deg,var(--fx-conc-d0),var(--fx-conc-d1),var(--fx-conc-d2))}
+#fx-conc .fxc-hint{margin:0}
+#fx-conc .fxc-main.wide .fxc-side{align-self:stretch}
+#fx-conc .fxc-main.wide .fxc-hint{margin-top:auto;padding-bottom:9px}
+
+/* training-path key: doubles as the replay's progress track */
+#fx-conc .fxc-track{display:block;width:100%;height:12px;overflow:visible}
+#fx-conc .fxc-track .tk-base{stroke:var(--accent);stroke-opacity:.22;stroke-width:1.25}
+#fx-conc .fxc-track .tk-prog{stroke:var(--accent);stroke-width:1.5;stroke-linecap:round}
+#fx-conc .fxc-track .tk-start{fill:var(--bg);stroke:var(--accent);stroke-width:1.3}
+#fx-conc .fxc-track .tk-end{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-conc .fxc-track .tk-end.open{fill:var(--bg);stroke:var(--accent);stroke-opacity:.35;stroke-width:1.3}
+#fx-conc .fxc-track .tk-mk{fill:var(--accent);stroke:var(--bg);stroke-width:1;visibility:hidden}
+#fx-conc .fxc-key.playing .fxc-track .tk-mk{visibility:visible}
+#fx-conc .fxc-ends{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font:300 11px/1.3 var(--mono);color:var(--muted);white-space:nowrap}
+#fx-conc .fxc-na{display:none;margin:5px 0 0;font:300 11px/1.45 var(--mono);color:var(--muted)}
+#fx-conc .fxc-key.off .fxc-track,#fx-conc .fxc-key.off .fxc-ends{opacity:.35}
+#fx-conc .fxc-key.na .fxc-track,#fx-conc .fxc-key.na .fxc-ends{opacity:.3}
+#fx-conc .fxc-key.na .fxc-na{display:block}
+#fx-conc .fxc-na .nw{white-space:nowrap}
+
+/* plane */
+#fx-conc .fx-svg .band{fill:var(--fx-band)}
+#fx-conc .fx-svg .diag{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3.5}
+#fx-conc .fx-svg tspan.tn{font-family:var(--sans);font-size:13px;font-weight:400;fill:var(--fg)}
+#fx-conc .fx-svg text.ann{font-family:var(--sans);font-size:12px;font-weight:400;fill:var(--muted)}
+#fx-conc .fx-svg text.ann,#fx-conc .fx-svg text.tr-lab{paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round}
+#fx-conc .fx-svg .pt{stroke:var(--bg);stroke-width:.8}
+#fx-conc .fx-svg .pt.sm{stroke-width:.6}
+#fx-conc .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1.1;pointer-events:none}
+
+/* training paths: one hue per traced layer (L9 blue, L10 green, L14 violet); points stay warm */
+#fx-conc .fx-svg [data-k="0"]{--trc:var(--fx-c1)}
+#fx-conc .fx-svg [data-k="1"]{--trc:var(--fx-c3)}
+#fx-conc .fx-svg [data-k="2"]{--trc:var(--fx-c5)}
+#fx-conc .fx-svg .tr{fill:none;stroke:var(--trc,var(--accent));stroke-width:1.1;stroke-opacity:.62;stroke-linejoin:round;stroke-linecap:round}
+#fx-conc .fx-svg .tr-ghost{fill:none;stroke:var(--trc,var(--accent));stroke-width:1.25;stroke-opacity:.2;stroke-linejoin:round;visibility:hidden}
+#fx-conc .fx-svg .tr-arrow{fill:var(--trc,var(--accent))}
+#fx-conc .fx-svg .tr-start{fill:var(--bg);stroke:var(--trc,var(--accent));stroke-width:1.3}
+#fx-conc .fx-svg .tr-end{fill:var(--trc,var(--accent));stroke:var(--bg);stroke-width:1}
+#fx-conc .fx-svg .tr-mk{fill:var(--trc,var(--accent));stroke:var(--bg);stroke-width:1;visibility:hidden}
+#fx-conc .fx-svg text.tr-lab{fill:var(--trc,var(--accent));font-weight:400}
+#fx-conc .fx-svg .trp.dim .tr{stroke-opacity:.2}
+#fx-conc .fx-svg .trp.dim .tr-arrow,#fx-conc .fx-svg .trp.dim .tr-start,#fx-conc .fx-svg .trp.dim .tr-end{opacity:.35}
+#fx-conc .fx-svg text.tr-lab.dim{opacity:.35}
+#fx-conc .fx-svg .trp.hot .tr{stroke-opacity:1;stroke-width:1.6}
+#fx-conc .fx-svg.playing .tr-ghost,#fx-conc .fx-svg.playing .tr-mk{visibility:visible}
+#fx-conc .fx-svg.playing .tr{stroke-opacity:.9}
+#fx-conc .fx-svg.playing .tr-end,#fx-conc .fx-svg.playing .tr-arrow{visibility:hidden}
+#fx-conc .fx-svg.playing text.tr-lab{opacity:.3}
+
+/* tooltip */
+#fx-conc .fx-tip .fxc-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px;font-variant-numeric:tabular-nums}
+#fx-conc .fx-tip .fxc-tt span:nth-child(even){text-align:right}
+#fx-conc .fx-tip .fxc-tt3{display:grid;grid-template-columns:auto auto auto;column-gap:14px;margin-top:2px;font-variant-numeric:tabular-nums}
+#fx-conc .fx-tip .fxc-tt3 span:not(:nth-child(3n+1)){text-align:right}
+#fx-conc .fx-tip .fxc-w{display:block;margin-top:1px}
+
+/* ---- gate ---- */
+/* Figure 5 · gate profiles vs knockouts (fx-gate). Everything scoped to #fx-gate. */
+#fx-gate .fxg-over{position:relative;border-radius:2px;outline:none}
+#fx-gate .fxg-over:focus-visible{outline:1px solid var(--accent);outline-offset:6px}
+#fx-gate .fxg-over .fx-svg{cursor:pointer}
+
+/* overview text */
+#fx-gate .fx-svg text.t{font-family:var(--sans);font-size:13px;font-weight:400;fill:var(--fg)}
+#fx-gate .fx-svg text.on{fill:var(--fg)}
+#fx-gate .fx-svg text.off{visibility:hidden}
+
+/* overview marks */
+#fx-gate .fx-svg .grid{fill:var(--fx-band)}
+#fx-gate .fx-svg .nbar{fill:color-mix(in oklab,var(--fx-gate) 80%,var(--bg))}
+#fx-gate .fx-svg .band-hov{fill:color-mix(in srgb,var(--fg) 4%,transparent)}
+#fx-gate .fx-svg .band-sel{fill:color-mix(in srgb,var(--fg) 8%,transparent)}
+#fx-gate .fx-svg .row-hov{fill:none;stroke:var(--fg);stroke-opacity:.35;stroke-width:1}
+#fx-gate .fx-svg .row-sel{fill:none;stroke:var(--fg);stroke-opacity:.85;stroke-width:1}
+#fx-gate .fx-svg .cell-cur{fill:none;stroke:var(--fg);stroke-width:2}
+
+/* legends under the overview */
+#fx-gate .fxg-keys{display:grid;align-items:center;row-gap:8px;margin-top:-6px}
+#fx-gate .fx-bar .fx-select{max-width:calc(100% - 58px)}
+#fx-gate .fx-tip .fxg-tt{display:grid;grid-template-columns:auto auto;column-gap:12px;margin-top:2px}
+#fx-gate .fxg-keys .fx-scale{min-width:0;white-space:nowrap}
+#fx-gate .fxg-keys .fx-scale i{flex:1 1 auto;min-width:36px;max-width:132px}
+#fx-gate .fxg-gs i{background:linear-gradient(in oklab 90deg,var(--bg),var(--fx-gate))}
+#fx-gate .fxg-ks i{background:linear-gradient(in oklab 90deg,var(--loss),var(--bg),var(--accent))}
+#fx-gate .fxg-note{margin:-4px 0 0;min-height:1.5em}
+
+/* detail */
+#fx-gate .fxg-detail{display:flex;flex-direction:column;gap:8px;margin-top:10px;min-width:0}
+#fx-gate .fxg-picks{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:300 12.5px/1.4 var(--mono);color:var(--muted)}
+#fx-gate .fxg-title{font-variant-numeric:tabular-nums}
+#fx-gate .fxg-leg{gap:4px 18px}
+#fx-gate .fxg-leg span{display:inline-flex;align-items:center;gap:6px}
+#fx-gate .fxg-sw{display:block;overflow:visible}
+#fx-gate .fxg-pk{display:block;width:12px;height:12px;background:var(--fx-band);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 6%,transparent)}
+#fx-gate .fxg-sw line{stroke-width:1.75;fill:none}
+#fx-gate .fxg-sw line.k{stroke:var(--fx-gate)}
+#fx-gate .fxg-sw circle.k{fill:var(--fx-gate)}
+#fx-gate .fxg-sw line.v{stroke:var(--accent);stroke-dasharray:4.5 3}
+#fx-gate .fxg-sw circle.v{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+#fx-gate .fxg-sw line.u{stroke:var(--muted);stroke-width:1.25;stroke-dasharray:1.5 2.5}
+
+#fx-gate .fx-svg .kline{fill:none;stroke:var(--fx-gate);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round}
+#fx-gate .fx-svg .vline{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-dasharray:4.5 3;stroke-linejoin:round}
+#fx-gate .fx-svg .kdot{fill:var(--fx-gate);stroke:var(--bg);stroke-width:1}
+#fx-gate .fx-svg .vdot{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+#fx-gate .fx-svg .uref{fill:none;stroke:var(--muted);stroke-width:1.25;stroke-dasharray:1.5 2.5}
+#fx-gate .fx-svg .peak{fill:var(--fx-band)}
+#fx-gate .fx-svg .bar-l{fill:var(--loss)}
+#fx-gate .fx-svg .bar-g{fill:var(--accent)}
+#fx-gate .fx-svg .hit{fill:transparent}
+#fx-gate .fxg-dwrap{position:relative}
+
+/* ---- cyc ---- */
+/* Figure 6: gate cycling (fx-cyc). Every selector is scoped to #fx-cyc. */
+#fx-cyc .cyc-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-cyc .cyc-ctl .lab{white-space:nowrap}
+
+/* δ slider: native range (keyboard, touch, a11y) over a hand-drawn rail. --tw = thumb box = hit area. */
+#fx-cyc .fx-bar{align-items:flex-start}
+#fx-cyc .cyc-dctl{align-items:flex-start;gap:10px;flex:1 1 300px}
+#fx-cyc .cyc-dctl .lab,#fx-cyc .cyc-dval{padding-top:5px}
+#fx-cyc .cyc-dval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:4.6em;white-space:nowrap}
+#fx-cyc .cyc-slider{--tw:28px;position:relative;flex:1 1 200px;min-width:170px;max-width:250px;height:49px}
+#fx-cyc .cyc-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-cyc .cyc-fill{position:absolute;top:0;height:2px;left:50%;width:0;border-radius:1px;background:var(--accent)}
+#fx-cyc .cyc-zero{position:absolute;left:50%;top:-3.5px;width:1px;height:9px;margin-left:-.5px;background:var(--muted)}
+#fx-cyc .cyc-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-cyc .cyc-range:focus{outline:none}
+#fx-cyc .cyc-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-cyc .cyc-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-cyc .cyc-range::-moz-range-progress{background:transparent}
+#fx-cyc .cyc-range::-moz-focus-outer{border:0}
+/* 14px ring (bg fill, accent border) painted inside the 28px transparent thumb box */
+#fx-cyc .cyc-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-cyc .cyc-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-cyc .cyc-range:hover::-webkit-slider-thumb,#fx-cyc .cyc-range:active::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-cyc .cyc-range:hover::-moz-range-thumb,#fx-cyc .cyc-range:active::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-cyc .cyc-range:active::-webkit-slider-thumb{cursor:grabbing}
+#fx-cyc .cyc-range:active::-moz-range-thumb{cursor:grabbing}
+#fx-cyc .cyc-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-cyc .cyc-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-cyc .cyc-ticks{position:absolute;left:0;right:0;top:24px;height:25px}
+#fx-cyc .cyc-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 3px 6px;font:400 10.5px/1 var(--mono);color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-cyc .cyc-ticks span:nth-child(1){left:calc(var(--tw) / 2)}
+#fx-cyc .cyc-ticks span:nth-child(2){left:calc(var(--tw) / 2 + (100% - var(--tw)) / 6)}
+#fx-cyc .cyc-ticks span:nth-child(3){left:calc(var(--tw) / 2 + (100% - var(--tw)) * 2 / 6)}
+#fx-cyc .cyc-ticks span:nth-child(4){left:50%}
+#fx-cyc .cyc-ticks span:nth-child(5){left:calc(var(--tw) / 2 + (100% - var(--tw)) * 4 / 6)}
+#fx-cyc .cyc-ticks span:nth-child(6){left:calc(var(--tw) / 2 + (100% - var(--tw)) * 5 / 6)}
+#fx-cyc .cyc-ticks span:nth-child(7){left:calc(100% - var(--tw) / 2)}
+#fx-cyc .cyc-ticks span:hover,#fx-cyc .cyc-ticks span.on{color:var(--fg)}
+#fx-cyc .cyc-ticks small{position:absolute;left:50%;top:13px;transform:translateX(-50%);font:300 9.5px/1 var(--mono);color:var(--muted);white-space:nowrap}
+/* phones: the slider gets a full-width row (stops ≈ 48px apart); label and live value share the line above */
+@media (max-width:400px){
+  #fx-cyc .cyc-dctl{flex-wrap:wrap;justify-content:space-between;row-gap:4px;flex-basis:100%}
+  #fx-cyc .cyc-dctl .lab,#fx-cyc .cyc-dval{padding-top:0}
+  #fx-cyc .cyc-dval{min-width:0;text-align:right}
+  #fx-cyc .cyc-slider{order:3;flex:1 1 100%;max-width:none;min-width:0}
+}
+
+/* legend swatches (decorative inline svg) */
+#fx-cyc .cyc-legend span{display:inline-flex;align-items:center;white-space:nowrap}
+#fx-cyc .cyc-sw{display:inline-block;flex:none;margin-right:6px;overflow:visible}
+#fx-cyc .cyc-sw .s-ob{stroke:var(--accent);stroke-width:1.75}
+#fx-cyc .cyc-sw .s-mk{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-cyc .cyc-sw .s-pr{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3}
+#fx-cyc .cyc-sw .s-cl{stroke:var(--fx-base2);stroke-width:1.5}
+
+#fx-cyc .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-cyc .fx-psub .ob{color:var(--accent)}
+#fx-cyc .fx-status .nw{white-space:nowrap}
+#fx-cyc .cyc-chart{min-width:0;position:relative}
+#fx-cyc .cyc-chart svg{transition:opacity .2s}
+#fx-cyc .cyc-chart svg.enter{opacity:0;transition:none}
+
+/* accuracy-by-phase chart */
+#fx-cyc .fx-svg .bnd{fill:var(--fg);fill-opacity:.045}
+#fx-cyc .fx-svg text.bnd-lab{font-size:10px}
+#fx-cyc .fx-svg .cl-band{fill:var(--fx-base2);fill-opacity:.17}
+#fx-cyc .fx-svg .cl-line{fill:none;stroke:var(--fx-base2);stroke-width:1.25;stroke-linejoin:round}
+#fx-cyc .fx-svg .ob-band{fill:var(--accent);fill-opacity:.16}
+#fx-cyc .fx-svg .ob-line{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round}
+#fx-cyc .fx-svg .pr-line{fill:none;stroke:var(--accent);stroke-width:1.4;stroke-dasharray:4 3;stroke-linejoin:round}
+#fx-cyc .fx-svg .mk{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-cyc .fx-svg .mk.hollow,#fx-cyc .fx-svg .pt.hollow{fill:var(--bg);stroke:var(--accent);stroke-width:1.5}
+#fx-cyc .fx-svg .mk.on{stroke:var(--fg);stroke-width:1.25}
+#fx-cyc .fx-svg .shift{stroke:var(--muted);stroke-width:1;fill:none}
+#fx-cyc .fx-svg .shift-head{fill:var(--muted)}
+#fx-cyc .fx-svg .hit{fill:transparent;cursor:crosshair}
+#fx-cyc .fx-svg .cl-line{transition:stroke .2s,stroke-width .2s}
+#fx-cyc .fx-svg.unc .cl-line{stroke:var(--fx-base3);stroke-width:1.6}
+
+/* predicted-vs-observed scatter */
+#fx-cyc .fx-svg .diag{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;fill:none}
+#fx-cyc .fx-svg .zero{stroke:var(--line);stroke-opacity:.55;stroke-width:1;shape-rendering:crispEdges}
+#fx-cyc .fx-svg .pt{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-cyc .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1;stroke-opacity:.7;pointer-events:none}
+#fx-cyc .fx-svg text.hl{font-size:13px;fill:var(--fg)}
+#fx-cyc .fx-svg .hl-ci{font-size:10.5px;fill:var(--muted)}
+#fx-cyc .fx-svg text.hl-sub{font-size:10.5px;fill:var(--muted)}
+#fx-cyc .fx-svg .hl-bg{fill:var(--bg);fill-opacity:.85}
+#fx-cyc .fx-svg text.ptlab{font-size:10px}
+#fx-cyc .fx-svg .note-bg{fill:var(--bg)}
+#fx-cyc .fx-svg text.note1{font-size:12px;fill:var(--fg)}
+#fx-cyc .fx-svg text.note2{font-size:10.5px;fill:var(--muted)}
+
+/* tooltip rows */
+#fx-cyc .fx-tip .cyc-tt{display:grid;grid-template-columns:auto auto;gap:0 12px;margin-top:2px}
+#fx-cyc .fx-tip .cyc-tt.c3{grid-template-columns:auto auto auto}
+#fx-cyc .fx-tip .cyc-tt.c3 > :nth-child(3n+2),#fx-cyc .fx-tip .cyc-tt.c3 > :nth-child(3n){text-align:right}
+
+/* R² index grid */
+#fx-cyc .cyc-index{display:flex;flex-direction:column;gap:6px;min-width:0}
+#fx-cyc .cyc-index-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+#fx-cyc .cyc-index-head .fx-scale{font-size:10.5px}
+#fx-cyc .cyc-index-head .fx-scale i{flex-basis:84px;height:7px}
+#fx-cyc .cyc-grid{table-layout:fixed;border-collapse:separate;border-spacing:3px 3px;margin:0 -3px;width:calc(100% + 6px);font:300 12px/1 var(--mono)}
+#fx-cyc .cyc-grid th,#fx-cyc .cyc-grid td{padding:0;border:0;white-space:nowrap}
+#fx-cyc .cyc-grid col.lab{width:23%}
+#fx-cyc .cyc-grid thead th{font:300 11.5px/1 var(--mono);color:var(--muted);text-align:center;padding:0 0 3px}
+#fx-cyc .cyc-grid thead th:first-child{text-align:right;padding-right:8px}
+#fx-cyc .cyc-grid thead th.on{color:var(--fg)}
+#fx-cyc .cyc-grid tbody th{font:300 12px/1 var(--mono);color:var(--muted);text-align:left;overflow:hidden;text-overflow:ellipsis;padding-right:6px}
+#fx-cyc .cyc-grid tbody tr.on th{color:var(--fg)}
+#fx-cyc .cyc-grid tbody tr.gap th,#fx-cyc .cyc-grid tbody tr.gap td{padding-top:6px}
+#fx-cyc .cyc-grid tbody tr.grp{display:table-row}
+#fx-cyc .cyc-grid tbody tr.grp th{font:300 10.5px/1 var(--mono);color:var(--muted);padding:7px 0 1px}
+#fx-cyc .cyc-grid tbody tr.grp:first-child th{padding-top:2px}
+#fx-cyc .cyc-grid .mid{padding-left:5px}
+#fx-cyc .cyc-cell{display:block;width:100%;height:27px;margin:0;padding:0;border:0;border-radius:2px;cursor:pointer;
+  font:300 12px/27px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg);text-align:center;
+  background:var(--bg);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 6%,transparent);transition:box-shadow .15s}
+#fx-cyc .cyc-cell:hover{box-shadow:inset 0 0 0 1px var(--line)}
+#fx-cyc .cyc-cell[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px var(--fg);font-weight:400}
+#fx-cyc .cyc-cell:focus-visible{outline:1.5px solid var(--accent);outline-offset:1.5px}
+
+@media (max-width:420px){
+  #fx-cyc .cyc-grid{font-size:11px;border-spacing:2px 3px;margin:0 -2px;width:calc(100% + 4px)}
+  #fx-cyc .cyc-grid col.lab{width:21%}
+  #fx-cyc .cyc-grid .g{display:none}
+  #fx-cyc .cyc-grid tbody tr.grp{display:table-row}
+  #fx-cyc .cyc-grid tbody tr.gap th,#fx-cyc .cyc-grid tbody tr.gap td{padding-top:0}
+  #fx-cyc .cyc-grid tbody th{font-size:11px;padding-right:3px}
+  #fx-cyc .cyc-grid thead th{font-size:11px}
+  #fx-cyc .cyc-grid .mid{padding-left:3px}
+  #fx-cyc .cyc-cell{font-size:11px}
+}

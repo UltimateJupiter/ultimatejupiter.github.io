@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+---
+
+<Base title="Blog" description="Notes and essays by Xingyu Zhu.">
+  <PageHeader kicker="Writing" title="Blog">
+    <p class="note muted">
+      Notes on machine learning, theory, and whatever else. <a href="/blog/rss.xml">RSS</a>
+    </p>
+  </PageHeader>
+  <div class="wrap body">
+    {posts.length ? <PostList posts={posts} grouped /> : <p class="muted empty">Nothing here yet.</p>}
+  </div>
+</Base>
+
+<style>
+  .note {
+    margin-top: 1rem;
+  }
+  .note a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+  }
+  .body {
+    max-width: calc(48rem + 2 * var(--gutter));
+    margin-left: max(0px, calc((100vw - var(--wide)) / 2));
+    padding-bottom: 4rem;
+  }
+  .empty {
+    font-style: italic;
+  }
+</style>

@@ -19,6 +19,18 @@ export async function getNews() {
   return (await getCollection('news')).sort(byDateDesc);
 }
 
+export type Post = CollectionEntry<'blog'>;
+/** Published posts, newest first. Drafts are included only in `astro dev`. */
+export async function getPosts() {
+  return (await getCollection('blog', (p) => import.meta.env.DEV || !p.data.draft)).sort(byDateDesc);
+}
+/** Rough reading time in minutes (math and code count as words; good enough). */
+export const postUrl = (p: Post) => p.data.href ?? `/blog/${p.id}/`;
+export function readingTime(body = '') {
+  const words = body.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 230));
+}
+
 export function groupByYear<T extends { data: { date: Date } }>(items: T[]) {
   const groups = new Map<number, T[]>();
   for (const item of items) {

@@ -1,0 +1,91 @@
+/* Match the main site (ultimatejupiter.github.io): warm paper and ink, Newsreader + IBM Plex Mono,
+   vermilion accent for links and chrome, and the site's top bar.
+   Load after base.css, fx.css, select.css and post.css.
+
+   Data colours keep their meaning from FIGURES.md: gain/highlight = --accent (blue), loss = --loss
+   (red; here the site's vermilion). Chrome that used --accent now uses --site-accent. */
+
+/* Newsreader (SIL OFL 1.1), variable weight and optical size; same files the main site serves. */
+@font-face{font-family:'Newsreader Variable';font-style:normal;font-display:swap;font-weight:200 800;
+  src:url(fonts/newsreader-latin-ext-opsz-normal.woff2) format('woff2-variations');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Newsreader Variable';font-style:normal;font-display:swap;font-weight:200 800;
+  src:url(fonts/newsreader-latin-opsz-normal.woff2) format('woff2-variations');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Newsreader Variable';font-style:italic;font-display:swap;font-weight:200 800;
+  src:url(fonts/newsreader-latin-ext-opsz-italic.woff2) format('woff2-variations');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Newsreader Variable';font-style:italic;font-display:swap;font-weight:200 800;
+  src:url(fonts/newsreader-latin-opsz-italic.woff2) format('woff2-variations');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* ---- tokens (same values as the main site's global.css) ---- */
+:root{
+  --bg:#f4f2ec; --fg:#1a1916; --ink-2:#45433d; --muted:#76726a; --faint:#b3aea3; --rule:#dedad0;
+  --site-accent:#d1431a;
+  --accent:#2f5f9e;   /* data: gain / highlighted series */
+  --loss:#d1431a;     /* data: loss (red) */
+  --good:#2f7a55;
+  --figure-bg:#ffffff;
+  /* Greek falls back to Source Sans 3, which is still loaded by fonts.css */
+  --sans:'Newsreader Variable','Source Sans 3','Iowan Old Style',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11110f; --fg:#ebe7de; --ink-2:#c8c3b8; --muted:#979287; --faint:#57544d; --rule:#2a2925;
+  --site-accent:#ff6d42; --accent:#8db4ee; --loss:#ff6d42; --good:#6fcf9f}}
+:root[data-theme="dark"]{
+  --bg:#11110f; --fg:#ebe7de; --ink-2:#c8c3b8; --muted:#979287; --faint:#57544d; --rule:#2a2925;
+  --site-accent:#ff6d42; --accent:#8db4ee; --loss:#ff6d42; --good:#6fcf9f}
+
+::selection{background:color-mix(in srgb,var(--site-accent) 20%,transparent)}
+
+/* ---- type ---- */
+body{font:400 19px/1.65 var(--sans);font-optical-sizing:auto;padding-block:120px 96px}
+main{max-width:672px}
+h1{font-size:44px;font-weight:360;line-height:1.08;letter-spacing:-.028em}
+h2{font-size:25px;font-weight:420;letter-spacing:-.012em;margin-top:44px;scroll-margin-top:84px}
+h3{font-size:19px;font-weight:600}
+b,strong{font-weight:600}
+figcaption{font-size:15px;line-height:1.55}
+@media (max-width:520px){body{font-size:17.5px;padding-block:92px 72px}h1{font-size:31px}h2{font-size:22px}}
+
+/* links: ink with a faint underline, vermilion on hover, as on the main site */
+a{color:inherit;border-bottom:0;text-decoration:underline;text-decoration-color:var(--faint);
+  text-decoration-thickness:1px;text-underline-offset:.18em;transition:color .2s,text-decoration-color .2s}
+a:hover{color:var(--site-accent);text-decoration-color:var(--site-accent)}
+.cite a,.toc a,.toc-inline a,.pill,a.pill,.authors a,.site-bar a{text-decoration:none}
+.cite a{color:var(--site-accent)}
+:focus-visible{outline-color:var(--site-accent)}
+
+/* header chrome */
+header{border-bottom-color:var(--rule)}
+.authors{font-family:var(--sans);font-size:17px}
+.authors a:hover,.authors a:focus-visible{color:var(--site-accent);border-bottom-color:transparent}
+.affils,.notes{font-family:var(--mono);font-size:12px;letter-spacing:.01em}
+.pill{font-family:var(--mono);border-radius:3px;border-color:var(--rule)}
+.pill:hover{border-color:var(--site-accent);color:var(--site-accent)}
+.pill:focus-visible{outline-color:var(--site-accent)}
+.thm{border-color:color-mix(in srgb,var(--site-accent) 22%,var(--rule));background:color-mix(in srgb,var(--site-accent) 3%,var(--bg))}
+.thm .thm-k{color:var(--site-accent)}
+
+/* contents rail: below the top bar, vermilion marker */
+@media (min-width:1100px){ .toc{top:calc(120px + env(safe-area-inset-top,0px))} }
+.toc a.on{border-left-color:var(--site-accent)}
+.toc,.toc-inline{font-family:var(--sans)}
+
+/* ---- the main site's top bar (static copy of src/components/Nav.astro) ---- */
+.site-bar{position:fixed;inset:0 0 auto 0;z-index:50;height:60px;display:flex;align-items:center;
+  background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px) saturate(1.2);
+  -webkit-backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid var(--rule)}
+.site-bar .in{width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px);display:flex;align-items:center;justify-content:space-between}
+.site-bar .brand{display:inline-flex;align-items:center;gap:10px;font:400 17px/1 var(--sans);color:var(--fg)}
+.site-bar .brand svg{width:24px;height:24px;stroke:var(--fg);fill:none;stroke-width:1}
+.site-bar .brand svg circle{fill:var(--site-accent);stroke:none}
+.site-bar ul{display:flex;flex-direction:row;align-items:center;gap:clamp(14px,2.5vw,28px);list-style:none;margin:0;padding:0;font:400 12px/1 var(--mono)}
+.site-bar ul li::marker{content:none}
+.site-bar ul a{color:var(--ink-2);position:relative}
+.site-bar ul a::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--site-accent);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.site-bar ul a:hover,.site-bar ul a[aria-current="page"]{color:var(--fg)}
+.site-bar ul a:hover::after,.site-bar ul a[aria-current="page"]::after{transform:scaleX(1)}
+@media (max-width:560px){.site-bar .brand span{display:none}}

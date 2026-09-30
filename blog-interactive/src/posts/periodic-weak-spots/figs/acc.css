@@ -1,0 +1,63 @@
+/* Figure 2 (fx-acc): full-attention baselines (left, fixed) beside one compressed run (right, chosen). */
+#fx-acc{
+  /* grey ramp for 1 / 4 / 8 KV heads (darker = more heads); the dashed ghost reuses its baseline's grey */
+  --fx-acc-k1:var(--fx-base2);
+  --fx-acc-k4:color-mix(in oklab,var(--fx-base2) 50%,var(--fx-base3));
+  --fx-acc-k8:var(--fx-base3);
+}
+#fx-acc .k1{--fx-acc-c:var(--fx-acc-k1)}
+#fx-acc .k4{--fx-acc-c:var(--fx-acc-k4)}
+#fx-acc .k8{--fx-acc-c:var(--fx-acc-k8)}
+#fx-acc .run{--fx-acc-c:var(--accent)}
+
+/* controls */
+/* one row on desktop: the model control takes the remaining width; in columns under ~530px the toggle wraps below */
+#fx-acc .fx-bar{column-gap:12px}
+#fx-acc .fxa-ctl{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}
+#fx-acc .fxa-model{flex:1 1 22em}
+#fx-acc .fxa-model .fx-select{flex:1 1 auto;min-width:0;padding-left:8px;padding-right:26px;text-overflow:ellipsis}
+
+/* panels: side by side, header / chart / numbers share rows (subgrid), so the two charts stay level even when a
+   header wraps; stacked below 600px as in _shared.css */
+#fx-acc .fx-panels{row-gap:30px}
+@media not all and (max-width:600px){
+  #fx-acc .fx-panels{grid-template-rows:auto auto auto;row-gap:6px}
+  #fx-acc .fx-panel{display:grid;grid-row:span 3;grid-template-rows:subgrid;align-content:start}
+}
+#fx-acc .fxa-head{display:flex;flex-direction:column;min-width:0}
+#fx-acc .fxa-sub{margin:0;font:300 12px/1.45 var(--mono);color:var(--muted)}
+#fx-acc .fxa-plot{min-width:0}
+#fx-acc .fx-psub .l{display:block}
+#fx-acc .fx-psub .s,#fx-acc .fxa-sub .s{white-space:nowrap}
+
+/* chart marks */
+#fx-acc .fx-svg{outline:none}
+#fx-acc .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-acc .fxa-line{fill:none;stroke:var(--fx-acc-c);stroke-width:1.25px;stroke-linejoin:round;stroke-linecap:round}
+#fx-acc .fxa-line.run,#fx-acc .fxa-full.on .fxa-line{stroke-width:1.75px}
+#fx-acc .fxa-line.cross{stroke-dasharray:0 4;stroke-width:1.9px}
+#fx-acc .fxa-band{fill:var(--fx-acc-c);fill-opacity:.15;stroke:none}
+#fx-acc .fxa-band.run{fill-opacity:.17}
+#fx-acc .fxa-ghost{fill:none;stroke:var(--fx-acc-c);stroke-width:1.5px;stroke-dasharray:5 3.5;stroke-linecap:butt}
+#fx-acc .fxa-guide{stroke:var(--muted);stroke-opacity:.55;stroke-width:1px;stroke-dasharray:3 3;shape-rendering:crispEdges}
+#fx-acc .fxa-bnd{fill:var(--muted);stroke:none}
+#fx-acc .fx-svg text.fxa-lab{paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-acc .fx-svg .fxa-full.on text.fxa-lab{fill:var(--fg)}
+
+/* hover layer */
+#fx-acc .fxa-hov{visibility:hidden;pointer-events:none}
+#fx-acc .fxa-hov.on{visibility:visible}
+#fx-acc .fxa-dot{fill:var(--fx-acc-c);stroke:var(--bg);stroke-width:2px}
+#fx-acc .fxa-dot.off{display:none}
+
+/* tooltip */
+#fx-acc .fx-tip{left:0;top:0}
+#fx-acc .fxa-th{color:var(--muted);margin-bottom:3px}
+#fx-acc .fxa-th b{color:var(--fg)}
+#fx-acc .fxa-tg{display:grid;grid-template-columns:14px auto auto auto;column-gap:8px;align-items:center}
+#fx-acc .fxa-tg .v{justify-self:end;font-variant-numeric:tabular-nums}
+#fx-acc .fxa-sw{display:block;width:14px;height:0;border-top:2px solid var(--fx-acc-c)}
+#fx-acc .fxa-sw.dot{border-top-style:dashed;border-top-width:2px}
+
+/* status: the selection name is spoken, not shown (the panel title shows it) */
+#fx-acc .fxa-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>smoke</title><style>html,body{margin:0}iframe{border:0;display:block}</style></head>
+<body><iframe id="fr"></iframe>
+<script>
+/* Interaction smoke test for the full page: loads src in a w×h iframe, drives every control of every data figure,
+   and logs error count + final status lines. params: src, w, h */
+const q=new URLSearchParams(location.search), fr=document.getElementById('fr');
+fr.style.width=(q.get('w')||1280)+'px'; fr.style.height=(q.get('h')||1000)+'px';
+fr.onload=()=>setTimeout(run,2500);
+fr.src=q.get('src');
+function run(){
+  const W=fr.contentWindow, d=fr.contentDocument, errs=[];
+  W.addEventListener('error',e=>errs.push(e.message+' @'+e.lineno));
+  const fire=(el,ev)=>el.dispatchEvent(new W.Event(ev,{bubbles:true}));
+  const out={};
+  try{
+    {const f=d.getElementById('fx-acc');if(f){const _f=f,s=f.querySelector('select');let n=0;
+     for(const o of s.options){s.value=o.value;fire(s,'change');for(const b of f.querySelectorAll('.fx-seg button')){b.click();n++;}}
+     out.acc=n;}}
+    {const f=d.getElementById('fx-ko');if(f){const _f=f,s=f.querySelector('select');let n=0;
+     for(const o of s.options){s.value=o.value;fire(s,'change');for(const b of f.querySelectorAll('.fx-seg button')){if(!b.disabled){b.click();n++;}}}
+     out.ko=n;}}
+    {const f=d.getElementById('fx-gate');if(f){const _f=f,s=f.querySelector('select');let n=0;
+     for(const o of s.options){s.value=o.value;fire(s,'change');for(const b of f.querySelectorAll('button')){b.click();n++;}}
+     out.gate=n;}}
+    {const f=d.getElementById('fx-cyc');if(f){const _f=f;const c=f.querySelectorAll('.cyc-cell');c.forEach(x=>x.click());
+     const s=f.querySelector('select');for(const o of s.options){s.value=o.value;fire(s,'change');f.querySelectorAll('.fx-seg button').forEach(b=>b.click());}
+     out.cyc=c.length;}}
+    {const f=d.getElementById('fx-niah');if(f){const _f=f;const r=f.querySelectorAll('input[type=radio]');
+     r.forEach(x=>{x.click();f.querySelectorAll('.fx-seg button').forEach(b=>b.click());});out.niah=r.length;}}
+    {const f=d.getElementById('fig-ko');if(f){const _f=f;f.querySelectorAll('.ill-controls button').forEach(b=>b.click());
+     f.querySelectorAll('#ko-net .row').forEach(r=>r.click());out.koill='ok';}}
+    {const f=d.getElementById('fig-cmp');if(f){const _f=f;f.querySelectorAll('button').forEach(b=>b.click());f.querySelectorAll('.ct').forEach(b=>b.click());out.cmp='ok';}}
+    {const f=d.getElementById('fig-fp8');if(f){const _f=f;f.querySelectorAll('.fp8-cell').forEach(b=>b.click());out.fp8='ok';}}
+    {const f=d.getElementById('fx-conc');if(f){const s=f.querySelector('select');let n=0;
+      for(const o of s.options){s.value=o.value;fire(s,'change');n++;}
+      s.value='kvc_w8s8_1kv_baseline';fire(s,'change');
+      f.querySelectorAll('button:not(.fx-dd-btn)').forEach(b=>{if(!b.closest('.fx-dd-pop'))b.click();});
+      f.querySelectorAll('button:not(.fx-dd-btn)').forEach(b=>{if(!b.closest('.fx-dd-pop'))b.click();});
+      out.conc=n;}}
+    // custom model menus: open each, pick every option by click, then keyboard-pick one
+    {let n=0; d.querySelectorAll('figure.fx .fx-dd-btn').forEach(btn=>{const fig=btn.closest('figure'),pop=fig.querySelector('.fx-dd-pop');
+       const opts=()=>[...pop.querySelectorAll('.fx-dd-opt')];
+       opts().forEach((o,i)=>{btn.click();opts()[i].click();n++;});
+       btn.click();pop.dispatchEvent(new W.KeyboardEvent('keydown',{key:'Home',bubbles:true}));pop.dispatchEvent(new W.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));});
+     out.menus=n;}
+    // delta slider (if present)
+    {const r=d.querySelector('#fx-cyc input[type=range]');if(r){for(const v of [-3,-2,-1,0,1,2,3,1]){r.value=v;r.dispatchEvent(new W.Event('input',{bubbles:true}));r.dispatchEvent(new W.Event('change',{bubbles:true}));}out.slider='ok';}}
+    // pointer sweeps over every chart svg
+    let pm=0; d.querySelectorAll('figure svg.fx-svg').forEach(svg=>{const b=svg.getBoundingClientRect();
+      for(let i=1;i<10;i++){svg.dispatchEvent(new W.PointerEvent('pointermove',{clientX:b.left+b.width*i/10,clientY:b.top+b.height*i/10,bubbles:true,pointerType:'mouse'}));pm++;}
+      svg.dispatchEvent(new W.PointerEvent('pointerleave',{bubbles:true}));});
+    out.pointer=pm;
+  }catch(e){ errs.push('SMOKE '+e.message); }
+  setTimeout(()=>{
+    console.log('SMOKE '+JSON.stringify(out)+' errors='+errs.length+(errs.length?' first='+errs.slice(0,3).join(' | '):''));
+    console.log('SMOKE overflow='+(d.documentElement.scrollWidth-W.innerWidth)+' width='+W.innerWidth);
+  },1500);
+}
+</script></body></html>
