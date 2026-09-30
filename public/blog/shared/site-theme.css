@@ -69,8 +69,10 @@ header{border-bottom-color:var(--rule)}
 .thm{border-color:color-mix(in srgb,var(--site-accent) 22%,var(--rule));background:color-mix(in srgb,var(--site-accent) 3%,var(--bg))}
 .thm .thm-k{color:var(--site-accent)}
 
-/* contents rail: below the top bar, vermilion marker */
-@media (min-width:1100px){ .toc{top:calc(120px + env(safe-area-inset-top,0px))} }
+/* contents rail: below the top bar, a clear 72px gutter from the 672px text column, vermilion marker.
+   It needs >= 1220px of width for that; narrower screens keep the inline contents under the header. */
+@media (min-width:1060px) and (max-width:1219px){ .toc{display:none} .toc-inline{display:block} }
+@media (min-width:1220px){ .toc{top:calc(120px + env(safe-area-inset-top,0px));left:calc(50vw - 336px - 72px - 180px);width:180px} }
 .toc a.on{border-left-color:var(--site-accent)}
 .toc,.toc-inline{font-family:var(--sans)}
 

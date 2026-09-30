@@ -11,7 +11,7 @@ export const profile = {
   cv: '/uploads/Xingyu_Zhu_CV_PhD.pdf',
 
   // Short bio in the hero. Markdown-style links are not parsed; use HTML.
-  bio: `I am a third year PhD Candidate in Computer Science at Princeton University working on
+  bio: `I am a fourth year PhD Candidate in Computer Science at Princeton University working on
     theoretical machine learning and language modeling. I am fortunate to be advised by Professor
     <a href="https://www.cs.princeton.edu/~arora/">Sanjeev Arora</a>. I did my undergrad at Duke,
     where I was fortunate to be advised by Professor <a href="https://users.cs.duke.edu/~rongge/">Rong Ge</a>.`,

@@ -146,15 +146,18 @@ const { title, date, updated, description, tags, draft } = post.data;
     margin: 0 auto;
   }
 
-  /* Table of contents: sticky in the left margin on wide screens, hidden otherwise. */
+  /* Table of contents: sticky in the left margin on wide screens, hidden otherwise.
+     The layout breaks out of the page wrapper so the rail can sit well clear of the text. */
   .toc {
     display: none;
   }
-  @media (min-width: 1180px) {
+  @media (min-width: 1300px) {
     .layout {
       display: grid;
-      grid-template-columns: 1fr minmax(0, 42rem) 1fr;
-      column-gap: 3rem;
+      grid-template-columns: minmax(0, 1fr) 42rem minmax(0, 1fr);
+      column-gap: 5rem;
+      margin-inline: calc(50% - 50vw);
+      padding-inline: var(--gutter);
     }
     .layout > .prose {
       grid-column: 2;
