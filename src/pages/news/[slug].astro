@@ -1,0 +1,61 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { fmtDay, getNews, type News } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const news = await getNews();
+  return news.filter((n) => n.body?.trim()).map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props as { item: News };
+const { Content } = await render(item);
+---
+
+<Base title={item.data.title} description={item.data.summary}>
+  <article class="wrap post">
+    <a class="back mono" href="/news/">← News</a>
+    <p class="label date">{fmtDay(item.data.date)}</p>
+    <h1>{item.data.title}</h1>
+    {item.data.summary && <p class="summary">{item.data.summary}</p>}
+    <div class="prose"><Content /></div>
+  </article>
+</Base>
+
+<style>
+  .post {
+    max-width: calc(42rem + 2 * var(--gutter));
+    padding-top: clamp(6.5rem, 12vw, 9rem);
+    padding-bottom: 4rem;
+  }
+  .back {
+    font-size: 0.75rem;
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .date {
+    margin-top: 2.5rem;
+  }
+  h1 {
+    font-size: clamp(1.9rem, 4vw, 2.75rem);
+    font-weight: 380;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    margin: 0.75rem 0 1.25rem;
+  }
+  .summary {
+    font-size: 1.15em;
+    color: var(--ink-2);
+  }
+  .prose {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .prose :global(blockquote) {
+    margin: 1.5rem 0;
+    padding-left: 1.25rem;
+    border-left: 1px solid var(--accent);
+    color: var(--ink-2);
+  }
+</style>

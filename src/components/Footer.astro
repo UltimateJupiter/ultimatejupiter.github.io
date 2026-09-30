@@ -1,0 +1,33 @@
+---
+import { profile } from '../data/profile';
+const year = new Date().getFullYear();
+const built = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+
+<footer class="footer">
+  <div class="wrap inner mono">
+    <span>© {year} {profile.name}</span>
+    <span class="muted">Last updated {built}</span>
+    <a href="#main" class="top">Back to top ↑</a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 2rem;
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    align-items: center;
+    padding-block: 2rem 2.5rem;
+    color: var(--ink-2);
+  }
+  .top {
+    margin-left: auto;
+    text-decoration: none;
+    color: var(--muted);
+  }
+</style>

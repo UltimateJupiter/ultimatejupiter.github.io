@@ -1,0 +1,188 @@
+---
+import 'katex/dist/katex.min.css';
+import { authorsHtml, getBibtex, mathHtml, type Publication } from '../lib/content';
+
+interface Props {
+  pub: Publication;
+  headingLevel?: 'h3' | 'h4';
+}
+const { pub, headingLevel: H = 'h3' } = Astro.props;
+const { title, authors, venue, award, links, abstract } = pub.data;
+const bib = getBibtex(pub.id);
+const uid = `p-${pub.id}`;
+---
+
+<article class="pub">
+  <H class="pub-title"><a href={`/publications/${pub.id}/`}>{title}</a></H>
+  <p class="authors" set:html={authorsHtml(authors)} />
+  <p class="venue">
+    <span>{venue}</span>
+    {award && <span class="award">{award}</span>}
+  </p>
+  <div class="chips">
+    {links.map((l) => <a href={l.url}>{l.name}</a>)}
+    {abstract && <button type="button" aria-expanded="false" aria-controls={`${uid}-abs`} data-toggle>Abstract</button>}
+    {bib && <button type="button" aria-expanded="false" aria-controls={`${uid}-bib`} data-toggle>BibTeX</button>}
+  </div>
+  {
+    abstract && (
+      <div class="panel" id={`${uid}-abs`} hidden>
+        <p set:html={mathHtml(abstract)} />
+      </div>
+    )
+  }
+  {
+    bib && (
+      <div class="panel" id={`${uid}-bib`} hidden>
+        <pre class="bib"><code>{bib}</code></pre>
+        <button type="button" class="copy mono" data-copy>Copy</button>
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .pub {
+    position: relative;
+    padding-block: 1.1rem;
+  }
+  .pub::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * clamp(0.75rem, 2vw, 1.25rem));
+    top: 1.45rem;
+    width: 1px;
+    height: 0;
+    background: var(--accent);
+    transition: height 0.45s var(--ease);
+  }
+  .pub:hover::before {
+    height: 1.2rem;
+  }
+  .pub-title {
+    font-size: 1.14em;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    font-weight: 450;
+  }
+  .pub-title a {
+    text-decoration: none;
+  }
+  .pub-title a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+  .authors {
+    margin: 0.3rem 0 0;
+    color: var(--ink-2);
+    font-size: 0.95em;
+    line-height: 1.45;
+  }
+  .authors :global(.me) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .authors :global(.eq) {
+    color: var(--muted);
+    font-size: 0.7em;
+    margin-left: 0.05em;
+  }
+  .venue {
+    margin: 0.15rem 0 0;
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.95em;
+  }
+  .award {
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    border: 1px solid currentColor;
+    padding: 0.1em 0.5em;
+    margin-left: 0.5rem;
+    vertical-align: 0.15em;
+    border-radius: 2px;
+  }
+  .panel {
+    position: relative;
+    margin-top: 0.8rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    font-size: 0.93em;
+    color: var(--ink-2);
+    animation: open 0.4s var(--ease);
+  }
+  .panel p {
+    margin: 0;
+  }
+  @keyframes open {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  .bib {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink-2);
+  }
+  .copy {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.66rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  document.addEventListener('click', async (e) => {
+    const el = e.target as HTMLElement;
+    const toggle = el.closest<HTMLButtonElement>('[data-toggle]');
+    if (toggle) {
+      const panel = document.getElementById(toggle.getAttribute('aria-controls')!);
+      if (!panel) return;
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      // one panel per paper at a time
+      toggle.parentElement?.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((b) => {
+        b.setAttribute('aria-expanded', 'false');
+        document.getElementById(b.getAttribute('aria-controls')!)?.setAttribute('hidden', '');
+      });
+      if (open) {
+        toggle.setAttribute('aria-expanded', 'true');
+        panel.removeAttribute('hidden');
+      }
+      return;
+    }
+    const copy = el.closest<HTMLButtonElement>('[data-copy]');
+    if (copy) {
+      const text = copy.parentElement?.querySelector('code')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        copy.textContent = 'Copied';
+      } catch {
+        copy.textContent = 'Select & copy';
+      }
+      setTimeout(() => (copy.textContent = 'Copy'), 1600);
+    }
+  });
+</script>

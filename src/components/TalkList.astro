@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import { fmtMonth, isoDate, type Talk } from '../lib/content';
+
+interface Props {
+  items: Talk[];
+}
+const { items } = Astro.props;
+---
+
+<ul class="dated talks" data-talks>
+  {
+    items.map((t) => (
+      <li data-talk>
+        <time datetime={isoDate(t.data.date)}>{fmtMonth(t.data.date)}</time>
+        <div>
+          <span class="title">{t.data.title}</span>
+          <span class="sub">
+            {t.data.event_url ? <a href={t.data.event_url}>{t.data.event}</a> : t.data.event}
+            {t.data.location && <>, {t.data.location}</>}
+          </span>
+          {(t.data.slides || t.data.video) && (
+            <div class="chips">
+              {t.data.slides && <a href={t.data.slides}>Slides</a>}
+              {t.data.video && <a href={t.data.video}>Video</a>}
+            </div>
+          )}
+        </div>
+        {t.data.image && <Image class="preview" src={t.data.image} alt="" width={360} aria-hidden="true" />}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .talks li {
+    position: relative;
+  }
+  /* Slide preview that trails the pointer (fine pointers only). */
+  .preview {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 15rem;
+    height: auto;
+    pointer-events: none;
+    z-index: 40;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.94) rotate(-1.5deg);
+    transition:
+      opacity 0.25s,
+      transform 0.5s var(--ease);
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .preview {
+      display: block;
+    }
+    li:hover .preview {
+      opacity: 1;
+      transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(1) rotate(0);
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-talk]').forEach((li) => {
+    const img = li.querySelector<HTMLElement>('.preview');
+    if (!img) return;
+    li.addEventListener('pointermove', (e) => {
+      img.style.setProperty('--x', `${e.clientX + 24}px`);
+      img.style.setProperty('--y', `${e.clientY - 60}px`);
+    });
+  });
+</script>

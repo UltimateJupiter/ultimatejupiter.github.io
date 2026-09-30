@@ -1,0 +1,38 @@
+---
+interface Props {
+  kicker: string;
+  title: string;
+}
+const { kicker, title } = Astro.props;
+---
+
+<header class="page-header wrap">
+  <p class="label">{kicker}</p>
+  <h1>{title}</h1>
+  <slot />
+</header>
+
+<style>
+  .page-header {
+    padding-top: clamp(7rem, 14vw, 10rem);
+    padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  }
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4.25rem);
+    font-weight: 350;
+    letter-spacing: -0.03em;
+    margin-top: 0.75rem;
+    animation: rise 1s var(--ease) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    h1 {
+      animation: none;
+    }
+  }
+</style>

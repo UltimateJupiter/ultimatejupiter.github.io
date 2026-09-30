@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import NewsList from '../../components/NewsList.astro';
+import { getNews } from '../../lib/content';
+
+const news = await getNews();
+---
+
+<Base title="News" description="News from Xingyu Zhu.">
+  <PageHeader kicker="Updates" title="News" />
+  <div class="wrap body">
+    <NewsList items={news} />
+  </div>
+</Base>
+
+<style>
+  .body {
+    max-width: calc(48rem + 2 * var(--gutter));
+    margin-left: max(0px, calc((100vw - var(--wide)) / 2));
+    padding-bottom: 4rem;
+  }
+</style>

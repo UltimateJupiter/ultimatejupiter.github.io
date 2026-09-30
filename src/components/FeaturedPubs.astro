@@ -1,0 +1,176 @@
+---
+import { Image } from 'astro:assets';
+import { authorsHtml, type Publication } from '../lib/content';
+
+interface Props {
+  pubs: Publication[];
+}
+const { pubs } = Astro.props;
+---
+
+<div class="featured">
+  {
+    pubs.map((p, i) => (
+      <a class="card" href={`/publications/${p.id}/`}>
+        <figure>
+          <div class="frame">
+            {p.data.image ? (
+              <Image src={p.data.image} alt={p.data.caption ?? p.data.title} widths={[480, 800, 1100]} sizes="(max-width: 760px) 92vw, 380px" />
+            ) : (
+              <div class="placeholder" aria-hidden="true" />
+            )}
+          </div>
+          <figcaption class="mono">
+            <span class="fig">Fig. {i + 1}</span>
+            {p.data.caption}
+          </figcaption>
+        </figure>
+        <div class="meta">
+          <p class="venue mono">
+            {p.data.venue}
+            {p.data.award && <span class="award"> · {p.data.award}</span>}
+          </p>
+          <h3>{p.data.title}</h3>
+          <p class="authors" set:html={authorsHtml(p.data.authors)} />
+        </div>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .featured {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem 2.25rem;
+  }
+  @media (max-width: 760px) {
+    .featured {
+      grid-template-columns: 1fr;
+    }
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card:hover {
+    color: inherit;
+  }
+  figure {
+    margin: 0;
+  }
+  .frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    transition:
+      border-color 0.4s,
+      transform 0.6s var(--ease);
+  }
+  /* Figures are drawn on white; keep them readable and quiet in dark mode */
+  :global([data-theme='dark']) .frame {
+    background: #ecebe6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .frame {
+      background: #ecebe6;
+    }
+  }
+  .frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.75rem;
+    transition: transform 0.8s var(--ease);
+  }
+  /* corner ticks, like registration marks */
+  .frame::before,
+  .frame::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--accent);
+    border-style: solid;
+    opacity: 0;
+    transition:
+      opacity 0.3s,
+      inset 0.5s var(--ease);
+    z-index: 1;
+  }
+  .frame::before {
+    top: 10px;
+    left: 10px;
+    border-width: 1px 0 0 1px;
+  }
+  .frame::after {
+    bottom: 10px;
+    right: 10px;
+    border-width: 0 1px 1px 0;
+  }
+  .card:hover .frame::before {
+    opacity: 1;
+    top: 5px;
+    left: 5px;
+  }
+  .card:hover .frame::after {
+    opacity: 1;
+    bottom: 5px;
+    right: 5px;
+  }
+  .card:hover .frame img {
+    transform: scale(1.025);
+  }
+  .placeholder {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(135deg, transparent 0 9px, var(--rule) 9px 10px);
+  }
+  figcaption {
+    margin-top: 0.6rem;
+    color: var(--muted);
+    font-size: 0.66rem;
+    line-height: 1.55;
+  }
+  figcaption .fig {
+    color: var(--ink);
+    margin-right: 0.4em;
+  }
+  .meta {
+    margin-top: 1rem;
+  }
+  .venue {
+    color: var(--muted);
+    margin: 0 0 0.35rem;
+  }
+  .award {
+    color: var(--accent);
+  }
+  h3 {
+    font-size: 1.3em;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    transition: color 0.2s;
+  }
+  .card:hover h3 {
+    color: var(--accent);
+  }
+  .authors {
+    margin: 0.5rem 0 0;
+    font-size: 0.9em;
+    color: var(--muted);
+  }
+  .authors :global(.me) {
+    color: var(--ink-2);
+  }
+  .authors :global(.eq) {
+    font-size: 0.7em;
+  }
+</style>

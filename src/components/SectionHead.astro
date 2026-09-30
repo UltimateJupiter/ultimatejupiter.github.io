@@ -1,0 +1,53 @@
+---
+// Sticky section label with a small geometric glyph that turns when the section scrolls in.
+interface Props {
+  index: string;
+  title: string;
+  shape?: 'circle' | 'triangle' | 'square' | 'hexagon' | 'diamond';
+  id?: string;
+}
+const { index, title, shape = 'square', id } = Astro.props;
+const shapes: Record<string, string> = {
+  circle: '<circle cx="8" cy="8" r="5.5"/><line x1="8" y1="2.5" x2="8" y2="8"/>',
+  triangle: '<polygon points="8,2 14,13 2,13"/>',
+  square: '<rect x="3" y="3" width="10" height="10"/>',
+  hexagon: '<polygon points="8,1.8 13.4,4.9 13.4,11.1 8,14.2 2.6,11.1 2.6,4.9"/>',
+  diamond: '<polygon points="8,1.5 14.5,8 8,14.5 1.5,8"/>',
+};
+---
+
+<div class="section-head">
+  <h2 class="section-title" id={id}>
+    <svg class={`glyph glyph-${shape}`} viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" set:html={shapes[shape]} />
+    <span class="idx">{index}</span>
+    <span>{title}</span>
+  </h2>
+  <slot />
+</div>
+
+<style>
+  .glyph {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.2;
+    transform: rotate(-90deg) scale(0.6);
+    opacity: 0;
+    transition:
+      transform 1.2s var(--ease),
+      opacity 0.6s;
+  }
+  :global(.in) .glyph {
+    transform: none;
+    opacity: 1;
+  }
+  .section-head:hover .glyph {
+    transform: rotate(180deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glyph {
+      transform: none;
+      opacity: 1;
+      transition: none;
+    }
+  }
+</style>

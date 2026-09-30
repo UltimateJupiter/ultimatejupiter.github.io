@@ -1,0 +1,26 @@
+---
+import { fmtMonth, isoDate, type News } from '../lib/content';
+
+interface Props {
+  items: News[];
+}
+const { items } = Astro.props;
+const href = (n: News) => (n.body?.trim() ? `/news/${n.id}/` : n.data.link);
+---
+
+<ul class="dated">
+  {
+    items.map((n) => {
+      const url = href(n);
+      return (
+        <li>
+          <time datetime={isoDate(n.data.date)}>{fmtMonth(n.data.date)}</time>
+          <div>
+            {url ? <a class="title" href={url}>{n.data.title}</a> : <span class="title">{n.data.title}</span>}
+            {n.data.summary && <span class="sub">{n.data.summary}</span>}
+          </div>
+        </li>
+      );
+    })
+  }
+</ul>

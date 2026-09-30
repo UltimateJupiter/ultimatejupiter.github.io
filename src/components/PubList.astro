@@ -1,0 +1,63 @@
+---
+import PubItem from './PubItem.astro';
+import { groupByYear, hasEqualContribution, type Publication } from '../lib/content';
+
+interface Props {
+  pubs: Publication[];
+}
+const { pubs } = Astro.props;
+const groups = groupByYear(pubs);
+const anyEqual = pubs.some((p) => hasEqualContribution(p.data.authors));
+---
+
+<div class="pub-list">
+  {
+    groups.map(([year, items]) => (
+      <section class="year-group">
+        <h3 class="year mono">{year}</h3>
+        <div class="items">
+          {items.map((p) => (
+            <PubItem pub={p} headingLevel="h4" />
+          ))}
+        </div>
+      </section>
+    ))
+  }
+  {anyEqual && <p class="footnote mono">* Equal contribution</p>}
+</div>
+
+<style>
+  .year-group {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .year-group:first-child {
+    border-top: 0;
+  }
+  .year-group:first-child .year,
+  .year-group:first-child .items > :global(:first-child) {
+    padding-top: 0;
+  }
+  .year {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+    padding-top: 1.45rem;
+    margin: 0;
+  }
+  .footnote {
+    color: var(--muted);
+    margin-top: 1.25rem;
+  }
+  @media (max-width: 520px) {
+    .year-group {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .year {
+      padding-top: 1rem;
+    }
+  }
+</style>
