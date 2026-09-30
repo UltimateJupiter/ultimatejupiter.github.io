@@ -75,3 +75,4 @@
 #fx-conc .fx-tip .fxc-tt3{display:grid;grid-template-columns:auto auto auto;column-gap:14px;margin-top:2px;font-variant-numeric:tabular-nums}
 #fx-conc .fx-tip .fxc-tt3 span:not(:nth-child(3n+1)){text-align:right}
 #fx-conc .fx-tip .fxc-w{display:block;margin-top:1px}
+@media (max-width:380px){#fx-conc .fxc-na .nw{white-space:normal}}

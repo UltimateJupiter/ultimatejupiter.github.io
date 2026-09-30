@@ -91,3 +91,27 @@ header{border-bottom-color:var(--rule)}
 .site-bar ul a:hover,.site-bar ul a[aria-current="page"]{color:var(--fg)}
 .site-bar ul a:hover::after,.site-bar ul a[aria-current="page"]::after{transform:scaleX(1)}
 @media (max-width:560px){.site-bar .brand span{display:none}}
+
+/* ---- no horizontal scrolling anywhere on the page ----
+   Content fits the column instead: long BibTeX lines wrap, display equations scale down when they
+   would overflow, tables let cells wrap, and figure strips never scroll sideways by hand. */
+html,body{overflow-x:clip;max-width:100%}
+pre.bib{white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:hidden}
+.math-block,.eqwrap .eq{overflow-x:hidden}
+.math-block mjx-container svg,.eqwrap .eq mjx-container svg,mjx-container svg{max-width:100% !important;height:auto}
+.tablewrap{overflow-x:hidden}
+@media (max-width:560px){
+  .tablewrap table{font-size:11.5px}
+  .tablewrap th,.tablewrap td{padding:6px 4px}
+  /* only the label column wraps; numbers and headers stay whole */
+  .tablewrap th:first-child,.tablewrap td:first-child{white-space:normal}
+}
+@media (max-width:360px){ .tablewrap table{font-size:10.5px} .tablewrap th,.tablewrap td{padding:5px 3px} }
+@media (max-width:400px){
+  .site-bar ul{gap:11px;font-size:11px}
+}
+/* MathJax's visually hidden MathML copy (for screen readers) takes the full width of long inline
+   formulas and can poke past the viewport; keep it a 1px box (still read by screen readers). */
+mjx-container mjx-assistive-mml{width:1px !important;height:1px !important}
+@media (max-width:380px){ .nw{white-space:normal} }
+@media (max-width:340px){ .tablewrap table{font-size:10px} .tablewrap th,.tablewrap td{padding:5px 2px} }

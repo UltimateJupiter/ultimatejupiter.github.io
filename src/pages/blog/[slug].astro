@@ -250,3 +250,17 @@ const { title, date, updated, description, tags, draft } = post.data;
     });
   }
 </script>
+
+<script>
+  // Scale any display equation that is wider than the text column down to fit (no sideways scrolling).
+  const fitMath = () =>
+    document.querySelectorAll<HTMLElement>('.prose .katex-display').forEach((d) => {
+      const k = d.firstElementChild as HTMLElement | null;
+      if (!k) return;
+      k.style.fontSize = '';
+      const s = d.clientWidth / k.scrollWidth;
+      if (s < 1) k.style.fontSize = `${Math.max(s, 0.5) * 100}%`;
+    });
+  fitMath();
+  new ResizeObserver(fitMath).observe(document.documentElement);
+</script>

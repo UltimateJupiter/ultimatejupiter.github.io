@@ -8,8 +8,8 @@
 .cmp-seg .shift{display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 8px}
 .cmp-seg .shift i{display:block;width:22px;height:14px;position:relative;border-radius:1px;background:color-mix(in srgb,var(--fg) 7%,transparent)}
 .cmp-seg .shift i::after{content:"";position:absolute;left:0;right:0;bottom:0;height:var(--a,0%);background:currentColor;opacity:.55;transition:height .35s}
-.cmp-strip-wrap{overflow-x:auto;padding:2px 0 4px}
-.cmp-strip{display:flex;gap:10px;justify-content:center;min-width:max-content;margin:0 auto}
+.cmp-strip-wrap{overflow-x:hidden;padding:2px 0 4px}
+.cmp-strip{display:flex;flex-wrap:wrap;row-gap:14px;gap:10px;justify-content:center;min-width:0;margin:0 auto}
 .cw{display:flex;flex-direction:column;gap:5px}
 .cw-toks{display:flex;gap:2px}
 .ct{appearance:none;background:transparent;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--mono);color:var(--fg);width:31px}

@@ -289,7 +289,7 @@
 /* ---- panel A: context line ---- */
 #fx-s5 .s5-ctx{display:flex;align-items:center;gap:10px;font:300 11px/1.4 var(--mono);color:var(--muted);min-width:0;margin-top:2px}
 #fx-s5 .s5-ctxlab,#fx-s5 .s5-ctxn{flex:none;white-space:nowrap}
-#fx-s5 .s5-ctxscroll{position:relative;flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding:3px 0 6px;
+#fx-s5 .s5-ctxscroll{position:relative;flex:1 1 auto;min-width:0;overflow-x:hidden;overflow-y:hidden;white-space:nowrap;padding:3px 0 6px;
   font:400 11px/1.4 var(--mono);color:var(--fg);outline:none;scrollbar-width:thin}
 /* fade only the edge that hides content (classes set by edges() in s5.js) */
 #fx-s5 .s5-mL:not(.s5-mR){-webkit-mask-image:linear-gradient(90deg,transparent,var(--fg) 22px);mask-image:linear-gradient(90deg,transparent,var(--fg) 22px)}
@@ -352,7 +352,7 @@
 
 /* ---- the recurrent chain ---- */
 #fx-s5 .s5-t2{margin-top:12px}
-#fx-s5 .s5-chain{display:flex;align-items:flex-end;overflow-x:auto;overflow-y:hidden;padding:2px 0 8px;position:relative;outline:none;scrollbar-width:thin}
+#fx-s5 .s5-chain{display:flex;align-items:flex-end;overflow-x:hidden;overflow-y:hidden;padding:2px 0 8px;position:relative;outline:none;scrollbar-width:thin}
 #fx-s5 .s5-chain:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
 #fx-s5 .s5-k{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 #fx-s5 .s5-k small{font:400 9.5px/1 var(--mono);color:var(--muted)}

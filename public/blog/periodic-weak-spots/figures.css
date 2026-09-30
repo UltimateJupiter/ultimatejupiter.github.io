@@ -73,6 +73,7 @@
   #fx-niah .niah-pre{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 }
 @media (prefers-reduced-motion: reduce){#fx-niah .niah-tbl tbody td{transition:none}}
+@media (max-width:360px){#fx-niah .niah-tbl{font-size:11px}#fx-niah .niah-tbl th,#fx-niah .niah-tbl td{padding:6px 3px}#fx-niah .niah-tbl label{gap:5px}}
 
 /* ---- acc ---- */
 /* Figure 2 (fx-acc): full-attention baselines (left, fixed) beside one compressed run (right, chosen). */
@@ -268,6 +269,7 @@
 #fx-conc .fx-tip .fxc-tt3{display:grid;grid-template-columns:auto auto auto;column-gap:14px;margin-top:2px;font-variant-numeric:tabular-nums}
 #fx-conc .fx-tip .fxc-tt3 span:not(:nth-child(3n+1)){text-align:right}
 #fx-conc .fx-tip .fxc-w{display:block;margin-top:1px}
+@media (max-width:380px){#fx-conc .fxc-na .nw{white-space:normal}}
 
 /* ---- gate ---- */
 /* Figure 5 · gate profiles vs knockouts (fx-gate). Everything scoped to #fx-gate. */
@@ -468,3 +470,4 @@
   #fx-cyc .cyc-grid .mid{padding-left:3px}
   #fx-cyc .cyc-cell{font-size:11px}
 }
+@media (max-width:380px){#fx-cyc .fx-status .nw{white-space:normal}}

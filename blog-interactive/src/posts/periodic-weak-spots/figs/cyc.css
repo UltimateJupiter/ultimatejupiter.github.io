@@ -140,3 +140,4 @@
   #fx-cyc .cyc-grid .mid{padding-left:3px}
   #fx-cyc .cyc-cell{font-size:11px}
 }
+@media (max-width:380px){#fx-cyc .fx-status .nw{white-space:normal}}

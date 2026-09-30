@@ -71,3 +71,4 @@
   #fx-niah .niah-pre{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 }
 @media (prefers-reduced-motion: reduce){#fx-niah .niah-tbl tbody td{transition:none}}
+@media (max-width:360px){#fx-niah .niah-tbl{font-size:11px}#fx-niah .niah-tbl th,#fx-niah .niah-tbl td{padding:6px 3px}#fx-niah .niah-tbl label{gap:5px}}
