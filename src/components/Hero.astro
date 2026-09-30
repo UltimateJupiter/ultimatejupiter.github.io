@@ -17,7 +17,7 @@ import { profile } from '../data/profile';
         <span class="native" lang="zh">{profile.nameNative}</span>
       </h1>
       <div class="bio-row">
-        <Image src={avatar} alt={`Portrait of ${profile.name}`} width={264} height={264} class="avatar" loading="eager" />
+        <Image src={avatar} alt={`Portrait of ${profile.name}`} width={480} class="avatar" loading="eager" fetchpriority="high" />
         <p class="bio" set:html={profile.bio} />
       </div>
       <ul class="links">
@@ -26,7 +26,7 @@ import { profile } from '../data/profile';
       </ul>
     </div>
     <p class="caption mono" aria-hidden="true">
-      <span class="fig">Fig. 0</span> Noisy gradient descent on a drifting loss surface.
+      <span class="fig">Fig. 0</span> Noisy heavy-ball descent on a drifting landscape with a flat basin, a sharp one, and a curved valley.
       <span class="hint">Move to carve a basin, click to drop a particle.</span>
     </p>
   </div>
@@ -111,20 +111,23 @@ import { profile } from '../data/profile';
   .bio-row {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 1.5rem;
-    align-items: start;
+    gap: 1.75rem;
+    align-items: center;
   }
   .avatar {
-    width: 5.5rem;
-    height: 5.5rem;
+    width: 8.5rem;
+    height: 8.5rem;
     object-fit: cover;
+    object-position: 50% 30%;
     border-radius: 50%;
-    filter: grayscale(1) contrast(1.05);
-    transition: filter 0.6s var(--ease);
-    margin-top: 0.3rem;
+    filter: saturate(0.8);
+    transition:
+      filter 0.6s var(--ease),
+      transform 0.6s var(--ease);
   }
   .bio-row:hover .avatar {
     filter: none;
+    transform: scale(1.03);
   }
   .bio {
     color: var(--ink-2);
@@ -196,6 +199,10 @@ import { profile } from '../data/profile';
   @media (max-width: 480px) {
     .bio-row {
       grid-template-columns: 1fr;
+    }
+    .avatar {
+      width: 7rem;
+      height: 7rem;
     }
   }
   @media (prefers-reduced-motion: reduce) {

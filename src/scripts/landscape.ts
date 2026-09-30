@@ -1,20 +1,43 @@
 // Hero figure: level sets of a slowly drifting 2-D "loss landscape", with a handful of
-// heavy-ball gradient-descent particles rolling around on it. The pointer digs a well
+// heavy-ball gradient-descent particles rolling down it. Each particle is released on high
+// ground, descends with smooth (temporally correlated) noise, and fades out once it has
+// settled into a basin; a fresh one is released a moment later. The pointer digs a well
 // into the landscape; clicking drops a new particle.
 
-type Well = { bx: number; by: number; rx: number; ry: number; w: number; ph: number; a: number; s: number };
+// A (possibly curved, rotated) Gaussian basin or bump. In its own frame (u along the axis,
+// v across it) the profile is  a · exp(-½ (u²/sx² + (v - bend·u²)²/sy²)).
+type Well = {
+  bx: number; by: number; rx: number; ry: number; w: number; ph: number; // wandering centre
+  a: number; bw: number; // depth, and how fast it breathes
+  sx: number; sy: number; th: number; spin: number; bend: number; // shape
+};
+// Per-frame snapshot of a well, so the field sampler does no trig.
+type Live = { x: number; y: number; a: number; c: number; s: number; isx2: number; isy2: number; bend: number };
 type Particle = {
   x: number; y: number; vx: number; vy: number;
   lr: number; beta: number;
-  trail: number[]; still: number; age: number; alpha: number; dying: boolean;
+  nx: number; ny: number; // correlated noise state
+  losses: number[]; // loss sampled every LOSS_EVERY frames, most recent last
+  trail: number[]; age: number; alpha: number; dying: boolean;
 };
 
-const GRID = 14; // css px between samples
+const GRID = 11; // css px between samples
 const LEVEL0 = -3;
 const LEVEL_STEP = 0.1;
-const TRAIL = 70;
-const MAX_PARTICLES = 9;
-const NOISE = 1.6;
+const TRAIL = 140; // trail points, one every TRAIL_EVERY frames
+const TRAIL_EVERY = 2;
+const POPULATION = 2; // particles kept alive when nobody is clicking
+const MAX_PARTICLES = 2; // including ones dropped by clicking
+const BOWL = 0.18; // weak confining quadratic
+const MAX_STEP = 0.00175; // world units per frame (height = 1)
+const NOISE = 1.2; // noise scale, in gradient units
+const NOISE_CORR = 0.995; // per-frame correlation of the noise (Ornstein–Uhlenbeck)
+// Settling: a particle whose loss has dropped by less than SETTLE_DROP over the last
+// LOSS_WINDOW samples (~3 s) has found its basin (or is circling it) and fades out.
+const LOSS_EVERY = 30;
+const LOSS_WINDOW = 6;
+const SETTLE_DROP = 0.03;
+const MAX_AGE = 60 * 90;
 const MOUSE_A = 0.7; // depth of the basin under the pointer
 const MOUSE_S = 0.07;
 const MOUSE_IDLE_MS = 1800; // the basin fills back in once the pointer rests
@@ -43,18 +66,58 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
   }
 
   function makeWells() {
-    // A few basins and ridges spread across the canvas, each wandering on a small ellipse.
-    const spec = [-1.25, -1.0, -0.85, -0.7, 0.75, 0.6, 0.5];
-    wells = spec.map((a, i) => ({
-      bx: aspect * ((i + 0.5) / spec.length + rand(-0.06, 0.06)),
-      by: rand(0.18, 0.82),
-      rx: rand(0.05, 0.16) * aspect * 0.5,
-      ry: rand(0.04, 0.12),
-      w: rand(0.06, 0.14) * (Math.random() < 0.5 ? -1 : 1),
+    // Three minima with different characters, laid out along the long side of the canvas:
+    // a wide flat basin, a curved narrow valley that slowly turns, and a small sharp (but
+    // deeper) basin — plus a low bump that makes a saddle. A weak bowl keeps
+    // particles on screen.
+    const wide = aspect >= 1;
+    const sc = Math.min(1, aspect / 0.9); // shrink features on portrait screens
+    const at = (along: number, across: number): [number, number] =>
+      wide ? [along * aspect, across] : [across * aspect, along];
+    const well = (pos: [number, number], w: Partial<Well>): Well => ({
+      bx: pos[0], by: pos[1],
+      rx: rand(0.04, 0.08) * sc, ry: rand(0.04, 0.08) * sc,
+      w: rand(0.05, 0.09) * (Math.random() < 0.5 ? -1 : 1),
       ph: rand(0, Math.PI * 2),
-      a,
-      s: a < 0 ? rand(0.13, 0.22) : rand(0.08, 0.14),
-    }));
+      bw: rand(0.03, 0.06),
+      a: -1, sx: 0.1, sy: 0.1, th: 0, spin: 0, bend: 0,
+      ...w,
+    });
+    const j = () => rand(-0.05, 0.05);
+    const flip = Math.random() < 0.5; // mirror the arrangement for variety
+    const f = (v: number) => (flip ? 1 - v : v);
+    wells = [
+      // flat
+      well(at(f(0.22 + j()), 0.38 + j()), { a: -0.85, sx: 0.2 * sc, sy: 0.17 * sc, th: rand(0, Math.PI), spin: 0.02 }),
+      // curved valley
+      well(at(f(0.55 + j()), 0.6 + j()), {
+        a: -0.9, sx: 0.27 * sc, sy: 0.055 * sc, bend: 3 / sc,
+        th: rand(0, Math.PI * 2), spin: rand(0.03, 0.05) * (Math.random() < 0.5 ? -1 : 1),
+      }),
+      // sharp
+      well(at(f(0.83 + j()), 0.35 + j()), { a: -1.15, sx: 0.06 * sc, sy: 0.06 * sc }),
+      // a low bump between the flat basin and the valley, making a saddle
+      well(at(f(0.38 + j()), 0.78 + j()), { a: 0.4, sx: 0.1 * sc, sy: 0.1 * sc }),
+    ];
+    updateWells();
+  }
+
+  let live: Live[] = [];
+  function updateWells() {
+    const snap = (w: Well): Live => {
+      const th = w.th + w.spin * t;
+      return {
+        x: w.bx + w.rx * Math.cos(w.w * t + w.ph),
+        y: w.by + w.ry * Math.sin(w.w * 1.3 * t + w.ph),
+        // depth slowly breathes, so basins deepen and fill back in over time
+        a: w.a * (1 + 0.15 * Math.sin(w.bw * t + 2 * w.ph)),
+        c: Math.cos(th), s: Math.sin(th),
+        isx2: 1 / (w.sx * w.sx), isy2: 1 / (w.sy * w.sy), bend: w.bend,
+      };
+    };
+    live = wells.map(snap);
+    if (mouse.k > 0.001)
+      live.push({ x: mouse.x, y: mouse.y, a: -MOUSE_A * mouse.k, c: 1, s: 0, isx2: 1 / MOUSE_S ** 2, isy2: 1 / MOUSE_S ** 2, bend: 0 });
   }
 
   function resize() {
@@ -79,80 +142,95 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
     if (reduce) frame();
   }
 
-  // Centres of the wells at time t (world units: height = 1, width = aspect).
-  const cx = (w: Well) => w.bx + w.rx * Math.cos(w.w * t + w.ph);
-  const cy = (w: Well) => w.by + w.ry * Math.sin(w.w * 1.3 * t + w.ph);
-
   function potential(x: number, y: number) {
-    let f = 0.35 * ((x - aspect / 2) ** 2 / (aspect * aspect * 0.25) + (y - 0.5) ** 2 * 1.2);
-    for (const w of wells) {
-      const dx = x - cx(w), dy = y - cy(w);
-      f += w.a * Math.exp(-(dx * dx + dy * dy) / (2 * w.s * w.s));
-    }
-    if (mouse.k > 0.001) {
-      const dx = x - mouse.x, dy = y - mouse.y, s = MOUSE_S;
-      f -= MOUSE_A * mouse.k * Math.exp(-(dx * dx + dy * dy) / (2 * s * s));
+    let f = BOWL * ((x - aspect / 2) ** 2 / (aspect * aspect * 0.25) + (y - 0.5) ** 2 * 1.2);
+    for (const w of live) {
+      const dx = x - w.x, dy = y - w.y;
+      const u = dx * w.c + dy * w.s, q = -dx * w.s + dy * w.c - w.bend * u * u;
+      f += w.a * Math.exp(-0.5 * (u * u * w.isx2 + q * q * w.isy2));
     }
     return f;
   }
 
   function gradient(x: number, y: number): [number, number] {
-    let gx = (0.7 * (x - aspect / 2)) / (aspect * aspect * 0.25);
-    let gy = 0.84 * (y - 0.5);
-    for (const w of wells) {
-      const dx = x - cx(w), dy = y - cy(w), s2 = w.s * w.s;
-      const e = w.a * Math.exp(-(dx * dx + dy * dy) / (2 * s2));
-      gx -= (e * dx) / s2;
-      gy -= (e * dy) / s2;
-    }
-    if (mouse.k > 0.001) {
-      const dx = x - mouse.x, dy = y - mouse.y, s2 = MOUSE_S * MOUSE_S;
-      const e = -MOUSE_A * mouse.k * Math.exp(-(dx * dx + dy * dy) / (2 * s2));
-      gx -= (e * dx) / s2;
-      gy -= (e * dy) / s2;
+    let gx = (2 * BOWL * (x - aspect / 2)) / (aspect * aspect * 0.25);
+    let gy = 2 * BOWL * 1.2 * (y - 0.5);
+    for (const w of live) {
+      const dx = x - w.x, dy = y - w.y;
+      const u = dx * w.c + dy * w.s, q = -dx * w.s + dy * w.c - w.bend * u * u;
+      const e = w.a * Math.exp(-0.5 * (u * u * w.isx2 + q * q * w.isy2));
+      const du = e * (-u * w.isx2 + q * w.isy2 * 2 * w.bend * u); // ∂/∂u
+      const dv = e * (-q * w.isy2); // ∂/∂v
+      gx += du * w.c - dv * w.s;
+      gy += du * w.s + dv * w.c;
     }
     return [gx, gy];
   }
 
-  function spawn(x?: number, y?: number, sharp = false): Particle {
+  // Release on high ground: best of a few random candidates, so it has somewhere to roll.
+  function spawn(x?: number, y?: number): Particle {
+    if (x === undefined || y === undefined) {
+      let best = -Infinity;
+      for (let k = 0; k < 6; k++) {
+        const cx = rand(0.04, 0.96) * aspect, cy = rand(0.06, 0.94);
+        const f = potential(cx, cy);
+        if (f > best) (best = f), (x = cx), (y = cy);
+      }
+    }
     return {
-      x: x ?? rand(0.05, 0.95) * aspect,
-      y: y ?? rand(0.05, 0.95),
-      vx: 0, vy: 0,
-      // Most particles use momentum; the "sharp" one runs plain GD with a large step and
-      // rattles across narrow basins instead of settling (a nod to edge-of-stability).
-      lr: sharp ? 0.045 : rand(0.0001, 0.00018),
-      beta: sharp ? 0 : rand(0.94, 0.97),
-      trail: [], still: 0, age: 0, alpha: 0, dying: false,
+      x: x!, y: y!, vx: 0, vy: 0,
+      lr: rand(0.0000125, 0.0000225),
+      beta: rand(0.95, 0.97),
+      nx: gauss(), ny: gauss(),
+      losses: [],
+      trail: [], age: 0, alpha: 0, dying: false,
     };
   }
 
+  const aliveCount = () => particles.reduce((n, p) => n + (p.dying ? 0 : 1), 0);
+  let pending: number[] = []; // countdown (frames) until the next automatic release
+
   function stepParticles() {
+    const rho = NOISE_CORR, kick = Math.sqrt(1 - rho * rho);
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       const [gx, gy] = gradient(p.x, p.y);
-      // a little minibatch noise keeps them exploring instead of freezing in the first basin
-      const noise = p.beta === 0 ? 0 : NOISE;
-      p.vx = p.beta * p.vx - p.lr * (gx + noise * gauss());
-      p.vy = p.beta * p.vy - p.lr * (gy + noise * gauss());
+      p.nx = rho * p.nx + kick * gauss();
+      p.ny = rho * p.ny + kick * gauss();
+      p.vx = p.beta * p.vx - p.lr * (gx + NOISE * p.nx);
+      p.vy = p.beta * p.vy - p.lr * (gy + NOISE * p.ny);
       const sp = Math.hypot(p.vx, p.vy);
-      if (sp > 0.02) (p.vx *= 0.02 / sp), (p.vy *= 0.02 / sp);
+      if (sp > MAX_STEP) (p.vx *= MAX_STEP / sp), (p.vy *= MAX_STEP / sp);
       p.x += p.vx;
       p.y += p.vy;
       p.age++;
-      p.trail.push(p.x, p.y);
-      if (p.trail.length > TRAIL * 2) p.trail.splice(0, 2);
-
-      p.still = sp < 0.0006 ? p.still + 1 : 0;
-      const out = p.x < -0.1 || p.x > aspect + 0.1 || p.y < -0.1 || p.y > 1.1;
-      if (p.still > 240 || p.age > 60 * 24 || out) p.dying = true;
-      p.alpha = p.dying ? p.alpha - 0.02 : Math.min(1, p.alpha + 0.03);
-      if (p.dying && p.alpha <= 0) {
-        const wasSharp = p.beta === 0;
-        particles.splice(i, 1);
-        if (particles.length < 6) particles.push(spawn(undefined, undefined, wasSharp));
+      if (p.age % TRAIL_EVERY === 0) {
+        p.trail.push(p.x, p.y);
+        if (p.trail.length > TRAIL * 2) p.trail.splice(0, 2);
       }
+
+      // Settling: compare the loss now with ~3 s ago. Rolling downhill keeps it falling;
+      // sitting in (or orbiting, or being carried along with) a basin does not.
+      if (p.age % LOSS_EVERY === 0) {
+        p.losses.push(potential(p.x, p.y));
+        if (p.losses.length > LOSS_WINDOW + 1) p.losses.shift();
+        const n = p.losses.length;
+        if (n > LOSS_WINDOW && p.losses[0] - p.losses[n - 1] < SETTLE_DROP) p.dying = true;
+      }
+
+      const out = p.x < -0.1 || p.x > aspect + 0.1 || p.y < -0.1 || p.y > 1.1;
+      if (p.age > MAX_AGE || out) p.dying = true;
+      p.alpha = p.dying ? p.alpha - 0.005 : Math.min(1, p.alpha + 0.01);
+      if (p.dying && p.alpha <= 0) particles.splice(i, 1);
     }
+    // Keep a small population, releasing replacements one at a time with a pause.
+    pending = pending.map((n) => n - 1);
+    while (pending.length && pending[0] <= 0) {
+      pending.shift();
+      if (aliveCount() < MAX_PARTICLES) particles.push(spawn());
+    }
+    const alive = aliveCount();
+    for (let k = alive + pending.length; k < POPULATION; k++) pending.push(Math.round(rand(90, 300)) + pending.length * 120);
   }
 
   function sampleField() {
@@ -220,7 +298,7 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
     for (const p of particles) {
       const n = p.trail.length / 2;
       dctx.strokeStyle = accent;
-      dctx.lineWidth = 1.2;
+      dctx.lineWidth = 1.1;
       for (let s = 1; s < n; s++) {
         dctx.globalAlpha = p.alpha * (s / n) * 0.85;
         dctx.beginPath();
@@ -249,6 +327,7 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
   function frame() {
     if (performance.now() - mouse.moved > MOUSE_IDLE_MS) mouse.target = 0;
     mouse.k += (mouse.target - mouse.k) * 0.05;
+    updateWells();
     ctx.clearRect(0, 0, W, H);
     sampleField();
     drawContours();
@@ -277,7 +356,7 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
 
   if (reduce) return;
 
-  for (let i = 0; i < 6; i++) particles.push(spawn(undefined, undefined, i === 0));
+  for (let i = 0; i < POPULATION; i++) particles.push(spawn());
 
   const toWorld = (e: PointerEvent) => {
     const r = canvas.getBoundingClientRect();
@@ -293,7 +372,9 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
   host.addEventListener('pointerdown', (e) => {
     if ((e.target as Element).closest('a, button')) return;
     const [x, y] = toWorld(e);
-    if (particles.length >= MAX_PARTICLES) particles[0].dying = true;
+    // at most MAX_PARTICLES in play: the oldest one bows out for the new one
+    const live = particles.filter((p) => !p.dying);
+    if (live.length >= MAX_PARTICLES) live[0].dying = true;
     particles.push(spawn(x, y));
   });
 
