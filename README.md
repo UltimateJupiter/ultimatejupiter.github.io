@@ -85,6 +85,6 @@ home page shows before linking to the full list is `homeLimits` in the same file
 - Type: Newsreader (text) + IBM Plex Mono (labels), self-hosted via Fontsource.
 - Colours are CSS variables at the top of `src/styles/global.css` (light + dark).
 - The hero figure (`src/scripts/landscape.ts`) draws level sets of a slowly drifting sum of
-  Gaussians with marching squares, plus a few heavy-ball SGD particles; the pointer carves a basin.
+  Gaussians with marching squares, plus a few heavy-ball SGD particles; the pointer raises a soft hill.
   It pauses off-screen and renders a static frame under `prefers-reduced-motion`.
 - The nav mark is a wireframe icosahedron (`src/scripts/mark.ts`).

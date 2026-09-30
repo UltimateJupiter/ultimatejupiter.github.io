@@ -1,8 +1,8 @@
-// Hero figure: level sets of a slowly drifting 2-D "loss landscape", with a handful of
-// heavy-ball gradient-descent particles rolling down it. Each particle is released on high
+// Hero figure: level sets of a slowly drifting 2-D "loss landscape", with a single
+// heavy-ball gradient-descent particle rolling down it. The particle is released on high
 // ground, descends with smooth (temporally correlated) noise, and fades out once it has
-// settled into a basin; a fresh one is released a moment later. The pointer digs a well
-// into the landscape; clicking drops a new particle.
+// settled; a fresh one is released a moment later. The pointer raises a soft hill in the
+// landscape; clicking drops a new particle where you click.
 
 // A (possibly curved, rotated) Gaussian basin or bump. In its own frame (u along the axis,
 // v across it) the profile is  a · exp(-½ (u²/sx² + (v - bend·u²)²/sy²)).
@@ -41,9 +41,9 @@ const LOSS_WINDOW = 6;
 const SETTLE_DROP = 0.015;
 const SETTLE_DIST = 0.025;
 const MAX_AGE = 60 * 90;
-const MOUSE_A = 0.7; // depth of the basin under the pointer
-const MOUSE_S = 0.07;
-const MOUSE_IDLE_MS = 1800; // the basin fills back in once the pointer rests
+const MOUSE_A = 0.45; // height of the hill under the pointer
+const MOUSE_S = 0.15; // and its width (broad, so it nudges rather than traps)
+const MOUSE_IDLE_MS = 1800; // the hill settles back down once the pointer rests
 
 export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElement, host: HTMLElement) {
   const ctx = canvas.getContext('2d')!;
@@ -120,7 +120,7 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
     };
     live = wells.map(snap);
     if (mouse.k > 0.001)
-      live.push({ x: mouse.x, y: mouse.y, a: -MOUSE_A * mouse.k, c: 1, s: 0, isx2: 1 / MOUSE_S ** 2, isy2: 1 / MOUSE_S ** 2, bend: 0 });
+      live.push({ x: mouse.x, y: mouse.y, a: MOUSE_A * mouse.k, c: 1, s: 0, isx2: 1 / MOUSE_S ** 2, isy2: 1 / MOUSE_S ** 2, bend: 0 });
   }
 
   function resize() {
