@@ -13,6 +13,8 @@ caption: Sample efficiency of context-enhanced learning
 links:
 - name: arXiv
   url: https://arxiv.org/abs/2503.01821
+- name: Interactive post
+  url: /blog/context-enhanced-learning/
 abstract: We formalize a new concept for LLMs, context-enhanced learning. It involves standard
   gradient-based learning on text except that the context is enhanced with additional data
   on which no auto-regressive gradients are computed. This setting is a gradient-based analog

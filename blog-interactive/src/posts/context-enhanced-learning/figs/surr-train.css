@@ -1,0 +1,72 @@
+/* Figure 3 (fx-surr-train): live training of the soft surrogate model (App. G.5, Algorithms 4 and 5). Scoped to #fx-surr-train. */
+
+/* controls */
+#fx-surr-train .sut-bar2{margin-top:-4px;column-gap:16px}
+#fx-surr-train .sut-ctl{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%}
+#fx-surr-train .sut-ctl .lab{white-space:nowrap}
+#fx-surr-train .fx-seg button{white-space:nowrap}
+#fx-surr-train .sut-act{margin-left:auto}
+#fx-surr-train .sut-play{min-width:6.2em}
+@media (max-width:520px){
+  /* three equal mode buttons that may wrap to two lines */
+  #fx-surr-train .sut-mode{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+  #fx-surr-train .sut-mode button{white-space:normal;line-height:1.3;padding:4px 6px}
+  #fx-surr-train .sut-act{margin-left:0}
+}
+
+/* panels: the curve is wider than the heatmap on desktop */
+@media not all and (max-width:600px){
+  #fx-surr-train .sut-panels{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+}
+#fx-surr-train .sut-panels{row-gap:26px}
+#fx-surr-train .sut-plot{min-width:0}
+#fx-surr-train .fx-ptitle sub{font-size:.75em;line-height:0}
+#fx-surr-train .sut-htitle{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+#fx-surr-train .sut-htitle .fx-select{font-size:12.5px;padding-top:1px;padding-bottom:1px}
+#fx-surr-train .sut-selname{color:var(--accent)}
+
+/* curve chart */
+#fx-surr-train .fx-svg{outline:none}
+#fx-surr-train .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-surr-train .sut-line{fill:none;stroke:var(--fx-base2);stroke-width:1.25px;stroke-linejoin:round;stroke-linecap:round}
+#fx-surr-train .sut-line.on{stroke:var(--accent);stroke-width:1.75px}
+#fx-surr-train .sut-band{fill:var(--fx-band);stroke:none}
+#fx-surr-train .sut-cyc{stroke:var(--rule);stroke-width:1;shape-rendering:crispEdges}
+#fx-surr-train .sut-chance{stroke:var(--muted);stroke-opacity:.7;stroke-width:1;stroke-dasharray:3 3;shape-rendering:crispEdges}
+#fx-surr-train .fx-svg text.sut-lab{paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-surr-train .fx-svg text.sut-lab.on{fill:var(--accent)}
+#fx-surr-train .fx-svg text.sut-atitle{fill:var(--muted)}
+#fx-surr-train .sut-hov{visibility:hidden;pointer-events:none}
+#fx-surr-train .sut-hov.on{visibility:visible}
+#fx-surr-train .sut-dot{fill:var(--fx-base2);stroke:var(--bg);stroke-width:1.5px}
+#fx-surr-train .sut-dot.on{fill:var(--accent)}
+#fx-surr-train .sut-curve{cursor:pointer}
+
+/* heatmap */
+#fx-surr-train .sut-cell{shape-rendering:crispEdges}
+#fx-surr-train .sut-diag{fill:none;stroke:var(--fg);stroke-opacity:.55;stroke-width:1;pointer-events:none}
+#fx-surr-train .sut-mask{fill:none;stroke:var(--loss);stroke-width:1;stroke-dasharray:3 2;pointer-events:none}
+#fx-surr-train .sut-hcell{fill:none;stroke:var(--fg);stroke-width:1.5;pointer-events:none;visibility:hidden}
+#fx-surr-train .sut-hcell.on{visibility:visible}
+#fx-surr-train .sut-frame{fill:none;stroke:var(--line);stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+
+/* colour key under the heatmap */
+#fx-surr-train .sut-scale{flex-wrap:wrap;row-gap:4px}
+#fx-surr-train .sut-scale > i{flex:0 0 72px;background:linear-gradient(90deg,var(--bg),var(--accent));border:1px solid var(--rule)}
+#fx-surr-train .sut-key{display:inline-flex;align-items:center;gap:5px;margin-left:6px;white-space:nowrap}
+#fx-surr-train .sut-scale .sut-key i{display:inline-block;flex:none;width:8px;height:8px;box-sizing:border-box}
+#fx-surr-train .sut-kdiag{border:1px solid color-mix(in srgb,var(--fg) 55%,transparent)}
+#fx-surr-train .sut-kmask i{border:1px dashed var(--loss)}
+#fx-surr-train .sut-kmask[hidden]{display:none}
+
+/* tooltip */
+#fx-surr-train .fx-tip{left:0;top:0}
+#fx-surr-train .sut-th{color:var(--muted);margin-bottom:3px}
+#fx-surr-train .sut-th b{color:var(--fg)}
+#fx-surr-train .sut-tg{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:12px}
+#fx-surr-train .sut-tg .v{justify-self:end;font-variant-numeric:tabular-nums}
+#fx-surr-train .sut-tg .on{color:var(--accent)}
+
+/* status: wraps only at the separators */
+#fx-surr-train .fx-status{font-variant-numeric:tabular-nums;min-height:3em}
+#fx-surr-train .fx-status .s{white-space:nowrap}

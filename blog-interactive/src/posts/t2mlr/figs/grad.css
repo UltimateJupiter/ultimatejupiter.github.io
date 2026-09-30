@@ -1,0 +1,53 @@
+/* Figure 3 · gradient agreement with the (32, 32) anchor (fx-grad). Everything is scoped to #fx-grad. */
+:root{ --fx-grad-ink-hi:var(--fg) }
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --fx-grad-ink-hi:var(--bg) }}
+:root[data-theme="dark"]{ --fx-grad-ink-hi:var(--bg) }
+
+#fx-grad .grad-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0}
+#fx-grad .fx-seg sub{font-size:.75em;line-height:0}
+#fx-grad .grad-n{display:none}
+#fx-grad .fx-status{margin:0}
+#fx-grad .fx-status sub{font-size:.75em;line-height:0}
+#fx-grad .fx-status .nw{white-space:nowrap}
+
+#fx-grad .grad-body{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 28px;min-width:0}
+#fx-grad .grad-plot{flex:0 0 auto;min-width:0;max-width:100%;line-height:0}
+#fx-grad .grad-plot svg{cursor:default;-webkit-tap-highlight-color:transparent}
+#fx-grad .grad-plot svg:focus{outline:none}
+#fx-grad .grad-plot svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px;border-radius:2px}
+
+/* cells and marks */
+#fx-grad .fx-svg .cell{stroke:var(--rule);stroke-width:1;shape-rendering:crispEdges}
+#fx-grad .fx-svg text.v{fill:var(--fg);pointer-events:none}
+#fx-grad .fx-svg text.v.hi{fill:var(--fx-grad-ink-hi)}
+#fx-grad .fx-svg text.ttl{fill:var(--muted)}
+#fx-grad .fx-svg text.tk.on{fill:var(--fg)}
+#fx-grad .fx-svg .tr{fill:none;stroke:var(--accent);stroke-width:1.5;pointer-events:none}
+#fx-grad .fx-svg .an{fill:var(--muted);stroke:none;pointer-events:none}
+#fx-grad .fx-svg .brk{fill:none;stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-grad .fx-svg .ov rect{fill:none;stroke:var(--fg);stroke-width:1;shape-rendering:crispEdges;pointer-events:none}
+#fx-grad .fx-svg .ov .ln{stroke-opacity:.3}
+#fx-grad .fx-svg .ov .cur{stroke-opacity:.95;stroke-width:1.5}
+
+/* key */
+#fx-grad .grad-key{flex:1 1 170px;min-width:0;display:flex;flex-direction:column;gap:7px;padding-bottom:2px}
+#fx-grad .grad-key p{margin:0}
+#fx-grad .fx-scale i{flex:0 0 72px;height:9px;box-shadow:inset 0 0 0 1px var(--rule);
+  background:linear-gradient(90deg,var(--bg),var(--loss));background:linear-gradient(90deg in oklab,var(--bg),var(--loss))}
+#fx-grad .grad-snote{margin-top:-3px}
+#fx-grad .grad-mk{display:flex;align-items:center;gap:8px;font:300 12px/1.5 var(--mono);color:var(--muted)}
+#fx-grad .grad-box{flex:none;width:16px;height:11px;box-sizing:border-box}
+#fx-grad .grad-box.tr{border:1.5px solid var(--accent)}
+#fx-grad .grad-box.an{border:1px solid var(--rule);background:linear-gradient(135deg,var(--muted) 0 6px,transparent 6px)}
+
+/* tooltip */
+#fx-grad .fx-tip .sw{display:inline-block;width:9px;height:9px;border-radius:1px;margin-right:7px;vertical-align:-1px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 18%,transparent)}
+#fx-grad .fx-tip .v{font-weight:400;color:var(--fg)}
+#fx-grad .fx-tip sub{font-size:.75em;line-height:0}
+#fx-grad .fx-tip .tag{color:var(--accent)}
+
+@media (max-width:520px){
+  #fx-grad .grad-w{display:none}
+  #fx-grad .grad-n{display:inline}
+  #fx-grad .fx-status{min-height:3em}
+}

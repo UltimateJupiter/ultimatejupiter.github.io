@@ -1,0 +1,23 @@
+/* T2MLR: post-specific styles (the Jacobi training steps and the small result tables). Tokens only. */
+
+/* Algorithm 1 as a numbered list */
+ol.algo{list-style:none;counter-reset:algo;margin:14px 0 18px;padding:12px 0 12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+ol.algo > li{counter-increment:algo;position:relative;padding-left:2.1em;margin:6px 0}
+ol.algo > li::before{content:counter(algo);position:absolute;left:.2em;top:.12em;font-family:var(--mono);font-size:12.5px;font-weight:400;color:var(--accent)}
+ol.algo .math-block{margin-top:4px}
+
+/* compact result tables */
+.t2-tab td.hi{color:var(--accent)}
+.t2-tab td b{font-weight:500;color:var(--accent)}
+.t2-tab + .note, .tablewrap + .note{margin-top:6px}
+.t2-rel td{text-align:left}
+.t2-rel th{text-align:left}
+.t2-rel td:last-child,.t2-rel th:last-child{text-align:right}
+@media (max-width:620px){.t2-rel td,.t2-rel th{white-space:normal;padding-inline:5px}}
+@media (max-width:520px){ol.algo > li{padding-left:1.5em}ol.algo .math-block.eqwrap{margin-inline:-.4em -.2em;font-size:.86em}}
+@media (max-width:620px){
+ .t2-tab{font-size:12px}
+ .t2-tab th{white-space:normal;vertical-align:bottom}
+ .t2-tab th,.t2-tab td{padding-inline:4px}
+ .t2-arrow td{white-space:normal}
+}

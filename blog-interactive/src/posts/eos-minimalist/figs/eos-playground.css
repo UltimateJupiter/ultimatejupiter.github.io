@@ -1,0 +1,106 @@
+/* Figure 1 · EoS playground (fx-eos-playground). Every selector is scoped to #fx-eos-playground. */
+#fx-eos-playground .eosp-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-eos-playground .eosp-ctl .lab{white-space:nowrap}
+#fx-eos-playground .eosp-ctl[hidden]{display:none}
+#fx-eos-playground .fx-bar .fx-select{max-width:calc(100vw - 150px)}
+#fx-eos-playground .eosp-bar2{margin-top:-4px;min-height:30px}
+#fx-eos-playground .eosp-act{margin-left:auto;gap:10px}
+#fx-eos-playground .fx-seg button{white-space:nowrap}
+#fx-eos-playground .eosp-prog:empty{display:none}
+#fx-eos-playground .eosp-prog{order:-1;text-align:right;font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em}
+#fx-eos-playground .eosp-legend{gap:4px 14px}
+#fx-eos-playground .eosp-legend[hidden]{display:none}
+#fx-eos-playground .eosp-legend span{white-space:nowrap}
+#fx-eos-playground .eosp-legend .sw{border-top-width:2.5px}
+
+/* run colours: a run group carries data-r and every mark reads --rc */
+#fx-eos-playground [data-r="0"]{--rc:var(--fx-c1)}
+#fx-eos-playground [data-r="1"]{--rc:var(--fx-c2)}
+#fx-eos-playground [data-r="2"]{--rc:var(--fx-c3)}
+#fx-eos-playground [data-r="s"]{--rc:var(--accent)}
+#fx-eos-playground .eosp-legend [data-r]{color:var(--rc)}
+#fx-eos-playground .eosp-legend [data-r] b{font-weight:400;color:var(--muted)}
+
+/* 2/η slider: native range over a drawn rail (keyboard, touch and a11y come from the input) */
+#fx-eos-playground .eosp-kctl{align-items:flex-start;gap:10px}
+#fx-eos-playground .eosp-kctl .lab,#fx-eos-playground .eosp-kval{padding-top:5px}
+#fx-eos-playground .eosp-kval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:7.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-eos-playground .eosp-slider{--tw:28px;position:relative;width:190px;height:42px;flex:0 1 190px;min-width:150px}
+#fx-eos-playground .eosp-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-eos-playground .eosp-fill{position:absolute;left:0;top:0;height:2px;width:50%;border-radius:1px;background:var(--accent)}
+#fx-eos-playground .eosp-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-eos-playground .eosp-range:focus{outline:none}
+#fx-eos-playground .eosp-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-eos-playground .eosp-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-eos-playground .eosp-range::-moz-range-progress{background:transparent}
+#fx-eos-playground .eosp-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-eos-playground .eosp-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-eos-playground .eosp-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-eos-playground .eosp-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-eos-playground .eosp-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
+#fx-eos-playground .eosp-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-eos-playground .eosp-ticks span:nth-child(1){left:0}
+#fx-eos-playground .eosp-ticks span:nth-child(2){left:25%}
+#fx-eos-playground .eosp-ticks span:nth-child(3){left:50%}
+#fx-eos-playground .eosp-ticks span:nth-child(4){left:75%}
+#fx-eos-playground .eosp-ticks span:nth-child(5){left:100%}
+#fx-eos-playground .eosp-ticks span:hover,#fx-eos-playground .eosp-ticks span.on{color:var(--fg)}
+
+/* panels */
+#fx-eos-playground .eosp-panels{gap:18px 22px}
+#fx-eos-playground .eosp-left{gap:4px}
+#fx-eos-playground .eosp-t2{margin-top:8px}
+#fx-eos-playground .eosp-right .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-eos-playground .eosp-chart{position:relative;min-width:0}
+#fx-eos-playground .fx-svg:focus{outline:none}
+#fx-eos-playground .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+#fx-eos-playground .fx-svg .hit{fill:transparent}
+#fx-eos-playground [data-chart="loss"] .hit,#fx-eos-playground [data-chart="sharp"] .hit{cursor:crosshair}
+#fx-eos-playground [data-chart="plane"] .fx-svg{cursor:crosshair}
+#fx-eos-playground .fx-svg text.axn{font-family:var(--sans);font-size:12.5px;fill:var(--fg)}
+#fx-eos-playground .fx-svg text.sup{font-size:8px}
+
+/* series */
+#fx-eos-playground .fx-svg .ln{fill:none;stroke:var(--rc);stroke-width:.5;stroke-opacity:.2;stroke-linejoin:round}
+#fx-eos-playground .fx-svg .dots{fill:var(--rc);stroke:none}
+#fx-eos-playground .fx-svg .thr{stroke:var(--rc);stroke-width:1.1;stroke-dasharray:5 3.5;fill:none;shape-rendering:crispEdges}
+#fx-eos-playground .fx-svg text.thr-lab{fill:var(--rc);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-eos-playground .fx-svg .cur{fill:var(--rc);stroke:var(--bg);stroke-width:1.2}
+
+/* plane */
+#fx-eos-playground .fx-svg .minc{fill:none;stroke:var(--fx-base2);stroke-width:1.5}
+#fx-eos-playground .fx-svg .mtk{stroke:var(--fx-base2);stroke-width:1.2}
+#fx-eos-playground .fx-svg text.mtk-lab,#fx-eos-playground .fx-svg text.minc-lab{paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-eos-playground .fx-svg text.minc-lab{font-family:var(--sans);font-size:12px}
+#fx-eos-playground .fx-svg .path{fill:none;stroke:var(--rc);stroke-width:.5;stroke-opacity:.25;stroke-linejoin:round}
+#fx-eos-playground .fx-svg .ev{fill:var(--rc);stroke:none}
+#fx-eos-playground .fx-svg .od{fill:none;stroke:var(--rc);stroke-width:.8}
+#fx-eos-playground .fx-svg .dia{fill:none;stroke:var(--rc);stroke-width:1.4;stroke-linejoin:miter}
+#fx-eos-playground .fx-svg .dia-bg{fill:none;stroke:var(--bg);stroke-width:3.6;stroke-opacity:.85}
+#fx-eos-playground .fx-svg .init{stroke:var(--fg);stroke-width:1.6;stroke-linecap:round;fill:none}
+#fx-eos-playground .fx-svg .init-bg{stroke:var(--bg);stroke-width:4.5;stroke-linecap:round;fill:none}
+#fx-eos-playground .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1.2;pointer-events:none}
+#fx-eos-playground .fx-svg .ring-bg{fill:none;stroke:var(--bg);stroke-width:3.2;pointer-events:none}
+
+/* tooltip */
+#fx-eos-playground .fx-tip{font-variant-numeric:tabular-nums}
+#fx-eos-playground .fx-tip .eosp-tt{display:grid;column-gap:12px;margin-top:2px}
+#fx-eos-playground .fx-tip .eosp-tt span{text-align:right}
+#fx-eos-playground .fx-tip .eosp-tt span.k{text-align:left}
+#fx-eos-playground .fx-tip .eosp-tt span.h{color:var(--rc)}
+
+@media (max-width:480px){
+  #fx-eos-playground .eosp-kctl{flex-wrap:wrap;justify-content:space-between;row-gap:2px;flex:1 1 100%}
+  #fx-eos-playground .eosp-kctl .lab,#fx-eos-playground .eosp-kval{padding-top:0}
+  #fx-eos-playground .eosp-kval{min-width:0;text-align:right}
+  #fx-eos-playground .eosp-slider{order:3;flex:1 1 100%;width:auto;max-width:none}
+  #fx-eos-playground .eosp-act{margin-left:0}
+  #fx-eos-playground #fx-eos-playground-steplab{display:none}
+}
+/* larger touch target for the tick shortcuts, without moving the labels */
+#fx-eos-playground .eosp-ticks span::after{content:'';position:absolute;inset:0 -7px -9px}

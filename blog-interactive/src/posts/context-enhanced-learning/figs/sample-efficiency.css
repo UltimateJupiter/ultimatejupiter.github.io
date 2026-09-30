@@ -1,0 +1,62 @@
+/* Figure 2 (fx-sample-efficiency): accuracy without context against dataset size, MLT(5, 8) and MLT(5, 10). */
+#fx-sample-efficiency .s-ann{--fxse-c:var(--accent)}
+#fx-sample-efficiency .s-fix{--fxse-c:var(--good)}
+#fx-sample-efficiency .s-noc{--fxse-c:var(--fg)}
+#fx-sample-efficiency .s-nod{--fxse-c:var(--fx-base2)}
+#fx-sample-efficiency .s-wrc{--fxse-c:color-mix(in oklab,var(--fx-base2) 50%,var(--fx-base3))}
+#fx-sample-efficiency .s-nic{--fxse-c:var(--fx-base3)}
+
+/* controls + legend */
+#fx-sample-efficiency .fxse-ctl{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}
+#fx-sample-efficiency .fxse-legend{gap:2px 6px;align-items:center;margin-top:-4px}
+#fx-sample-efficiency .fxse-legend .grp{display:inline-flex;align-items:center;color:var(--muted);padding-left:4px;white-space:nowrap}
+#fx-sample-efficiency .fxse-legend .brk{flex-basis:100%;height:0}
+#fx-sample-efficiency .fxse-lg{display:inline-flex;align-items:center;gap:6px;font:inherit;color:var(--muted);background:transparent;border:0;border-radius:2px;
+  padding:2px 5px;cursor:pointer;white-space:nowrap;transition:opacity .2s,color .2s}
+#fx-sample-efficiency .fxse-lg:hover{color:var(--fg)}
+#fx-sample-efficiency .fxse-lg:focus-visible{outline:1px solid var(--accent);outline-offset:0}
+#fx-sample-efficiency .fxse-lg[aria-pressed="true"]{color:var(--fg);background:color-mix(in srgb,var(--fg) 9%,transparent)}
+#fx-sample-efficiency .fxse-legend.has-sel .fxse-lg[aria-pressed="false"]{opacity:.55}
+#fx-sample-efficiency .fxse-lg.off{opacity:.4}
+#fx-sample-efficiency .fxse-lg.off:hover{opacity:.75}
+#fx-sample-efficiency .fxse-sw{display:block;flex:0 0 auto;overflow:visible}
+
+/* panels */
+#fx-sample-efficiency .fx-panels{row-gap:26px}
+#fx-sample-efficiency .fxse-plot{min-width:0}
+#fx-sample-efficiency .fx-svg{outline:none}
+#fx-sample-efficiency .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+
+/* marks */
+#fx-sample-efficiency .fxse-ser{transition:opacity .2s,visibility .2s}
+#fx-sample-efficiency .fxse-ser.dim{opacity:.3}
+#fx-sample-efficiency .fxse-ser.hid{opacity:0;visibility:hidden}
+#fx-sample-efficiency .fxse-line{fill:none;stroke:var(--fxse-c);stroke-width:1.75px;stroke-linejoin:round;stroke-linecap:round}
+#fx-sample-efficiency .s-noc .fxse-line{stroke-width:1.5px}
+#fx-sample-efficiency .abl .fxse-line{stroke-width:1.25px;stroke-linecap:butt}
+#fx-sample-efficiency .s-nod .fxse-line{stroke-dasharray:5 3}
+#fx-sample-efficiency .s-wrc .fxse-line{stroke-dasharray:2.5 2.5}
+#fx-sample-efficiency .s-nic .fxse-line{stroke-dasharray:8 2.5 2 2.5}
+#fx-sample-efficiency .mk-star,#fx-sample-efficiency .mk-sq{fill:var(--fxse-c);stroke:var(--bg);stroke-width:.8px;stroke-linejoin:round}
+#fx-sample-efficiency .mk-circ{fill:var(--bg);stroke:var(--fxse-c);stroke-width:1.5px}
+#fx-sample-efficiency .mk-x{fill:none;stroke:var(--fxse-c);stroke-width:1.5px;stroke-linecap:round}
+#fx-sample-efficiency .fxse-rg{stroke:var(--muted);stroke-width:1.4px;stroke-dasharray:.1 3.4;stroke-linecap:round;fill:none}
+#fx-sample-efficiency .fx-svg text.fxse-rgl{font-size:10px;paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-sample-efficiency .fx-svg .tk{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-sample-efficiency .fx-svg .gr.v{stroke-dasharray:none}
+#fx-sample-efficiency .fx-svg tspan.sup{font-size:8px}
+
+/* hover */
+#fx-sample-efficiency .fxse-hov{visibility:hidden;pointer-events:none}
+#fx-sample-efficiency .fxse-hov.on{visibility:visible}
+
+/* tooltip */
+#fx-sample-efficiency .fx-tip{left:0;top:0}
+#fx-sample-efficiency .fxse-th{color:var(--muted);margin-bottom:3px}
+#fx-sample-efficiency .fxse-th b{color:var(--fg)}
+#fx-sample-efficiency .fxse-tg{display:grid;grid-template-columns:18px auto auto;column-gap:8px;align-items:center}
+#fx-sample-efficiency .fxse-tg .v{justify-self:end;font-variant-numeric:tabular-nums;color:var(--fg)}
+#fx-sample-efficiency .fxse-tg .k.hl{color:var(--fg)}
+#fx-sample-efficiency .fxse-tg .fxse-sw{justify-self:center}
+
+#fx-sample-efficiency .fxse-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}

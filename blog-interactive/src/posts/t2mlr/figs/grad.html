@@ -1,0 +1,17 @@
+<figure class="fx" id="fx-grad">
+  <div class="fx-bar">
+    <span class="grad-ctl"><span class="lab" id="fx-grad-gl">gradient of</span><span class="fx-seg" role="group" aria-labelledby="fx-grad-gl" data-k="group"><button type="button" data-v="all" aria-pressed="true" aria-label="All parameters"><span class="grad-w">All parameters</span><span class="grad-n">All</span></button><button type="button" data-v="fusion" aria-pressed="false" aria-label="Fusion module"><span class="grad-w">Fusion module</span><span class="grad-n">Fusion</span></button><button type="button" data-v="layer15" aria-pressed="false" aria-label="Layer 15">Layer 15</button></span></span>
+    <span class="grad-ctl"><span class="lab" id="fx-grad-ml">metric</span><span class="fx-seg" role="group" aria-labelledby="fx-grad-ml" data-k="metric"><button type="button" data-v="cos" aria-pressed="true" aria-label="cosine similarity"><span class="grad-w">cosine similarity</span><span class="grad-n">cosine</span></button><button type="button" data-v="l2" aria-pressed="false" aria-label="relative l2 distance"><span class="grad-w">relative ℓ<sub>2</sub> distance</span><span class="grad-n">rel. ℓ<sub>2</sub></span></button></span></span>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <div class="grad-body">
+    <div class="grad-plot"></div>
+    <div class="grad-key">
+      <div class="fx-scale" role="img" aria-label=""><span class="grad-s0"></span><i></i><span class="grad-s1"></span></div>
+      <p class="fx-note grad-snote"></p>
+      <p class="grad-mk"><span class="grad-box tr" aria-hidden="true"></span>training setting (16, 4)</p>
+      <p class="grad-mk"><span class="grad-box an" aria-hidden="true"></span>anchor (32, 32)</p>
+    </div>
+  </div>
+  <figcaption>Figure 3. How far training gradients move when the recurrence is approximated with fewer iterations. For a checkpoint of T2MLR(5, 26) and one batch of 2048-token sequences, each cell compares the gradient under \((d_{\text{forward}}, d_{\text{backward}})\) with the gradient under the anchor \((32, 32)\), for all parameters, the fusion module, or layer 15; redder cells are farther from the anchor (relative \(\ell_2\) on a log scale that saturates at 10). With \(d_{\text{forward}} \ge 8\) and \(d_{\text{backward}} \ge 4\) the cosine similarity is at least 0.97 for all three, while with \(d_{\text{forward}} \le 4\) it is at most 0.68, and the fusion-module gradient points away from the anchor once \(d_{\text{forward}} \le 2\). Outlined: the training setting (16, 4). Hover a cell, or focus the chart and use the arrow keys, to read its value. Values from the paper's Figure 7 (Appendix B.3).</figcaption>
+</figure>

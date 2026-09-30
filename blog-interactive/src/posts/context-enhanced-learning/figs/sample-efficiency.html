@@ -1,0 +1,20 @@
+<figure class="fx" id="fx-sample-efficiency">
+  <div class="fx-bar">
+    <div class="fxse-ctl"><span class="lab" id="fx-sample-efficiency-modelab">series</span><div class="fx-seg" role="group" aria-labelledby="fx-sample-efficiency-modelab"><button type="button" data-mode="cur" aria-pressed="true">curricula</button><button type="button" data-mode="all" aria-pressed="false">+ ablations</button></div></div>
+  </div>
+  <div class="fx-legend fxse-legend" role="group" aria-label="Highlight a series"></div>
+  <div class="fx-panels">
+    <div class="fx-panel" data-panel="0">
+      <p class="fx-ptitle">MLT(5, 8)</p>
+      <p class="fx-psub">d = 5 levels · n = 8 symbols</p>
+      <div class="fxse-plot"></div>
+    </div>
+    <div class="fx-panel" data-panel="1">
+      <p class="fx-ptitle">MLT(5, 10)</p>
+      <p class="fx-psub">d = 5 levels · n = 10 symbols</p>
+      <div class="fxse-plot"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 2. Accuracy on held-out inputs with no phrasebook in the context, after one epoch of training on a fixed set of phrasebooks \(\Pi^*\), against the number of training samples \(|D_{\Pi^*}|\). Annealing Dropout (blue) and Fixed Dropout (green) keep phrasebook excerpts in the context during training; No Context is plain fine-tuning. The ablations (dashed, shown with <i>+ ablations</i>) use no dropout, wrong rules, or a base model without ICL capability. Click a legend entry to highlight one series; hover or tap a chart to read the values at one dataset size. Values are read from the vector graphics of the paper's Figure 2 (about ±0.005); the dotted line is random guessing, \(1/n\).</figcaption>
+</figure>

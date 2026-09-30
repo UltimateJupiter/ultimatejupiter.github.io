@@ -1,0 +1,40 @@
+<figure class="fx" id="fx-surr-train">
+  <div class="fx-bar sut-bar">
+    <div class="fx-seg sut-mode" role="group" aria-label="Training mode">
+      <button type="button" data-mode="layer" aria-pressed="true">context, layer-wise</button>
+      <button type="button" data-mode="full" aria-pressed="false">context, all layers</button>
+      <button type="button" data-mode="none" aria-pressed="false">no context</button>
+    </div>
+  </div>
+  <div class="fx-bar sut-bar2">
+    <label class="sut-ctl"><span class="lab">size</span><select class="fx-select sut-size" aria-label="Task size: characters n and depth d">
+      <option value="4,3">n = 4, d = 3</option>
+      <option value="6,5" selected>n = 6, d = 5</option>
+      <option value="5,8">n = 5, d = 8</option>
+    </select></label>
+    <label class="sut-ctl"><span class="lab">η</span><select class="fx-select sut-lr" aria-label="Learning rate η">
+      <option value="1">1</option>
+      <option value="10">10</option>
+      <option value="100" selected>100</option>
+    </select></label>
+    <div class="fx-seg sut-act" role="group" aria-label="Playback">
+      <button type="button" class="sut-play" aria-pressed="false" aria-label="Run the training">play</button>
+      <button type="button" class="sut-reset" aria-label="Reset with a new random task">reset</button>
+    </div>
+  </div>
+  <div class="fx-panels sut-panels">
+    <div class="fx-panel sut-left">
+      <p class="fx-ptitle">Columns of HardMax(W<sub>i</sub>) that match the phrasebook</p>
+      <p class="fx-psub sut-lsub"><b class="sut-selname">W1</b> in blue · click a line to select</p>
+      <div class="sut-plot" data-chart="curve"></div>
+    </div>
+    <div class="fx-panel sut-right">
+      <p class="fx-ptitle sut-htitle"><span>Weights of</span> <select class="fx-select sut-layer" aria-label="Layer shown in the heatmap"></select></p>
+      <p class="fx-psub">correct rule on the diagonal</p>
+      <div class="sut-plot" data-chart="heat"></div>
+      <div class="fx-scale sut-scale" aria-hidden="true"><span>W 0</span><i></i><span>1</span><span class="sut-key"><i class="sut-kdiag"></i>correct</span><span class="sut-key sut-kmask"><i></i>masked rule</span></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 3. Live training of the surrogate model as in the paper's Appendix G.5: softmax at temperature 1/25, cross-entropy, weights clipped to \([0, 1]\), and one fixed random training string of \(10n^2\) pairs (the length the authors' released code uses); by default \(n = 6\), \(d = 5\) and learning rate 100. With context, every phrasebook is in the input except one rule, and the removed rule cycles through all rules of all levels (grey bands: steps where a rule of the selected layer is removed); layer-wise updates only the layer whose rule is missing (Algorithm 4), all layers updates every layer (Algorithm 5). The curves show, per layer, the fraction of columns of \(\mathrm{HardMax}(W_i)\) that equal the phrasebook's, and the heatmap shows the selected layer's weights with the correct rules on the diagonal; hover over either panel to read values. Trained without the phrasebooks in context, the same model stays at chance, \(1/n^2\) per rule. Reset draws a new random task.</figcaption>
+</figure>

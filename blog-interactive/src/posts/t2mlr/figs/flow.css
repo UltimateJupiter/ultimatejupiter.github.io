@@ -1,0 +1,82 @@
+/* Figure 1 · data flow and serial depth (fx-flow). Every selector is scoped to #fx-flow. */
+#fx-flow .flw-bar{align-items:center}
+#fx-flow .flw-bar + .flw-bar{margin-top:-6px}
+#fx-flow .flw-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-flow .flw-ctl .lab{white-space:nowrap}
+#fx-flow .flw-rng{flex-wrap:wrap;gap:6px 18px}
+#fx-flow .flw-rng[hidden]{display:none}
+#fx-flow .flw-sl{display:inline-flex;align-items:center;gap:8px}
+#fx-flow .flw-sl .lab sub{font-size:.78em;vertical-align:-.25em;line-height:0}
+#fx-flow .flw-val{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+
+/* ℓ sliders: native range (keyboard, touch, a11y) over a drawn rail. --tw = thumb box = hit area. */
+#fx-flow .flw-slider{--tw:26px;position:relative;width:118px;height:var(--tw);flex:0 0 auto}
+#fx-flow .flw-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:calc(var(--tw) / 2 - 1px);height:2px;border-radius:1px;background:var(--line)}
+#fx-flow .flw-fill{position:absolute;top:0;left:0;height:2px;width:0;border-radius:1px;background:var(--accent)}
+#fx-flow .flw-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-flow .flw-range:focus{outline:none}
+#fx-flow .flw-range:focus-visible{outline:1px solid var(--accent);outline-offset:1px;border-radius:2px}
+#fx-flow .flw-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-flow .flw-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-flow .flw-range::-moz-range-progress{background:transparent}
+#fx-flow .flw-range::-moz-focus-outer{border:0}
+#fx-flow .flw-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5px,var(--accent) 5.6px 6.6px,transparent 7.2px)}
+#fx-flow .flw-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5px,var(--accent) 5.6px 6.6px,transparent 7.2px)}
+#fx-flow .flw-range:active::-webkit-slider-thumb{cursor:grabbing}
+
+/* panels: the data-flow panel gets more width than the chart */
+#fx-flow .flw-panels{grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:22px}
+@media (max-width:600px){#fx-flow .flw-panels{grid-template-columns:1fr;gap:18px}}
+#fx-flow .fx-ptitle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* main svg */
+#fx-flow #fx-flow-svg{cursor:pointer;outline:none;border-radius:2px}
+#fx-flow #fx-flow-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-flow .fx-svg text.num{font-size:12px;fill:var(--muted);font-variant-numeric:tabular-nums}
+#fx-flow .fx-svg text.num.on{fill:var(--accent);font-weight:500}
+#fx-flow .fx-svg text.tok{fill:var(--muted)}
+#fx-flow .fx-svg text.tok.on{fill:var(--fg)}
+#fx-flow .fx-svg text.cap{font-size:9.5px;letter-spacing:.02em}
+#fx-flow .fx-svg text.tk.on{fill:var(--fg)}
+#fx-flow .fx-svg .col.fut{opacity:.5}
+#fx-flow .fx-svg .rec{fill:none;stroke:color-mix(in srgb,var(--fg) 60%,transparent);stroke-width:1.25;stroke-linejoin:round;stroke-linecap:round}
+#fx-flow .fx-svg .rec.fut{stroke:color-mix(in srgb,var(--fg) 25%,transparent)}
+#fx-flow .fx-svg .ah{fill:color-mix(in srgb,var(--fg) 60%,transparent)}
+#fx-flow .fx-svg .ah.fut{fill:color-mix(in srgb,var(--fg) 25%,transparent)}
+#fx-flow .fx-svg .ah.on{fill:var(--accent)}
+#fx-flow .fx-svg .chip rect{fill:var(--bg);stroke:color-mix(in srgb,var(--fg) 60%,transparent);stroke-width:1}
+#fx-flow .fx-svg .chip text{fill:var(--fg);font-size:10.5px}
+#fx-flow .fx-svg .chip.fut rect{stroke:color-mix(in srgb,var(--fg) 25%,transparent)}
+#fx-flow .fx-svg .chip.fut text{fill:var(--muted)}
+#fx-flow .fx-svg .chip.on rect{stroke:var(--accent)}
+#fx-flow .fx-svg .chip.on text{fill:var(--accent)}
+#fx-flow .fx-svg text.phi{font-size:10.5px;fill:var(--muted)}
+#fx-flow .fx-svg text.phi.on{fill:var(--accent)}
+#fx-flow .fx-svg .phit{stroke:color-mix(in srgb,var(--fg) 60%,transparent);stroke-width:1.5;shape-rendering:crispEdges}
+#fx-flow .fx-svg .path{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round}
+#fx-flow .fx-svg .brk{stroke:var(--accent);stroke-width:2;shape-rendering:crispEdges}
+#fx-flow .fx-svg .cellh{fill:none;stroke:var(--fg);stroke-width:1;pointer-events:none}
+
+/* legend swatches */
+#fx-flow .flw-leg{gap:4px 14px;font-size:11.5px}
+#fx-flow .flw-leg span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+#fx-flow .flw-leg .box{margin-right:0}
+#fx-flow .flw-leg .ln{display:inline-block;width:16px;height:0;border-top:1.75px solid var(--accent)}
+
+/* chart */
+#fx-flow .fx-svg .s-tr{fill:none;stroke:var(--fx-base2);stroke-width:1.25}
+#fx-flow .fx-svg .s-ctx{fill:none;stroke:var(--fx-base2);stroke-width:1.25;stroke-dasharray:1.5 2.5}
+#fx-flow .fx-svg .s-sel{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-linejoin:round}
+#fx-flow .fx-svg .s-loop{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-dasharray:5 3}
+#fx-flow .fx-svg .d-sel{fill:var(--accent);stroke:var(--bg);stroke-width:1.25}
+#fx-flow .fx-svg .d-tr{fill:var(--fx-base2);stroke:var(--bg);stroke-width:1.25}
+#fx-flow .fx-svg text.lb-sel{fill:var(--accent)}
+#fx-flow .fx-svg text.lb-tr{fill:var(--muted)}
+#fx-flow .fx-svg .tband{fill:var(--fx-band)}
+#fx-flow .fx-svg .hit{fill:transparent}
+#fx-flow .fx-tip .flw-tt{display:grid;grid-template-columns:auto auto;column-gap:12px;margin-top:2px}
+#fx-flow .fx-tip .flw-tt span:nth-child(2n){text-align:right;font-variant-numeric:tabular-nums}
+#fx-flow .fx-tip .flw-tn{color:var(--muted);margin-top:3px;white-space:normal;max-width:260px}

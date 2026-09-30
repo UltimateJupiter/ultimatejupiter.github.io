@@ -1,0 +1,51 @@
+/* Context-Enhanced Learning: Algorithm 1 box, layer table, and the training-sequence illustration (#fig-seq). Tokens only. */
+
+/* Algorithm 1 */
+.algo{padding:16px 22px 17px;border:1px solid var(--rule);border-radius:6px;font-size:16.5px;line-height:1.55}
+.algo p{margin:0}
+.algo .algo-h{font-weight:500;margin-bottom:6px}
+.algo .algo-k{font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-right:8px}
+.algo .algo-in{color:var(--muted);margin-bottom:4px}
+.algo ol{margin:0;padding:0 0 0 1.9em;counter-reset:al}
+.algo ol li{list-style:none;position:relative;counter-increment:al;margin:1px 0}
+.algo ol li::before{content:counter(al);position:absolute;left:-1.9em;width:1.3em;text-align:right;font-family:var(--mono);font-size:11px;line-height:2.2;color:var(--muted)}
+.algo ol li.in{padding-left:1.4em}
+@media (max-width:520px){.algo{padding:14px 14px 15px;font-size:15.5px}}
+
+/* reading vs storage layers */
+table.layers th{white-space:normal;vertical-align:bottom;font-weight:400;color:var(--muted)}
+table.layers td:first-child{font-family:var(--sans);font-size:16px}
+
+/* one training sequence under the curricula */
+#fig-seq .seq-seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+#fig-seq .seq-prog{display:inline-flex;align-items:center;gap:8px;transition:opacity .2s}
+#fig-seq .seq-prog.off{opacity:.4}
+#fig-seq .seq-prog input{width:110px;accent-color:var(--accent)}
+#fig-seq .seq-tv{min-width:3.2em;font-variant-numeric:tabular-nums}
+#fig-seq .seq{display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-weight:300;font-size:12px;line-height:1.7}
+#fig-seq .seq-part{border-left:2px solid var(--rule);padding:2px 0 2px 12px}
+#fig-seq .seq-part.seq-out{border-left-color:var(--accent)}
+#fig-seq .seq-tag{font-family:var(--sans);font-size:14px;color:var(--muted);margin-bottom:3px}
+#fig-seq .seq-tag b{font-weight:500;color:var(--fg);margin-right:4px}
+#fig-seq .seq-nl,#fig-seq .seq-l{font-family:var(--mono);font-size:11px;margin-left:6px;padding:0 5px;border-radius:2px;border:1px solid var(--rule)}
+#fig-seq .seq-l{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--rule))}
+#fig-seq .seq-body{color:var(--fg);overflow-wrap:anywhere}
+#fig-seq .seq-book{display:grid;grid-template-columns:22px minmax(0,1fr);align-items:baseline}
+#fig-seq .seq-pi{color:var(--muted);font-size:11.5px}
+#fig-seq .seq-rules{display:flex;flex-wrap:wrap;gap:1px 10px}
+#fig-seq .seq-r{white-space:nowrap;color:var(--fg);transition:opacity .2s,color .2s}
+#fig-seq .seq-r.unused{border-bottom:1px dashed var(--muted)}
+#fig-seq .seq-r.drop{color:var(--muted);opacity:.5;text-decoration:line-through;text-decoration-color:var(--loss)}
+#fig-seq .seq-empty{color:var(--muted);font-style:italic}
+#fig-seq .seq-think{color:var(--muted)}
+#fig-seq .seq-ans{color:var(--accent);font-weight:400}
+@media (max-width:520px){
+ #fig-seq .seq{font-size:11px}
+ #fig-seq .seq-rules{gap:0 8px}
+ #fig-seq .seq-prog input{width:90px}
+}
+@media (prefers-reduced-motion: reduce){#fig-seq .seq-r,#fig-seq .seq-prog{transition:none !important}}
+
+/* theorem headers: keep "Theorem 1" on one line when the informal note wraps at phone width */
+.thm .thm-h .thm-k{white-space:nowrap}
+.thm .thm-h .thm-i{line-height:1.3}

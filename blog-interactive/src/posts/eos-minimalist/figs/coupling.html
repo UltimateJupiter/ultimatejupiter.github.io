@@ -1,0 +1,41 @@
+<figure class="fx" id="fx-coupling">
+  <div class="fx-bar cpl-bar">
+    <label class="cpl-ctl"><span class="lab">initialization</span><select class="fx-select" id="fx-coupling-init" aria-label="Initialization">
+      <option value="3">3 layers: (6, 0.1, 0.4)</option>
+      <option value="7" selected>7 layers: (2, 2.5, 3, 0.1, 0.2, 0.3, 0.4)</option>
+      <option value="4">4 layers: (6, 0.7, 0.3, 0.2)</option>
+    </select></label>
+  </div>
+  <div class="fx-bar cpl-bar2">
+    <div class="fx-legend cpl-legend" aria-hidden="true">
+      <span class="cpl-lg-s"><i class="sw"></i>entry initialized below 1</span>
+      <span class="cpl-lg-l"><i class="sw"></i>above 1</span>
+    </div>
+    <div class="cpl-ctl cpl-act">
+      <div class="fx-seg" role="group" aria-label="Playback">
+        <button type="button" class="cpl-play" aria-label="Replay the run">replay</button>
+        <button type="button" class="cpl-end" aria-label="Show all 5000 steps">show all</button>
+      </div>
+      <span class="cpl-prog" aria-hidden="true"></span>
+    </div>
+  </div>
+  <div class="cpl-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle">Loss</p>
+      <p class="fx-psub" data-sub="loss">&nbsp;</p>
+      <div class="cpl-chart" data-chart="loss"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Sharpness</p>
+      <p class="fx-psub" data-sub="sharp">&nbsp;</p>
+      <div class="cpl-chart" data-chart="sharp"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Distance to the last entry</p>
+      <p class="fx-psub" data-sub="dist">&nbsp;</p>
+      <div class="cpl-chart" data-chart="dist"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 5. Gradient descent <span class="nw">(\(\eta=0.2\))</span> on \(n\)-layer scalar networks \(\tfrac12(1-x_1\cdots x_n)^2\) with all entries initialized differently, from the three initializations of the paper's Appendix A.4 (its Figures 16, 17 and 20), simulated live for 5000 steps. The distance \(|x_i-x_n|\) of each entry to the last one, over the first 200 steps, shows the small entries (blue) becoming equal geometrically, which recovers the coupled model. The sharpness, the top eigenvalue of the \(n\times n\) Hessian, rises above \(2/\eta=10\) and then settles just below it, even in the 4-layer case where the small entries never become exactly equal, while the loss decreases non-monotonically. Hover a panel, or focus it and use the arrow keys, to read the step, loss, sharpness and every entry.</figcaption>
+</figure>

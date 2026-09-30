@@ -1,0 +1,67 @@
+<figure class="fx" id="fx-jacobi">
+  <div class="fx-bar jb-bar">
+    <div class="jb-sl">
+      <label class="lab" for="fx-jacobi-grec">γ<sub>rec</sub></label>
+      <div class="jb-slider">
+        <div class="jb-rail" aria-hidden="true"><i class="jb-fill"></i><i class="jb-zero"></i></div>
+        <input id="fx-jacobi-grec" class="jb-range" type="range" min="-2" max="2" step="0.1" value="0.5" data-g="rec">
+        <div class="jb-ticks" aria-hidden="true"><span>−2</span><span>0</span><span>2</span></div>
+      </div>
+      <output class="jb-val" for="fx-jacobi-grec" aria-hidden="true">+0.5</output>
+    </div>
+    <div class="jb-sl">
+      <label class="lab" for="fx-jacobi-gcur">γ<sub>cur</sub></label>
+      <div class="jb-slider">
+        <div class="jb-rail" aria-hidden="true"><i class="jb-fill"></i><i class="jb-zero"></i></div>
+        <input id="fx-jacobi-gcur" class="jb-range" type="range" min="-2" max="2" step="0.1" value="-0.5" data-g="cur">
+        <div class="jb-ticks" aria-hidden="true"><span>−2</span><span>0</span><span>2</span></div>
+      </div>
+      <output class="jb-val" for="fx-jacobi-gcur" aria-hidden="true">−0.5</output>
+    </div>
+    <div class="jb-row">
+      <div class="jb-ctl">
+        <label class="lab" for="fx-jacobi-df">d<sub>forward</sub></label>
+        <select class="fx-select" id="fx-jacobi-df" aria-label="d forward, the number of Jacobi iterations used in training">
+          <option value="4">4</option>
+          <option value="8">8</option>
+          <option value="16" selected>16 (paper)</option>
+          <option value="32">32</option>
+        </select>
+      </div>
+      <div class="fx-seg" role="group" aria-label="Weights">
+        <button type="button" id="fx-jacobi-new">new weights</button>
+        <button type="button" id="fx-jacobi-reset">reset</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle">Relative error of the parallel cache</p>
+      <p class="fx-psub">per position \(t\), after \(k\) iterations</p>
+      <div class="jb-heat" id="fx-jacobi-heat" tabindex="0" role="group" aria-label="Error map. Arrow keys move a cursor over iterations and positions; Home and End jump along a row; Escape clears.">
+        <svg class="fx-svg" id="fx-jacobi-hsvg" role="img" aria-label="Relative error of the parallel cache"></svg>
+      </div>
+      <div class="jb-keys" aria-hidden="true">
+        <div class="fx-scale jb-scale">
+          <div class="jb-ramp"><i></i>
+            <div class="jb-rl"><span>1</span><span>10<sup>−2</sup></span><span>10<sup>−4</sup></span><span>≤10<sup>−6</sup></span></div>
+          </div>
+        </div>
+        <div class="fx-legend jb-leg">
+          <span><svg class="jb-sw" width="18" height="10" viewBox="0 0 18 10"><line class="fr" x1="1" y1="9" x2="17" y2="1"/></svg>exact to the left</span>
+          <span><i class="jb-box"></i>k = d<sub>forward</sub></span>
+        </div>
+      </div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Worst position vs iterations</p>
+      <p class="fx-psub">\(\max_t\) of the relative error, log scale</p>
+      <div class="jb-line" id="fx-jacobi-line">
+        <svg class="fx-svg" id="fx-jacobi-lsvg" role="img" aria-label="Worst-position relative error against iterations"></svg>
+      </div>
+    </div>
+  </div>
+  <p class="fx-note" id="fx-jacobi-note"></p>
+  <p class="fx-status" id="fx-jacobi-status" aria-live="polite"></p>
+  <figcaption>Figure 2. The parallel approximation of the recurrent cache (Algorithm 1) on a toy middle block: two causal attention-plus-MLP layers with random weights, width 16, 48 tokens, and the paper's fusion (Eq. 2.3) and cache update (Eq. 2.4). Each cell is the relative error of \(\mathbf R\) at one position after \(k\) Jacobi iterations, compared with the exact sequential recurrence (red is large, background is below \(10^{-6}\)). The right panel follows the worst position, with both gates at 0 in grey for reference. The shift makes positions left of the dashed line exact, one more per iteration. Everywhere else, in this toy, the error falls roughly geometrically with \(k\). Move the gates, or draw new weights. The weights are random, not trained, and the numbers are illustrative.</figcaption>
+</figure>

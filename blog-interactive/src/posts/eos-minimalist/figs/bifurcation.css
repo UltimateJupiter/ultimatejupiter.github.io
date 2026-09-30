@@ -1,0 +1,102 @@
+/* Figure 4 · bifurcation of the two-step map (fx-bifurcation). Every selector is scoped to #fx-bifurcation.
+   The diagram's dots are drawn on a <canvas> under an SVG that carries axes, overlays and the cursor.
+   Canvas colours are resolved from the same tokens in JS, so the legend and the dots agree in both themes. */
+#fx-bifurcation .bif-it{font-family:var(--sans);font-style:italic;font-size:1.08em}
+#fx-bifurcation .bif-bar{align-items:flex-start;gap:8px 18px}
+#fx-bifurcation .bif-ctl{display:inline-flex;align-items:flex-start;gap:10px;min-width:0;max-width:100%}
+#fx-bifurcation .bif-ctl .lab{white-space:nowrap;padding-top:5px}
+#fx-bifurcation .bif-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:6.2em;white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:5px}
+#fx-bifurcation .bif-seg{margin-top:2px}
+#fx-bifurcation .bif-seg button{white-space:nowrap}
+#fx-bifurcation .bif-play{min-width:4.6em}
+
+/* slider: native range over a drawn rail (keyboard, touch and a11y come from the input) */
+#fx-bifurcation .bif-slider{--tw:28px;position:relative;width:250px;height:42px;flex:0 1 250px;min-width:170px}
+#fx-bifurcation .bif-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-bifurcation .bif-rail i{position:absolute;top:-3px;width:1px;height:8px;background:var(--muted);opacity:.6}
+#fx-bifurcation .bif-rail .bif-z{left:16.129%}
+#fx-bifurcation .bif-rail .bif-s1{left:56.452%}
+#fx-bifurcation .bif-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-bifurcation .bif-range:focus{outline:none}
+#fx-bifurcation .bif-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-bifurcation .bif-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-bifurcation .bif-range::-moz-range-progress{background:transparent}
+#fx-bifurcation .bif-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-bifurcation .bif-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-bifurcation .bif-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-bifurcation .bif-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-bifurcation .bif-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
+#fx-bifurcation .bif-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-bifurcation .bif-ticks span:nth-child(1){left:0}
+#fx-bifurcation .bif-ticks span:nth-child(2){left:16.129%}
+#fx-bifurcation .bif-ticks span:nth-child(3){left:32.258%}
+#fx-bifurcation .bif-ticks span:nth-child(4){left:48.387%}
+#fx-bifurcation .bif-ticks span:nth-child(5){left:64.516%}
+#fx-bifurcation .bif-ticks span:nth-child(6){left:80.645%}
+#fx-bifurcation .bif-ticks span:nth-child(7){left:96.774%}
+#fx-bifurcation .bif-ticks span:hover{color:var(--fg)}
+
+/* legend */
+#fx-bifurcation .bif-legend{gap:4px 16px;margin-top:-4px}
+#fx-bifurcation .bif-legend span{display:inline-flex;align-items:center;gap:7px}
+#fx-bifurcation .bif-legend .bif-li-gd[hidden]{display:none}
+#fx-bifurcation .bif-sw{display:inline-block;width:6px;height:6px;border-radius:50%}
+#fx-bifurcation .bif-sw-map{background:var(--fx-base2)}
+#fx-bifurcation .bif-sw-gd{background:var(--accent)}
+#fx-bifurcation .bif-ksw{display:block;overflow:visible}
+#fx-bifurcation .bif-ksw line{stroke:var(--fg);stroke-opacity:.7;stroke-width:1.25;stroke-dasharray:4 3}
+
+/* panels: diagram wider than the orbit; stacked when the figure is narrow */
+#fx-bifurcation .bif-panels{display:grid;grid-template-columns:minmax(0,1fr);gap:18px 22px;align-items:start}
+#fx-bifurcation .bif-panels.wide{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+#fx-bifurcation .fx-panel{gap:4px}
+#fx-bifurcation .fx-ptitle{min-height:24px;display:flex;align-items:center;white-space:nowrap}
+#fx-bifurcation .fx-status{min-height:3em}
+#fx-bifurcation .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-bifurcation .bif-plot{position:relative;min-width:0}
+#fx-bifurcation .bif-cvs{position:absolute;left:0;top:0;width:10px;height:10px;display:block;z-index:0;pointer-events:none}
+#fx-bifurcation .bif-plot .fx-svg{position:relative;-webkit-user-select:none;user-select:none;z-index:1;-webkit-tap-highlight-color:transparent}
+#fx-bifurcation #fx-bifurcation-svg{cursor:ew-resize}
+#fx-bifurcation #fx-bifurcation-osvg{cursor:crosshair}
+#fx-bifurcation .fx-svg:focus{outline:none}
+#fx-bifurcation .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+
+/* marks */
+#fx-bifurcation .fx-svg .bif-tick{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-bifurcation .fx-svg text.axn{font-family:var(--sans);font-style:italic;font-size:13px;fill:var(--fg)}
+#fx-bifurcation .fx-svg .bif-ref{stroke:var(--muted);stroke-opacity:.55;stroke-width:1;stroke-dasharray:2 3;shape-rendering:crispEdges}
+#fx-bifurcation .fx-svg text.bif-reflab{font-size:10px}
+#fx-bifurcation .fx-svg .bif-par{fill:none;stroke:var(--fg);stroke-opacity:.75;stroke-width:1.25;stroke-dasharray:4 3}
+#fx-bifurcation .fx-svg text.bif-parlab{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-bifurcation .fx-svg .bif-cur{stroke:var(--fg);stroke-opacity:.6}
+#fx-bifurcation .fx-svg .bif-grip{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-bifurcation .fx-svg .bif-hov{stroke-dasharray:3 3}
+#fx-bifurcation .fx-svg .bif-oline{fill:none;stroke:var(--fx-base2);stroke-opacity:.7;stroke-width:1;stroke-linejoin:round}
+#fx-bifurcation .fx-svg .bif-otr{fill:var(--fx-base2)}
+#fx-bifurcation .fx-svg .bif-ost{fill:var(--accent)}
+#fx-bifurcation .fx-svg .bif-ring{fill:none;stroke:var(--fg);stroke-width:1.3}
+#fx-bifurcation .fx-svg .bif-ringh{fill:none;stroke:var(--bg);stroke-width:3.4}
+#fx-bifurcation .fx-svg text.bif-esclab{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+
+/* tooltip */
+#fx-bifurcation .fx-tip{white-space:normal;max-width:250px;font-variant-numeric:tabular-nums}
+#fx-bifurcation .fx-tip .bif-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px}
+#fx-bifurcation .fx-tip .bif-tt span:nth-child(even){text-align:right}
+#fx-bifurcation .fx-tip .bif-reg{display:block;margin-top:4px;line-height:1.4}
+
+/* probe used to resolve token colours for the canvas */
+#fx-bifurcation .bif-probe{position:absolute;width:1px;height:1px;left:0;top:0;opacity:0;pointer-events:none}
+
+@media (max-width:480px){
+  #fx-bifurcation .bif-actl{flex-wrap:wrap;justify-content:space-between;row-gap:2px;flex:1 1 100%}
+  #fx-bifurcation .bif-actl .lab,#fx-bifurcation .bif-aval{padding-top:0}
+  #fx-bifurcation .bif-aval{min-width:0;text-align:right}
+  #fx-bifurcation .bif-slider{order:3;flex:1 1 100%;width:auto;max-width:none}
+}
+/* larger touch target for the tick shortcuts, without moving the labels */
+#fx-bifurcation .bif-ticks span::after{content:'';position:absolute;inset:0 -7px -9px}

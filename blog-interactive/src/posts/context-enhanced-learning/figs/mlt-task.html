@@ -1,0 +1,23 @@
+<figure class="fx" id="fx-mlt-task">
+  <div class="fx-bar">
+    <span class="fx-mlt-task-ctl">
+      <span class="fx-seg" role="group" aria-label="Instance" id="fx-mlt-task-inst"><button type="button" data-v="paper" aria-pressed="true">paper example</button><button type="button" data-v="random" aria-pressed="false" aria-label="random instance">random<span class="fx-mlt-task-w"> instance</span></button></span>
+      <span class="fx-seg"><button type="button" id="fx-mlt-task-new" disabled aria-label="Draw a new random instance">new instance</button></span>
+    </span>
+    <span class="fx-mlt-task-ctl">
+      <span class="lab" id="fx-mlt-task-dlab">depth</span>
+      <span class="fx-seg" role="group" aria-labelledby="fx-mlt-task-dlab" id="fx-mlt-task-depth"><button type="button" data-v="1" aria-pressed="false" aria-label="depth 1">1</button><button type="button" data-v="2" aria-pressed="false" aria-label="depth 2">2</button><button type="button" data-v="3" aria-pressed="false" aria-label="depth 3">3</button><button type="button" data-v="4" aria-pressed="false" aria-label="depth 4">4</button><button type="button" data-v="5" aria-pressed="true" aria-label="depth 5">5</button></span>
+      <span class="fx-seg"><button type="button" id="fx-mlt-task-shift" aria-pressed="true" aria-label="Show shifted rows">shifted rows</button></span>
+    </span>
+  </div>
+  <div class="fx-mlt-task-block">
+    <svg class="fx-svg" id="fx-mlt-task-svg" role="img" aria-label="Multi-level translation rows"></svg>
+    <div class="fx-mlt-task-hit" id="fx-mlt-task-hit" role="group" aria-label="Output pairs; arrow keys move the selection"></div>
+  </div>
+  <div class="fx-mlt-task-rules" id="fx-mlt-task-rules">
+    <p class="fx-psub">rules applied inside the highlighted cone</p>
+    <div class="fx-mlt-task-rlist" id="fx-mlt-task-rlist"></div>
+  </div>
+  <p class="fx-status" id="fx-mlt-task-status" aria-live="polite"></p>
+  <figcaption>Figure 1. The multi-level translation task on the worked example in the paper's appendix (Figure 16: \(d = 5\), \(n = 8\), a 28-character input; strings and rules copied from it). At each level the string is shifted left by one character, wrapping around, and each consecutive pair is rewritten with that level's phrasebook \(\pi_i\), shown here only through the rules it uses. Select an output pair (hover, tap, or arrow keys) to highlight, in blue, the \(2d\) input characters it depends on and the \(d(d+1)/2\) rule applications along the way. The depth control truncates the task to its first levels. Random instance draws new phrasebooks, each a random bijection on pairs, and a new input.</figcaption>
+</figure>

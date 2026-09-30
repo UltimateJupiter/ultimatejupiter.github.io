@@ -1,0 +1,44 @@
+<figure class="fx" id="fx-s5">
+  <div class="fx-bar s5-bar">
+    <div class="s5-nctl">
+      <label class="lab" for="fx-s5-n">N (states)</label>
+      <div class="s5-slider">
+        <div class="s5-rail" aria-hidden="true"><i class="s5-fa"></i><i class="s5-fl"></i><i class="s5-tk" data-v="16"></i><i class="s5-tk" data-v="32"></i></div>
+        <input id="fx-s5-n" class="s5-range" type="range" min="1" max="48" step="1" value="12" aria-valuetext="N = 12 states">
+        <div class="s5-ticks" aria-hidden="true"><span data-v="1">1</span><span data-v="16">16</span><span data-v="32">32</span><span data-v="48">48</span><small class="s5-cap s5-c16" data-v="16">4-layer scan limit</small><small class="s5-cap s5-c32" data-v="32">max N in training</small></div>
+      </div>
+      <output class="s5-nval" for="fx-s5-n" aria-hidden="true">N = 12</output>
+    </div>
+    <div class="s5-inst">
+      <div class="fx-seg"><button type="button" id="fx-s5-new" aria-describedby="fx-s5-seed">new instance</button></div>
+      <span class="s5-seed" id="fx-s5-seed">seed 1</span>
+    </div>
+  </div>
+
+  <div class="fx-panel s5-pa">
+    <p class="fx-ptitle">The sequence</p>
+    <div class="s5-ctx">
+      <span class="s5-ctxlab">context</span>
+      <div class="s5-ctxscroll" id="fx-s5-ctx" role="region" tabindex="0" aria-label="The dictionary as the model reads it: 120 permutations, each followed by its four-character code"></div>
+      <span class="s5-ctxn">120 entries</span>
+    </div>
+    <div class="s5-rows" id="fx-s5-rows" tabindex="0" role="group" aria-label="The sequence: input actions, target states and retrieved codes. Left and right arrow keys select a state."></div>
+  </div>
+
+  <div class="fx-panel s5-pb">
+    <p class="fx-ptitle">Computing all states in parallel</p>
+    <p class="fx-psub">prefix scan: layer <i>j</i> composes each node with the node 2<sup><i>j</i>−1</sup> to its left</p>
+    <div class="s5-net">
+      <div class="s5-svgwrap" id="fx-s5-netwrap" tabindex="0" role="group" aria-label="Prefix-scan network. Left and right arrow keys select a state.">
+        <svg class="fx-svg" id="fx-s5-svg" role="img" aria-label="Prefix-scan network"></svg>
+      </div>
+      <div class="s5-read" id="fx-s5-read" aria-hidden="true"></div>
+    </div>
+    <p class="fx-ptitle s5-t2">Carrying the state instead</p>
+    <div class="s5-chain" id="fx-s5-chain" role="region" tabindex="0" aria-label="The states as a recurrent chain, one action absorbed per step"></div>
+    <p class="fx-note s5-cnote">T2MLR(1,4): the state after layer 4 at one step feeds layer 1 at the next, so each state is one composition on top of the last. Illustrative, not a trained model; in the model the state is passed at every token, five tokens per state.</p>
+  </div>
+
+  <p class="fx-status" id="fx-s5-status" aria-live="polite"></p>
+  <figcaption>Figure 4. The \(S_5\)-Retrieval task, generated live. A fresh dictionary maps each of the 120 permutations of five elements to a four-character code. The model reads the dictionary and a list of permutations, and must output each running product \(a_1\circ\cdots\circ a_i\) followed by its code. Click a state to see which actions it composes and which entry it retrieves. Below, a parallel prefix scan computes every running product in \(\lceil\log_2 N\rceil\) layers, so four layers cover at most 16 states (red levels need more). A recurrent state instead absorbs one action per step. This is an illustration of the task and the depth argument, not a simulation of the trained models.</figcaption>
+</figure>

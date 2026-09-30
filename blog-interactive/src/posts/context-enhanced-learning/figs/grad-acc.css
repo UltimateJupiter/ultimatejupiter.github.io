@@ -1,0 +1,65 @@
+/* Figure 4 (fx-grad-acc): gradient prediction accuracy, live Monte Carlo in the soft surrogate. */
+#fx-grad-acc{
+  /* context series: a grey ramp (darker = larger batch / higher rate); the highlighted series is --accent */
+  --fx-grad-acc-g1:var(--fx-base2);
+  --fx-grad-acc-g2:color-mix(in oklab,var(--fx-base2) 45%,var(--fx-base3));
+  --fx-grad-acc-g3:color-mix(in oklab,var(--fx-base2) 20%,var(--fx-base3));
+}
+#fx-grad-acc .b1,#fx-grad-acc .r1{--fx-grad-acc-c:var(--fx-grad-acc-g1)}
+#fx-grad-acc .b10,#fx-grad-acc .r3{--fx-grad-acc-c:var(--fx-grad-acc-g2)}
+#fx-grad-acc .b100,#fx-grad-acc .r5{--fx-grad-acc-c:var(--fx-grad-acc-g3)}
+#fx-grad-acc .hi{--fx-grad-acc-c:var(--accent)}
+
+/* controls: wrap as whole groups; Pause / Reset sit at the end of the row */
+#fx-grad-acc .fx-bar{gap:8px 16px}
+#fx-grad-acc .gacc-ctl{display:inline-flex;align-items:center;gap:7px;min-width:0}
+#fx-grad-acc .gacc-ctl[hidden]{display:none}
+#fx-grad-acc .fx-seg button{white-space:nowrap}
+#fx-grad-acc .fx-seg button sub{font-size:.75em;line-height:0}
+#fx-grad-acc .gacc-run button{min-width:4.2em}
+#fx-grad-acc .fx-seg .sw{display:none;width:12px;height:0;border-top:2px solid var(--fx-grad-acc-c);vertical-align:middle;margin-right:6px}
+#fx-grad-acc .fx-seg button[data-v="1"]{--fx-grad-acc-c:var(--fx-grad-acc-g1)}
+#fx-grad-acc .fx-seg button[data-v="10"]{--fx-grad-acc-c:var(--fx-grad-acc-g2)}
+#fx-grad-acc .fx-seg button[data-v="100"]{--fx-grad-acc-c:var(--fx-grad-acc-g3)}
+#fx-grad-acc .fx-seg button.hi{--fx-grad-acc-c:var(--accent)}
+#fx-grad-acc .fx-seg button[aria-pressed="true"] .sw{display:inline-block}
+
+#fx-grad-acc .gacc-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;margin-bottom:-6px}
+#fx-grad-acc .gacc-titles{display:flex;flex-direction:column;gap:2px;min-width:0}
+#fx-grad-acc .gacc-titles .s{white-space:nowrap}
+#fx-grad-acc .gacc-run{flex:none}
+#fx-grad-acc .gacc-plot{min-width:0;line-height:0}
+
+/* chart marks */
+#fx-grad-acc .fx-svg{outline:none;cursor:crosshair}
+#fx-grad-acc .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-grad-acc .gacc-s{color:var(--fx-grad-acc-c)}
+#fx-grad-acc .gacc-band{fill:var(--fx-grad-acc-c);fill-opacity:.15;stroke:none}
+#fx-grad-acc .gacc-line{fill:none;stroke:var(--fx-grad-acc-c);stroke-width:1.25px;stroke-linejoin:round;stroke-linecap:round}
+#fx-grad-acc .gacc-s.hi .gacc-line{stroke-width:1.75px}
+#fx-grad-acc .gacc-mk{fill:var(--fx-grad-acc-c);stroke:var(--bg);stroke-width:1px}
+#fx-grad-acc .gacc-chance{stroke:var(--muted);stroke-opacity:.8;stroke-width:1.25px;stroke-dasharray:1.5 3.5;stroke-linecap:round}
+
+/* hover layer */
+#fx-grad-acc .gacc-hov{visibility:hidden;pointer-events:none}
+#fx-grad-acc .gacc-hov.on{visibility:visible}
+#fx-grad-acc .gacc-dot{fill:var(--fx-grad-acc-c);stroke:var(--bg);stroke-width:2px}
+
+/* legend */
+#fx-grad-acc .gacc-lg{display:inline-flex;align-items:center}
+#fx-grad-acc .gacc-lg .sw{color:var(--fx-grad-acc-c)}
+#fx-grad-acc .gacc-lg.hi{color:var(--fg)}
+#fx-grad-acc .gacc-lg.ch .sw{color:var(--muted);border-top-style:dotted}
+
+/* tooltip */
+#fx-grad-acc .fx-tip{left:0;top:0}
+#fx-grad-acc .gacc-th{color:var(--muted);margin-bottom:3px}
+#fx-grad-acc .gacc-th b{color:var(--fg)}
+#fx-grad-acc .gacc-tg{display:grid;grid-template-columns:14px auto auto auto;column-gap:8px;align-items:center}
+#fx-grad-acc .gacc-tg .v{justify-self:end;font-variant-numeric:tabular-nums;color:var(--fg)}
+#fx-grad-acc .gacc-tg .d{color:var(--muted)}
+#fx-grad-acc .fx-tip.narrow .gacc-tg{grid-template-columns:14px auto auto}
+#fx-grad-acc .fx-tip.narrow .gacc-tg .d{grid-column:2 / -1;margin-bottom:2px}
+#fx-grad-acc .gacc-tg .sw{display:block;width:14px;height:0;border-top:2px solid var(--fx-grad-acc-c)}
+
+#fx-grad-acc .fx-status{font-variant-numeric:tabular-nums}

@@ -1,0 +1,53 @@
+<figure class="fx" id="fx-two-step">
+  <div class="fx-bar tws-bar">
+    <label class="tws-ctl"><span class="lab">step size</span><select class="fx-select" id="fx-two-step-eta" aria-label="Step size η">
+      <option value="0.2">η = 0.2 (2/η = 10)</option>
+      <option value="0.1" selected>η = 0.1 (2/η = 20)</option>
+      <option value="0.05">η = 0.05 (2/η = 40)</option>
+    </select></label>
+    <div class="tws-ctl">
+      <span class="lab" id="fx-two-step-viewlab">view</span>
+      <div class="fx-seg" role="group" aria-labelledby="fx-two-step-viewlab">
+        <button type="button" data-view="whole" aria-pressed="true">whole run</button>
+        <button type="button" data-view="near" aria-pressed="false">near the minimum</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-bar tws-bar2">
+    <div class="tws-ctl tws-actl">
+      <label class="lab" for="fx-two-step-a0">start a<sub>0</sub></label>
+      <div class="tws-slider">
+        <div class="tws-rail" aria-hidden="true"><i class="tws-fill"></i></div>
+        <input id="fx-two-step-a0" class="tws-range" type="range" min="0.02" max="0.3" step="0.01" value="0.1" aria-valuetext="a0 = 0.10">
+        <div class="tws-ticks" aria-hidden="true"><span data-v="0.02">0.02</span><span data-v="0.1">0.1</span><span data-v="0.2">0.2</span><span data-v="0.3">0.3</span></div>
+      </div>
+      <output class="tws-aval" for="fx-two-step-a0" aria-hidden="true">0.10</output>
+    </div>
+    <div class="tws-ctl tws-act">
+      <div class="fx-seg" role="group" aria-label="Playback">
+        <button type="button" class="tws-play" aria-label="Replay the iterations">replay</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-legend tws-legend" aria-hidden="true">
+    <span><svg class="tws-sw" viewBox="0 0 10 10" width="10" height="10"><circle class="s-ev" cx="5" cy="5" r="2.6"/></svg>even steps</span>
+    <span><svg class="tws-sw" viewBox="0 0 10 10" width="10" height="10"><circle class="s-od" cx="5" cy="5" r="2.6"/></svg>odd steps</span>
+    <span><svg class="tws-sw" viewBox="0 0 10 10" width="10" height="10"><path class="s-st" d="M2 2L8 8M2 8L8 2"/></svg>start</span>
+    <span><svg class="tws-sw" viewBox="0 0 12 12" width="12" height="12"><circle class="s-en" cx="6" cy="6" r="4.2"/></svg>end</span>
+    <span><svg class="tws-sw" viewBox="0 0 20 10" width="20" height="10"><line class="s-cv" x1="1" y1="5" x2="19" y2="5"/></svg>two-step approximation</span>
+  </div>
+  <div class="fx-panels tws-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle">Degree 4: ¼(1 − x²y²)²</p>
+      <p class="fx-psub" data-sub="4">&nbsp;</p>
+      <div class="tws-chart" data-chart="4"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Degree 2: ½(1 − xy)²</p>
+      <p class="fx-psub" data-sub="2">&nbsp;</p>
+      <div class="tws-chart" data-chart="2"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 3. The same gradient descent in coordinates along the valley of minima <span class="nw">(\(a\))</span> and across it <span class="nw">\((b = xy - 1)\),</span> with the minimum of sharpness exactly \(2/\eta\) at the origin (paper Definition 2). Both runs are simulated live from <span class="nw">\(a = a_0\),</span> \(b = 0.01\) until <span class="nw">\(|b| &lt; 10^{-10}\);</span> filled dots are every second iterate and hollow dots the ones in between. In the degree-4 panel every start joins the parabola \(b^2 = a\kappa/2 + \kappa^4/16\) <span class="nw">(\(\kappa = \sqrt\eta\),</span> paper Eq. 9) and stops near its tip, which tends to \(a = -\kappa^3/8\) as \(\eta\) shrinks, just on the flat side of the threshold. In the degree-2 panel, for <span class="nw">\(\tfrac12(1 - xy)^2\),</span> the iterates follow an ellipse around the origin (dashed, the local approximation of paper Sec. 4) and stop near <span class="nw">\(a = -a_0\),</span> so a sharper start ends flatter. Move \(a_0\) to compare, and hover or use the arrow keys on a panel to read an iterate's step, position and sharpness.</figcaption>
+</figure>

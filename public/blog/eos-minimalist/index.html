@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edge of Stability, Minimal</title>
+<meta name="description" content="A four-parameter scalar network reproduces edge-of-stability training, and a two-step parabola explains why gradient descent ends just below the stability threshold 2/η.">
+<script src="../shared/theme-init.js"></script>
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="post.css">
+<link rel="stylesheet" href="../shared/fx.css">
+<link rel="stylesheet" href="../shared/select.css">
+<link rel="stylesheet" href="figures.css">
+<link rel="stylesheet" href="../shared/site-theme.css">
+<script src="../shared/mathjax-config.js"></script>
+<script defer src="../shared/vendor/mathjax/tex-svg.min.js"></script>
+</head>
+<body>
+<div class="site-bar"><div class="in">
+  <a class="brand" href="/" aria-label="Xingyu Zhu, home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5 3.8 16.8V7.2Z"/><path d="M12 2.5 7.6 14.6h8.8Z M7.6 14.6 3.8 7.2 M16.4 14.6 20.2 7.2 M7.6 14.6 12 21.5 16.4 14.6 M3.8 16.8 7.6 14.6 M20.2 16.8 16.4 14.6"/><circle cx="12" cy="2.5" r="1.6"/></svg><span>Xingyu Zhu</span></a>
+  <nav aria-label="Site"><ul><li><a href="/publications/">Publications</a></li><li><a href="/talks/">Talks</a></li><li><a href="/blog/" aria-current="page">Blog</a></li><li><a href="/news/">News</a></li><li><a href="/uploads/Xingyu_Zhu_CV_PhD.pdf">CV</a></li></ul></nav>
+</div></div>
+<nav class="toc" aria-label="Contents"><ol><li><a href="#summary">Summary</a></li><li><a href="#edge-of-stability">Sharpness that tracks the step size</a></li><li><a href="#a-four-parameter-model">A four-parameter model</a></li><li><a href="#one-sharpness-for-many-starts">One sharpness for many starts</a></li><li><a href="#two-steps-at-a-time">Two steps at a time</a></li><li><a href="#why-degree-two-differs">Why degree two behaves differently</a></li><li><a href="#chaos-far-from-the-minimum">Far from the minimum: bifurcation</a></li><li><a href="#beyond-the-toy-model">Beyond the toy model</a></li><li><a href="#related-work">Related work</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#references">References</a></li></ol></nav>
+
+<main>
+<header>
+  <h1>Understanding Edge-of-Stability Training Dynamics with a Minimalist Example</h1>
+  <ul class="authors" aria-label="Authors">
+    <li><a href="https://ultimatejupiter.github.io/" target="_blank" rel="noopener">Xingyu Zhu</a><sup>1*</sup></li>
+    <li>Zixuan Wang<sup>2*</sup></li>
+    <li>Xiang Wang<sup>1</sup></li>
+    <li>Mo Zhou<sup>1</sup></li>
+    <li><a href="https://users.cs.duke.edu/~rongge/" target="_blank" rel="noopener">Rong Ge</a><sup>1</sup></li>
+  </ul>
+  <p class="affils"><span><sup>1</sup>Duke University</span><span><sup>2</sup>Tsinghua University</span></p>
+  <p class="notes"><span><sup>*</sup>Equal contribution.</span><span>ICLR 2023.</span></p>
+  <div class="links">
+    <a class="pill" href="https://arxiv.org/abs/2210.03294"><span class="k">arXiv</span>2210.03294</a>
+    <a class="pill" href="https://arxiv.org/pdf/2210.03294">PDF</a>
+    <a class="pill" href="https://openreview.net/forum?id=p7EagBsMAEO">OpenReview</a>
+    <a class="pill" href="https://slideslive.com/38999092"><span class="k">Talk</span>SlidesLive</a>
+    <a class="pill" href="#cite">Cite</a>
+    <button type="button" class="pill theme" id="theme-btn">◐<span class="t"> Dark</span></button>
+  </div>
+  <nav class="toc-inline" aria-label="Contents"><a href="#summary">Summary</a> <span>·</span> <a href="#edge-of-stability">Sharpness that tracks the step size</a> <span>·</span> <a href="#a-four-parameter-model">A four-parameter model</a> <span>·</span> <a href="#one-sharpness-for-many-starts">One sharpness for many starts</a> <span>·</span> <a href="#two-steps-at-a-time">Two steps at a time</a> <span>·</span> <a href="#why-degree-two-differs">Why degree two behaves differently</a> <span>·</span> <a href="#chaos-far-from-the-minimum">Far from the minimum: bifurcation</a> <span>·</span> <a href="#beyond-the-toy-model">Beyond the toy model</a> <span>·</span> <a href="#related-work">Related work</a> <span>·</span> <a href="#limitations">Limitations</a> <span>·</span> <a href="#references">References</a></nav>
+</header>
+
+<h2 id="summary">Summary</h2>
+<ul>
+  <li>With a fixed step size <span class="nw">\(\eta\),</span> gradient descent on deep networks raises the sharpness, the largest eigenvalue of the loss Hessian, to the stability threshold \(2/\eta\) and keeps it near there while the loss keeps decreasing, though not monotonically. This is the edge of stability&nbsp;<span class="cite">[<a href="#ref-1">1</a>]</span>. Two stronger regularities hold at the end of training. From one initialization, the final sharpness sits just below \(2/\eta\) for a range of step sizes (sharpness adaptivity), and at one step size it sits there for a wide range of initializations (sharpness concentration). For shallow models such as matrix factorization and two-layer networks, the gap to \(2/\eta\) is often much larger.</li>
+  <li>We study <span class="nw">\(L(x,y,z,w)=\tfrac12(1-xyzw)^2\),</span> a four-layer network with one neuron per layer, started with \(z=x\) and <span class="nw">\(w=y\).</span> Gradient descent on it shows both regularities (Figure 1). We prove that for small <span class="nw">\(\eta\),</span> every initialization in a constant-size region converges to a global minimum with sharpness in <span class="nw">\((2/\eta-20\eta/3,\ 2/\eta)\),</span> which implies adaptivity over a range of step sizes. A rank-1 matrix version holds as well.</li>
+  <li>The mechanism is visible in coordinates along and across the valley of minima. Every two steps, gradient descent follows the parabola \(b^2=a\kappa/2+\kappa^4/16\) with <span class="nw">\(\kappa=\sqrt\eta\),</span> and the tip of the parabola, at <span class="nw">\(a\approx-\kappa^3/8\),</span> fixes where training stops. Degree-2 objectives lack the cubic term that creates this parabola. Their two-step paths are ellipses, so the endpoint roughly mirrors the start and a sharper start ends flatter.</li>
+  <li>Far from the minimum the dynamics are chaotic. The boundary between converging and diverging initializations is fractal, and the two-step map \(b\mapsto b(1+8a\kappa-16b^2)\) is a cubic map that period-doubles. A 5-layer ELU network trained on 50 CIFAR-10 images ends at sharpness 199.97 with <span class="nw">\(2/\eta=200\),</span> and near the end its trajectory, projected onto two directions, is well fit by a parabola.</li>
+</ul>
+
+<h2 id="edge-of-stability">Sharpness that tracks the step size</h2>
+<p>Write \(\lambda\) for the sharpness, the top eigenvalue of the Hessian. On an objective with a fixed Hessian, gradient descent with step size \(\eta\) is stable only when <span class="nw">\(\lambda&lt;2/\eta\),</span> which is why \(2/\eta\) is called the stability threshold. Cohen et al.&nbsp;<span class="cite">[<a href="#ref-1">1</a>]</span> observed that full-batch gradient descent on neural networks does not stay below it. The sharpness rises to about \(2/\eta\) and hovers there, and the loss still decreases in the long run, with local increases along the way.</p>
+<p>Deeper networks also end training in a regular place, in two senses:</p>
+<ul>
+  <li><i>Sharpness adaptivity</i>: from a fixed initialization, changing \(\eta\) moves the final sharpness to just below the new <span class="nw">\(2/\eta\).</span></li>
+  <li><i>Sharpness concentration</i>: at a fixed <span class="nw">\(\eta\),</span> a wide range of initializations all end at sharpness just below <span class="nw">\(2/\eta\).</span></li>
+</ul>
+<p>The paper's first figure contrasts a deep network with a shallow one. A ReLU network with five fully connected layers of 50 neurons, trained with <span class="nw">\(\eta=2/200,\ 2/300,\ 2/400\),</span> ends at sharpness close to \(2/\eta\) each time. A linear two-layer network with 10 neurons per layer, whose layers are rescaled at initialization by factors 4 and 0.1 (without rescaling it does not reach the threshold), ends clearly below \(2/\eta\) for <span class="nw">\(\eta=2/30,\ 2/35,\ 2/40\).</span> Depth seems to matter. We look for the smallest model in which the endpoint is pinned to <span class="nw">\(2/\eta\),</span> and for the mechanism that pins it.</p>
+
+<h2 id="a-four-parameter-model">A four-parameter model</h2>
+<p>The model is a product of four scalars, a network with four layers and one neuron each, fit to the target 1 with the squared loss:</p>
+<div class="math-block">\[L(x,y,z,w)=\tfrac12\,(1-xyzw)^2 .\]</div>
+<p>We run gradient descent with a fixed step size \(\eta\) from <span class="nw">\(z_0=x_0\),</span> <span class="nw">\(w_0=y_0\).</span> The objective is unchanged when \(x\) is swapped with \(z\) and \(y\) with <span class="nw">\(w\),</span> so the coupling persists at every step, and the dynamics are gradient descent on <span class="nw">\(L(x,y)=\tfrac14(1-x^2y^2)^2\):</span></p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle x_{t+1}=x_t-\eta\,x_ty_t^2\,(x_t^2y_t^2-1),\)</span><span class="eq">\(\displaystyle y_{t+1}=y_t-\eta\,x_t^2y_t\,(x_t^2y_t^2-1).\)</span></div>
+<p>The global minima form the hyperbola <span class="nw">\(xy=1\),</span> and we take <span class="nw">\(x&gt;y&gt;0\).</span> With \(S=x^2+y^2\) and <span class="nw">\(\gamma=xy\),</span> the Hessian at \((x,y,x,y)\) has the eigenvalue</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \lambda_1=\tfrac12\Big[S\,(3\gamma^2-1)\)</span><span class="eq cont">\(\displaystyle {}+\sqrt{S^2(1-3\gamma^2)^2+4\gamma^2(3-10\gamma^2+7\gamma^4)}\,\Big].\)</span></div>
+<p>At a minimum the other three eigenvalues vanish and <span class="nw">\(\lambda_1=2(x^2+y^2)\).</span> Sharpness therefore grows along the hyperbola away from the point \((1,1),\) and on the branch \(x&gt;y\) exactly one minimum has sharpness <span class="nw">\(2/\eta\).</span> Away from the minima the four-parameter Hessian has other eigenvalues, and \(\lambda_1\) is not always the largest; the paper's experiments compute the top eigenvalue of the exact Hessian numerically. Near the minima the other eigenvalues vanish, so our figures plot \(\lambda_1\) throughout.</p>
+<div class="thm" role="note" aria-label="Definition 1"><p class="thm-h"><span class="thm-k">Definition 1</span><span class="thm-i">η-EoS minimum</span></p>
+<p>For <span class="nw">\(\eta&lt;\tfrac12\),</span> the minimum with sharpness exactly <span class="nw">\(2/\eta\),</span> that is \(x^2+y^2=1/\eta\) and <span class="nw">\(xy=1\),</span> is</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \breve x=\tfrac1{\sqrt2}\Big(\big(\eta^{-2}-4\big)^{1/2}+\eta^{-1}\Big)^{1/2},\)</span><span class="eq">\(\displaystyle \breve y=\sqrt2\,\Big(\big(\eta^{-2}-4\big)^{1/2}+\eta^{-1}\Big)^{-1/2}.\)</span></div>
+<p>For \(2/\eta=8,\ 10,\ 12\) it is \((1.932,\,0.518),\) \((2.189,\,0.457)\) and \((2.414,\,0.414).\)</p></div>
+<p>Figure 1 runs gradient descent from \((2.5,\,0.4001),\) where \(\lambda_1=12.83\) is above all three thresholds <span class="nw">\(2/\eta=8,\ 10,\ 12\).</span> In each run the sharpness spends a while above its threshold (146, 181 and 236 steps, all within the first 450) and then settles just below it. After 1000 steps the simulation reads 7.925, 9.927 and 11.933, while the loss has fallen to about \(10^{-11}\) or less. In the plane, successive iterates jump back and forth across the valley, while every second iterate traces a smooth curve along it and stops next to the matching EoS minimum, slightly on its flat side (smaller <span class="nw">\(x\)).</span></p>
+<p>The same figure can switch to the degree-2 objective <span class="nw">\(\tfrac12(1-xy)^2\).</span> From \((3.2,\,0.25)\) with <span class="nw">\(2/\eta=10,\ 9.5,\ 9\),</span> it ends after 100 steps at 9.511, 8.472 and 7.310, below each threshold by 0.49 to 1.69 (simulation readouts).</p>
+<figure class="fx" id="fx-eos-playground">
+  <div class="fx-bar eosp-bar">
+    <label class="eosp-ctl"><span class="lab">objective</span><select class="fx-select" id="fx-eos-playground-obj" aria-label="Objective">
+      <option value="4">degree 4: ¼(1 − x²y²)²</option>
+      <option value="2">degree 2: ½(1 − xy)²</option>
+    </select></label>
+    <div class="eosp-ctl">
+      <span class="lab" id="fx-eos-playground-steplab">step size</span>
+      <div class="fx-seg" role="group" aria-labelledby="fx-eos-playground-steplab">
+        <button type="button" data-mode="one" aria-pressed="false">one step size</button>
+        <button type="button" data-mode="three" aria-pressed="true">compare three</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-bar eosp-bar2">
+    <div class="eosp-ctl eosp-kctl" hidden>
+      <label class="lab" for="fx-eos-playground-k">2/η</label>
+      <div class="eosp-slider">
+        <div class="eosp-rail" aria-hidden="true"><i class="eosp-fill"></i></div>
+        <input id="fx-eos-playground-k" class="eosp-range" type="range" min="6" max="14" step="0.5" value="10" aria-valuetext="2/η = 10, η = 0.2">
+        <div class="eosp-ticks" aria-hidden="true"><span data-v="6">6</span><span data-v="8">8</span><span data-v="10">10</span><span data-v="12">12</span><span data-v="14">14</span></div>
+      </div>
+      <output class="eosp-kval" for="fx-eos-playground-k" aria-hidden="true">10</output>
+    </div>
+    <div class="fx-legend eosp-legend" aria-hidden="true"></div>
+    <div class="eosp-ctl eosp-act">
+      <div class="fx-seg" role="group" aria-label="Playback and starting point">
+        <button type="button" class="eosp-play" aria-label="Replay the iterations">replay</button>
+        <button type="button" class="eosp-reset" aria-label="Reset the starting point">reset start</button>
+      </div>
+      <span class="eosp-prog" aria-hidden="true"></span>
+    </div>
+  </div>
+  <div class="fx-panels eosp-panels">
+    <div class="fx-panel eosp-left">
+      <p class="fx-ptitle">Loss</p>
+      <div class="eosp-chart" data-chart="loss"></div>
+      <p class="fx-ptitle eosp-t2">Sharpness \(\lambda_1\)</p>
+      <div class="eosp-chart" data-chart="sharp"></div>
+    </div>
+    <div class="fx-panel eosp-right">
+      <p class="fx-ptitle">(x, y) trajectory</p>
+      <p class="fx-psub eosp-hint" id="fx-eos-playground-hint">&nbsp;</p>
+      <div class="eosp-chart" data-chart="plane"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 1. Gradient descent on the 4-layer scalar network \(\tfrac12(1-xyzw)^2\) with coupled entries <span class="nw">\((z=x,\ w=y)\),</span> which is gradient descent on <span class="nw">\(\tfrac14(1-x^2y^2)^2\),</span> simulated live in the browser. The loss and sharpness panels (sharpness is \(\lambda_1\) of the paper's Eq. 3, which is the top Hessian eigenvalue near the minima) show runs at \(2/\eta = 8, 10, 12\) from the same start, 1000 steps each, with dashed lines at <span class="nw">\(2/\eta\).</span> The trajectory panel shows the iterates in the \((x, y)\) plane, even steps filled and odd steps hollow. The curve \(xy = 1\) is the set of global minima, its ticks give their sharpness, and diamonds mark the minimum whose sharpness is exactly <span class="nw">\(2/\eta\).</span> Click the plane (or focus it and use the arrow keys) to choose another start, or switch to the degree-2 objective <span class="nw">\(\tfrac12(1-xy)^2\),</span> 100 steps at <span class="nw">\(2/\eta = 10, 9.5, 9\),</span> to see the gap to \(2/\eta\) grow instead.</figcaption>
+</figure>
+
+<h2 id="one-sharpness-for-many-starts">One sharpness for many starts</h2>
+<p>Adaptivity fixes the start and varies <span class="nw">\(\eta\).</span> Concentration fixes \(\eta\) and varies the start. Figure 2 runs gradient descent at \(\eta=0.2\) from every cell of a grid of initializations, for up to 50,000 steps as in the paper's Figure 2b, and colors each start by the sharpness of the minimum it reaches.</p>
+<p>Next to each of the two EoS minima, \((2.189,\,0.457)\) and its mirror image \((0.457,\,2.189),\) a large region of starts ends within 0.1 of <span class="nw">\(2/\eta=10\).</span> In our checks of the grid, this band holds about a quarter of all converging starts in <span class="nw">\([0,4]^2\),</span> and the status line under the figure gives the live count. Many of these starts are sharper than <span class="nw">\(2/\eta\),</span> so gradient descent first enters the edge of stability and then settles just below the threshold. The step-size menu repeats the experiment at \(\eta=0.3\) and \(0.4\) (paper Figure 10). In our grid the band then covers a larger share of the converging starts, about 32% and 45% against 24% at <span class="nw">\(\eta=0.2\).</span></p>
+<p>For the degree-2 objective at the same step size, the band shrinks to isolated cells (paper Figure 5b). Only starts very close to its EoS minimum end near 10 (paper Figure 12). The fractal-edge view zooms into <span class="nw">\(x_0\in[3.0,\,3.4]\),</span> \(y_0\in[0.10,\,0.50]\) (paper Figure 6a). Nearly every converging start there ends in the band, but converging and diverging starts interleave in ever finer strips. We return to this boundary below.</p>
+<figure class="fx" id="fx-init-map">
+  <div class="fx-bar">
+    <span class="im-ctl"><label class="lab" for="fx-init-map-obj">objective</label>
+    <select class="fx-select" id="fx-init-map-obj" aria-label="Objective">
+      <option value="4" selected>degree 4 · ¼(1 − x²y²)²</option>
+      <option value="2">degree 2 · ½(1 − xy)²</option>
+    </select></span>
+    <span class="im-ctl"><label class="lab" for="fx-init-map-eta">step size</label>
+    <select class="fx-select" id="fx-init-map-eta" aria-label="Step size">
+      <option value="0.2" selected>η = 0.2</option>
+      <option value="0.3">η = 0.3</option>
+      <option value="0.4">η = 0.4</option>
+    </select></span>
+    <span class="im-ctl"><span class="lab" id="fx-init-map-viewlab">view</span>
+    <div class="fx-seg" id="fx-init-map-view" role="group" aria-labelledby="fx-init-map-viewlab">
+      <button type="button" data-view="full" aria-pressed="true">full</button>
+      <button type="button" data-view="edge" aria-pressed="false">fractal edge</button>
+    </div></span>
+  </div>
+  <div class="im-main" id="fx-init-map-main">
+    <div class="im-plot" id="fx-init-map-plot">
+      <canvas class="im-cvs" id="fx-init-map-cvs" width="160" height="160" aria-hidden="true"></canvas>
+      <svg class="fx-svg" id="fx-init-map-svg" role="img" tabindex="0" aria-label="Map of starting points colored by the sharpness of the minimum gradient descent reaches"></svg>
+    </div>
+    <div class="im-side" id="fx-init-map-side">
+      <div class="fx-legend im-leg" id="fx-init-map-leg">
+        <span class="im-li"><i class="box im-sw-band"></i><span>ends within 0.1 of 2/η</span></span>
+        <span class="im-li"><span class="im-ramp" aria-hidden="true"><i class="im-r1"></i><i class="im-r2"></i><i class="im-r3"></i></span><span>ends flatter <span class="im-rl">(0 → 2/η)</span></span></span>
+        <span class="im-li"><i class="box im-sw-div"></i><span>diverges</span></span>
+        <span class="im-li" id="fx-init-map-unc" hidden><i class="box im-sw-unc"></i><span>not converged in 50,000 steps</span></span>
+        <span class="im-li"><svg class="im-ksw" width="16" height="10" viewBox="0 0 16 10" aria-hidden="true"><line x1="0" y1="5" x2="16" y2="5"/></svg><span>minima xy = 1</span></span>
+        <span class="im-li"><svg class="im-ksw" width="16" height="10" viewBox="0 0 16 10" aria-hidden="true"><path class="h" d="M8 1.2 L11.8 5 L8 8.8 L4.2 5 Z"/><path class="d" d="M8 1.2 L11.8 5 L8 8.8 L4.2 5 Z"/></svg><span>minima with sharpness 2/η</span></span>
+      </div>
+      <p class="fx-note im-hint" id="fx-init-map-hint"></p>
+      <p class="fx-note im-path" id="fx-init-map-path" hidden><span id="fx-init-map-pathtxt"></span> <button type="button" class="im-clear" id="fx-init-map-clear">clear path</button></p>
+    </div>
+  </div>
+  <p class="fx-status" id="fx-init-map-status" aria-live="polite"></p>
+  <figcaption>Figure 2. Each cell of a 160 × 160 grid is a starting point \((x_0, y_0)\) for gradient descent on \(\tfrac14(1-x^2y^2)^2\) (degree 4) or \(\tfrac12(1-xy)^2\) (degree 2), run live in your browser for up to 50,000 steps and colored by the sharpness of the minimum it reaches. Blue cells end within 0.1 of \(2/\eta\) (the band used in the paper's Fig. 2b), grey cells end flatter (the stronger the grey, the closer to <span class="nw">\(2/\eta\)),</span> and red-tinted cells diverge; a run counts as converged once \(|x^2y^2-1|\) (or <span class="nw">\(|xy-1|\))</span> falls below \(10^{-12}\) and as diverged once \(|x|\) or \(|y|\) exceeds <span class="nw">\(10^4\).</span> The dashed curve is the set of minima <span class="nw">\(xy = 1\),</span> and diamonds mark the two minima whose sharpness is exactly <span class="nw">\(2/\eta\).</span> Hover for a cell's outcome and click to draw its first 400 steps; the fractal-edge view zooms into the boundary between converging and diverging starts (the paper's Fig. 6a).</figcaption>
+</figure>
+
+<h2 id="two-steps-at-a-time">Two steps at a time</h2>
+<p>To see why the endpoint is pinned, we change coordinates. Let \(c=(x^2-y^2)^{1/2}\) and <span class="nw">\(d=xy\).</span> Level sets of \(d\) are hyperbolas parallel to the valley of minima, so changing \(d\) moves across the valley. Level sets of \(c\) are the orthogonal hyperbolas <span class="nw">\(x^2-y^2=\text{const}\),</span> so changing \(c\) moves along it. Arora et al.&nbsp;<span class="cite">[<a href="#ref-2">2</a>]</span> use a similar split. The EoS minimum is <span class="nw">\((c,d)=\big((\eta^{-2}-4)^{1/4},\,1\big)\),</span> and we measure offsets from it:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle a=(x^2-y^2)^{1/2}-(\eta^{-2}-4)^{1/4},\)</span><span class="eq">\(\displaystyle b=xy-1,\qquad \kappa=\sqrt\eta .\)</span></div>
+<p>Minima are the line <span class="nw">\(b=0\).</span> Positive \(a\) is sharper than the EoS minimum and negative \(a\) is flatter. For small <span class="nw">\(\kappa\),</span> \(a\) and <span class="nw">\(b\),</span> one step and two steps of gradient descent are, to leading order,</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle a'\approx a-2b^2\kappa^3,\)</span><span class="eq">\(\displaystyle b'\approx -b-4ab\kappa-3b^2-b^3;\)</span><span class="eq">\(\displaystyle a''\approx a-4b^2\kappa^3,\)</span><span class="eq">\(\displaystyle b''\approx b+8ab\kappa-16b^3.\)</span></div>
+<p>One step flips the sign of <span class="nw">\(b\):</span> the iterate jumps across the valley. Over two steps the flip cancels, and so do the even powers of <span class="nw">\(b\).</span> What remains moves \(a\) steadily toward flatter minima, and moves \(b\) by a balance of two terms. The term \(8ab\kappa\) pushes \(b\) away from zero while <span class="nw">\(a&gt;0\),</span> and the cubic term \(-16b^3\) pulls it back.</p>
+<p>Treating the two-step change as a derivative gives an ODE with explicit solutions:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \frac{db}{da}=\frac{16b^3-8ab\kappa}{4b^2\kappa^3},\)</span><span class="eq">\(\displaystyle b^2=\tfrac12a\kappa+\tfrac1{16}\kappa^4+C\,e^{8a/\kappa^3}.\)</span></div>
+<p>Along a trajectory \(a\) decreases, so the last term decays exponentially on the scale <span class="nw">\(\kappa^3\),</span> and every path that starts at a positive, not too small \(a\) joins the parabola <span class="nw">\(b^2=a\kappa/2+\kappa^4/16\).</span> The parabola meets \(b=0\) at <span class="nw">\(a=-\kappa^3/8\),</span> just on the flat side of the EoS minimum. The start only decides where the path joins the parabola, and the endpoint is the tip. Near the EoS minimum, the sharpness of a minimum changes by about <span class="nw">\(4a/\kappa\),</span> so \(a=-\kappa^3/8\) corresponds to a gap of about \(\eta/2\) below <span class="nw">\(2/\eta\).</span> This last step is our own calculation, not a statement in the paper.</p>
+<p>Figure 3 runs the actual gradient descent in these coordinates, from \(b_0=0.01\) and a chosen <span class="nw">\(a_0\).</span> In the degree-4 panel every second iterate joins the parabola and follows it to its tip, and the endpoint barely moves when \(a_0\) does. At \(\eta=0.1\) the runs end at \(a\) between \(-0.00373\) and \(-0.00376\) for \(a_0\) from 0.02 to 0.3, against <span class="nw">\(-\kappa^3/8=-0.00395\).</span> At \(\eta=0.05\) they end at \(a=-0.00138\) for every \(a_0\) from 0.05 to 0.8, with sharpness 39.9755 against <span class="nw">\(2/\eta=40\).</span> For <span class="nw">\(a_0=0.1\),</span> the ratio of the final \(a\) to \(-\kappa^3/8\) approaches 1 as \(\eta\) shrinks: 0.83 at <span class="nw">\(\eta=0.2\),</span> 0.95 at 0.1 and 0.99 at 0.05, since \(-\kappa^3/8\) is the small-step limit. These are simulation readouts. The degree-2 panel is the subject of the next section.</p>
+<figure class="fx" id="fx-two-step">
+  <div class="fx-bar tws-bar">
+    <label class="tws-ctl"><span class="lab">step size</span><select class="fx-select" id="fx-two-step-eta" aria-label="Step size η">
+      <option value="0.2">η = 0.2 (2/η = 10)</option>
+      <option value="0.1" selected>η = 0.1 (2/η = 20)</option>
+      <option value="0.05">η = 0.05 (2/η = 40)</option>
+    </select></label>
+    <div class="tws-ctl">
+      <span class="lab" id="fx-two-step-viewlab">view</span>
+      <div class="fx-seg" role="group" aria-labelledby="fx-two-step-viewlab">
+        <button type="button" data-view="whole" aria-pressed="true">whole run</button>
+        <button type="button" data-view="near" aria-pressed="false">near the minimum</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-bar tws-bar2">
+    <div class="tws-ctl tws-actl">
+      <label class="lab" for="fx-two-step-a0">start a<sub>0</sub></label>
+      <div class="tws-slider">
+        <div class="tws-rail" aria-hidden="true"><i class="tws-fill"></i></div>
+        <input id="fx-two-step-a0" class="tws-range" type="range" min="0.02" max="0.3" step="0.01" value="0.1" aria-valuetext="a0 = 0.10">
+        <div class="tws-ticks" aria-hidden="true"><span data-v="0.02">0.02</span><span data-v="0.1">0.1</span><span data-v="0.2">0.2</span><span data-v="0.3">0.3</span></div>
+      </div>
+      <output class="tws-aval" for="fx-two-step-a0" aria-hidden="true">0.10</output>
+    </div>
+    <div class="tws-ctl tws-act">
+      <div class="fx-seg" role="group" aria-label="Playback">
+        <button type="button" class="tws-play" aria-label="Replay the iterations">replay</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-legend tws-legend" aria-hidden="true">
+    <span><svg class="tws-sw" viewBox="0 0 10 10" width="10" height="10"><circle class="s-ev" cx="5" cy="5" r="2.6"/></svg>even steps</span>
+    <span><svg class="tws-sw" viewBox="0 0 10 10" width="10" height="10"><circle class="s-od" cx="5" cy="5" r="2.6"/></svg>odd steps</span>
+    <span><svg class="tws-sw" viewBox="0 0 10 10" width="10" height="10"><path class="s-st" d="M2 2L8 8M2 8L8 2"/></svg>start</span>
+    <span><svg class="tws-sw" viewBox="0 0 12 12" width="12" height="12"><circle class="s-en" cx="6" cy="6" r="4.2"/></svg>end</span>
+    <span><svg class="tws-sw" viewBox="0 0 20 10" width="20" height="10"><line class="s-cv" x1="1" y1="5" x2="19" y2="5"/></svg>two-step approximation</span>
+  </div>
+  <div class="fx-panels tws-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle">Degree 4: ¼(1 − x²y²)²</p>
+      <p class="fx-psub" data-sub="4">&nbsp;</p>
+      <div class="tws-chart" data-chart="4"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Degree 2: ½(1 − xy)²</p>
+      <p class="fx-psub" data-sub="2">&nbsp;</p>
+      <div class="tws-chart" data-chart="2"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 3. The same gradient descent in coordinates along the valley of minima <span class="nw">(\(a\))</span> and across it <span class="nw">\((b = xy - 1)\),</span> with the minimum of sharpness exactly \(2/\eta\) at the origin (paper Definition 2). Both runs are simulated live from <span class="nw">\(a = a_0\),</span> \(b = 0.01\) until <span class="nw">\(|b| &lt; 10^{-10}\);</span> filled dots are every second iterate and hollow dots the ones in between. In the degree-4 panel every start joins the parabola \(b^2 = a\kappa/2 + \kappa^4/16\) <span class="nw">(\(\kappa = \sqrt\eta\),</span> paper Eq. 9) and stops near its tip, which tends to \(a = -\kappa^3/8\) as \(\eta\) shrinks, just on the flat side of the threshold. In the degree-2 panel, for <span class="nw">\(\tfrac12(1 - xy)^2\),</span> the iterates follow an ellipse around the origin (dashed, the local approximation of paper Sec. 4) and stop near <span class="nw">\(a = -a_0\),</span> so a sharper start ends flatter. Move \(a_0\) to compare, and hover or use the arrow keys on a panel to read an iterate's step, position and sharpness.</figcaption>
+</figure>
+
+<p>The theorem makes this picture rigorous in a region of initializations that is large compared with the precision of the endpoint.</p>
+<div class="thm" role="note" aria-label="Theorem 1"><p class="thm-h"><span class="thm-k">Theorem 1</span><span class="thm-i">sharpness concentration, paper Theorem 3.1 and Corollary 3.1</span></p>
+<p class="t">Many starts, one final sharpness.</p>
+<p>Let \(K\) be a large enough absolute constant and <span class="nw">\(\eta&lt;K^{-2}/8{,}000{,}000\).</span> From every \((x_0,y_0)\) with \(x_0\in\big(\breve x+13\eta^{5/4},\ \breve x+K^{-2}\eta^{-1/2}/5\big)\) and <span class="nw">\(0&lt;|x_0y_0-1|&lt;K^{-1}\),</span> gradient descent with step size \(\eta\) converges to a global minimum with sharpness in <span class="nw">\((2/\eta-20\eta/3,\ 2/\eta)\).</span></p>
+<p>In \((a,b)\) coordinates: if <span class="nw">\(\kappa&lt;K^{-1}/(2000\sqrt2)\),</span> \(a_0\in(12\kappa^{5/2},\ K^{-2}\kappa^{-1}/4)\) and <span class="nw">\(b_0\in(-K^{-1},K^{-1})\setminus\{0\}\),</span> then for every \(\varepsilon&gt;0\) there is a time \(T\) such that \(|b_t|&lt;\varepsilon\) and \(a_t\in(-5\kappa^3/3,\ -\kappa^3/10)\) for all <span class="nw">\(t&gt;T\),</span> with \(T=O(K^{-2}\kappa^{-15/2})\) plus \(O(\log(1/\varepsilon))\) plus <span class="nw">\(O(\log(1/|b_0|)\,\kappa^{-7/2})\).</span></p></div>
+<div class="thm" role="note" aria-label="Corollary 2"><p class="thm-h"><span class="thm-k">Corollary 2</span><span class="thm-i">sharpness adaptivity, paper Corollary 3.2</span></p>
+<p class="t">One region of starts, many step sizes.</p>
+<p>Fix <span class="nw">\(\alpha&lt;K^{-1}/(2000\sqrt2)\).</span> Every start with \(x_0\in\big(\alpha^{-1}+K^{-2}\alpha^{-1}/15,\ \alpha^{-1}+K^{-2}\alpha^{-1}/6\big)\) and \(0&lt;|x_0y_0-1|&lt;K^{-1}\) converges, for every step size <span class="nw">\(\eta\in(\alpha^2-K^{-2}\alpha^2/10,\ \alpha^2)\),</span> to a minimum with sharpness in <span class="nw">\((2/\eta-20\eta/3,\ 2/\eta)\).</span></p></div>
+<p>In the \((x,y)\) plane the region of Theorem 1 contains a box of width \(\Theta(K^{-2}\eta^{-1/2})\) and height <span class="nw">\(\Theta(K^{-1}\eta^{1/2})\),</span> so many starts are far from the EoS minimum, while the final sharpness is fixed to within <span class="nw">\(20\eta/3\).</span> The proof follows the two-step iterates through six regions of the \((a,|b|)\) plane:</p>
+<ul>
+  <li>Region I, above <span class="nw">\(b^2=2a\kappa\):</span> the cubic term dominates, and \(|b|\) decreases until the iterate enters region II.</li>
+  <li>Region III, below <span class="nw">\(b^2=a\kappa/4\):</span> the term \(ab\kappa\) dominates, and \(|b|\) grows by a factor of at least \(1+a\kappa\) every two steps until it enters region II.</li>
+  <li>Region II, between those curves, keeps the iterate while \(a\) decreases into region IV. There the residual \(\xi=b^2-a\kappa/2-\kappa^4/16\) contracts, roughly as <span class="nw">\(\xi''\approx(1-32b^2)\,\xi\),</span> to <span class="nw">\(|\xi|&lt;\kappa^4/200\),</span> and it stays that small in region V as the iterate follows the parabola.</li>
+  <li>In region VI, near the tip, \(a\) is negative, so \(|b''|&lt;(1+a\kappa)\,|b|\) with <span class="nw">\(1+a\kappa&lt;1\):</span> \(|b|\) shrinks geometrically while \(a\) barely moves.</li>
+</ul>
+<figure class="ill" id="fig-proof">
+<svg class="pf-svg" viewBox="0 0 480 280" role="img" aria-labelledby="fig-proof-cap">
+  <path class="pf-band" d="M108.0,215.6 L109.4,214.8 L110.9,213.9 L112.4,213.1 L113.8,212.4 L115.3,211.6 L116.7,210.8 L118.2,210.1 L119.7,209.4 L121.1,208.7 L122.6,208.0 L124.0,207.3 L125.5,206.7 L127.0,206.0 L128.4,205.4 L129.9,204.7 L131.4,204.1 L132.8,203.5 L134.3,202.9 L135.7,202.3 L137.2,201.7 L138.7,201.1 L140.1,200.5 L141.6,200.0 L143.0,199.4 L144.5,198.8 L146.0,198.3 L147.4,197.8 L148.9,197.2 L150.4,196.7 L151.8,196.2 L153.3,195.6 L154.7,195.1 L156.2,194.6 L157.7,194.1 L159.1,193.6 L160.6,193.1 L162.0,192.6 L163.5,192.2 L165.0,191.7 L166.4,191.2 L167.9,190.7 L169.4,190.3 L170.8,189.8 L172.3,189.3 L173.7,188.9 L175.2,188.4 L176.7,188.0 L178.1,187.5 L179.6,187.1 L181.0,186.6 L182.5,186.2 L184.0,185.8 L185.4,185.3 L186.9,184.9 L188.4,184.5 L189.8,184.1 L191.3,183.7 L192.7,183.2 L194.2,182.8 L195.7,182.4 L195.7,192.3 L194.2,192.7 L192.7,193.2 L191.3,193.7 L189.8,194.2 L188.4,194.7 L186.9,195.2 L185.4,195.8 L184.0,196.3 L182.5,196.8 L181.0,197.3 L179.6,197.9 L178.1,198.4 L176.7,199.0 L175.2,199.5 L173.7,200.1 L172.3,200.7 L170.8,201.2 L169.4,201.8 L167.9,202.4 L166.4,203.0 L165.0,203.6 L163.5,204.2 L162.0,204.9 L160.6,205.5 L159.1,206.1 L157.7,206.8 L156.2,207.5 L154.7,208.2 L153.3,208.8 L151.8,209.6 L150.4,210.3 L148.9,211.0 L147.4,211.8 L146.0,212.5 L144.5,213.3 L143.0,214.1 L141.6,214.9 L140.1,215.8 L138.7,216.7 L137.2,217.6 L135.7,218.5 L134.3,219.5 L132.8,220.5 L131.4,221.5 L129.9,222.6 L128.4,223.7 L127.0,224.9 L125.5,226.2 L124.0,227.5 L122.6,229.0 L121.1,230.6 L119.7,232.4 L118.2,234.5 L116.7,237.0 L115.3,240.6 L113.8,246.0 L112.4,246.0 L110.9,246.0 L109.4,246.0 L108.0,246.0Z"/>
+  <line class="pf-v" x1="250.9" y1="18.0" x2="250.9" y2="246"/>
+  <line class="pf-v" x1="195.7" y1="18.0" x2="195.7" y2="246"/>
+  <line class="pf-v" x1="108.0" y1="18.0" x2="108.0" y2="246"/>
+  <line class="pf-ax" x1="56" y1="246" x2="462" y2="246"/>
+  <line class="pf-ax" x1="137.2" y1="246" x2="137.2" y2="14.0"/>
+  <path class="pf-c" d="M137.2,246.0 L140.8,223.3 L144.4,214.0 L148.0,206.8 L151.6,200.7 L155.2,195.3 L158.9,190.5 L162.5,186.1 L166.1,181.9 L169.7,178.0 L173.3,174.3 L176.9,170.8 L180.5,167.5 L184.1,164.3 L187.7,161.2 L191.3,158.2 L194.9,155.4 L198.6,152.6 L202.2,149.9 L205.8,147.2 L209.4,144.7 L213.0,142.2 L216.6,139.7 L220.2,137.3 L223.8,135.0 L227.4,132.7 L231.0,130.5 L234.6,128.3 L238.2,126.1 L241.9,124.0 L245.5,121.9 L249.1,119.8 L252.7,117.8 L256.3,115.8 L259.9,113.9 L263.5,111.9 L267.1,110.0 L270.7,108.2 L274.3,106.3 L277.9,104.5 L281.6,102.7 L285.2,100.9 L288.8,99.2 L292.4,97.4 L296.0,95.7 L299.6,94.0 L303.2,92.3 L306.8,90.7 L310.4,89.0 L314.0,87.4 L317.6,85.8 L321.3,84.2 L324.9,82.6 L328.5,81.0 L332.1,79.5 L335.7,78.0 L339.3,76.4 L342.9,74.9 L346.5,73.4 L350.1,72.0 L353.7,70.5 L357.3,69.0 L361.0,67.6 L364.6,66.2 L368.2,64.7 L371.8,63.3 L375.4,61.9 L379.0,60.5 L382.6,59.2 L386.2,57.8 L389.8,56.4 L393.4,55.1 L397.0,53.7 L400.6,52.4 L404.3,51.1 L407.9,49.8 L411.5,48.5 L415.1,47.2 L418.7,45.9 L422.3,44.6 L425.9,43.3 L429.5,42.1 L433.1,40.8 L436.7,39.6 L440.3,38.3 L444.0,37.1 L447.6,35.9 L451.2,34.7 L454.8,33.4 L458.4,32.2 L462.0,31.0"/>
+  <path class="pf-c" d="M137.2,246.0 L140.8,238.0 L144.4,234.7 L148.0,232.1 L151.6,230.0 L155.2,228.1 L158.9,226.4 L162.5,224.8 L166.1,223.3 L169.7,222.0 L173.3,220.7 L176.9,219.4 L180.5,218.2 L184.1,217.1 L187.7,216.0 L191.3,215.0 L194.9,214.0 L198.6,213.0 L202.2,212.0 L205.8,211.1 L209.4,210.2 L213.0,209.3 L216.6,208.4 L220.2,207.6 L223.8,206.8 L227.4,205.9 L231.0,205.2 L234.6,204.4 L238.2,203.6 L241.9,202.9 L245.5,202.1 L249.1,201.4 L252.7,200.7 L256.3,200.0 L259.9,199.3 L263.5,198.6 L267.1,197.9 L270.7,197.3 L274.3,196.6 L277.9,196.0 L281.6,195.3 L285.2,194.7 L288.8,194.1 L292.4,193.5 L296.0,192.9 L299.6,192.3 L303.2,191.7 L306.8,191.1 L310.4,190.5 L314.0,189.9 L317.6,189.4 L321.3,188.8 L324.9,188.2 L328.5,187.7 L332.1,187.1 L335.7,186.6 L339.3,186.1 L342.9,185.5 L346.5,185.0 L350.1,184.5 L353.7,183.9 L357.3,183.4 L361.0,182.9 L364.6,182.4 L368.2,181.9 L371.8,181.4 L375.4,180.9 L379.0,180.4 L382.6,179.9 L386.2,179.5 L389.8,179.0 L393.4,178.5 L397.0,178.0 L400.6,177.6 L404.3,177.1 L407.9,176.6 L411.5,176.2 L415.1,175.7 L418.7,175.2 L422.3,174.8 L425.9,174.3 L429.5,173.9 L433.1,173.5 L436.7,173.0 L440.3,172.6 L444.0,172.1 L447.6,171.7 L451.2,171.3 L454.8,170.8 L458.4,170.4 L462.0,170.0"/>
+  <path class="pf-p" d="M98.2,246.0 L101.3,235.6 L104.3,231.3 L107.3,228.0 L110.3,225.2 L113.4,222.8 L116.4,220.6 L119.4,218.5 L122.5,216.6 L125.5,214.8 L128.5,213.2 L131.6,211.6 L134.6,210.0 L137.6,208.6 L140.7,207.1 L143.7,205.8 L146.7,204.5 L149.8,203.2 L152.8,201.9 L155.8,200.7 L158.9,199.6 L161.9,198.4 L164.9,197.3 L167.9,196.2 L171.0,195.1 L174.0,194.1 L177.0,193.1 L180.1,192.0 L183.1,191.1 L186.1,190.1 L189.2,189.1 L192.2,188.2 L195.2,187.3 L198.3,186.4 L201.3,185.5 L204.3,184.6 L207.4,183.7 L210.4,182.8 L213.4,182.0 L216.5,181.2 L219.5,180.3 L222.5,179.5 L225.5,178.7 L228.6,177.9 L231.6,177.1 L234.6,176.3 L237.7,175.6 L240.7,174.8 L243.7,174.1 L246.8,173.3 L249.8,172.6 L252.8,171.8 L255.9,171.1 L258.9,170.4 L261.9,169.7 L265.0,169.0 L268.0,168.3 L271.0,167.6 L274.0,166.9 L277.1,166.2 L280.1,165.6 L283.1,164.9 L286.2,164.2 L289.2,163.6 L292.2,162.9 L295.3,162.3 L298.3,161.6 L301.3,161.0 L304.4,160.4 L307.4,159.7 L310.4,159.1 L313.5,158.5 L316.5,157.9 L319.5,157.3 L322.6,156.7 L325.6,156.1 L328.6,155.5 L331.6,154.9 L334.7,154.3 L337.7,153.7 L340.7,153.1 L343.8,152.5 L346.8,152.0 L349.8,151.4 L352.9,150.8 L355.9,150.3 L358.9,149.7 L362.0,149.1 L365.0,148.6 L368.0,148.0 L371.1,147.5 L374.1,146.9 L377.1,146.4 L380.2,145.9 L383.2,145.3 L386.2,144.8 L389.2,144.3 L392.3,143.7 L395.3,143.2 L398.3,142.7 L401.4,142.2 L404.4,141.6 L407.4,141.1 L410.5,140.6 L413.5,140.1 L416.5,139.6 L419.6,139.1 L422.6,138.6 L425.6,138.1 L428.7,137.6 L431.7,137.1 L434.7,136.6 L437.7,136.1 L440.8,135.6 L443.8,135.1 L446.8,134.6 L449.9,134.2 L452.9,133.7 L455.9,133.2 L459.0,132.7 L462.0,132.3"/>
+  <text class="pf-lab" x="462.0" y="23.1" text-anchor="end">b² = 2aκ</text>
+  <text class="pf-lab pf-acc" x="462.0" y="123.3" text-anchor="end">b² = aκ/2 + κ⁴/16</text>
+  <text class="pf-lab" x="462.0" y="162.0" text-anchor="end">b² = aκ/4</text>
+  <text class="pf-rn" x="267.1" y="56.0">I</text>
+  <text class="pf-rn" x="280.1" y="133.5" text-anchor="middle">II</text>
+  <text class="pf-rn" x="371.1" y="224.7">III</text>
+  <text class="pf-rn" x="223.3" y="170.0" text-anchor="middle">IV</text>
+  <text class="pf-rn" x="156.7" y="182.2" text-anchor="middle">V</text>
+  <text class="pf-rn" x="80.4" y="224.7" text-anchor="middle">VI</text>
+  <text class="pf-tk" x="250.9" y="12.0" text-anchor="middle">2κ<tspan dy="-4" font-size="8.5">5/2</tspan></text>
+  <text class="pf-tk" x="195.7" y="12.0" text-anchor="middle">κ<tspan dy="-4" font-size="8.5">5/2</tspan></text>
+  <text class="pf-tk" x="98.2" y="261.0" text-anchor="middle">−κ³/8</text>
+  <line class="pf-ax" x1="98.2" y1="246" x2="98.2" y2="250"/>
+  <text class="pf-tk" x="137.2" y="261.0" text-anchor="middle">0</text>
+  <path class="pf-dm" d="M137.2 241 l5 5 l-5 5 l-5 -5Z"/>
+  <text class="pf-tk" x="462.0" y="261.0" text-anchor="end">a (along the minima) →</text>
+  <text class="pf-tk" x="143.2" y="24.0">|b|</text>
+</svg>
+  <figcaption id="fig-proof-cap">Schematic of the proof, after the paper's Figure 4: the \((a,|b|)\) plane with the EoS minimum at the origin (diamond). Distances are not to scale. Two-step iterates move left as \(a\) decreases. Starts above or below the band between \(b^2=2a\kappa\) and \(b^2=a\kappa/4\) are drawn into it (regions I–III), then into the thin tube V around the parabola \(b^2=a\kappa/2+\kappa^4/16\) (blue), and they stop at its tip, \(a\approx-\kappa^3/8\) (region VI). The vertical lines mark <span class="nw">\(a=2\kappa^{5/2}\),</span> \(a=\kappa^{5/2}\) and the start of region VI.</figcaption>
+</figure>
+<p>The same result holds for vectors. For <span class="nw">\(\min_{x,y\in\mathbb R^d}\tfrac14\|I-xy^\top xy^\top\|_F^2\),</span> from random initializations on spheres of suitable radii and with one multiplicative perturbation \(y\leftarrow y(1+2K^{-1})\) during training, for every \(\varepsilon&gt;0\) gradient descent eventually keeps the loss below \(\varepsilon\) with <span class="nw">\(\|x\|^2+\|y\|^2\in(1/\eta-10\eta/3,\ 1/\eta)\),</span> with probability at least \(1-2\delta_0-2e^{-\Omega(d)}\) (paper Theorem 3.2). The vectors first align geometrically, and then their norms follow the scalar dynamics. The perturbation keeps the run from converging to an unstable point with sharpness above <span class="nw">\(2/\eta\).</span></p>
+
+<h2 id="why-degree-two-differs">Why degree two behaves differently</h2>
+<p>Prior analyses of gradient descent beyond the threshold on <span class="nw">\((\mu-xy)^2\),</span> \((\mu-x^\top y)^2\) and \(\|\mu I-xy^\top\|_F^2\)&nbsp;<span class="cite">[<a href="#ref-3">3</a>, <a href="#ref-4">4</a>]</span> prove convergence to a minimum with sharpness at most <span class="nw">\(2/\eta\).</span> Empirically, these runs overshoot. They end at minima clearly flatter than the EoS minimum, and the sharpness does not oscillate around the threshold (paper Figure 15, with \(\eta=0.05\) on \((1-x^\top y)^2\) and <span class="nw">\(\|I-xy^\top\|_F^2\)).</span></p>
+<p>For <span class="nw">\(\tfrac12(1-xy)^2\),</span> the same coordinates, centered at its own EoS minimum where <span class="nw">\(x^2+y^2=2/\eta\),</span> give the two-step map</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle a''\approx a-\sqrt2\,b^2\kappa^3,\)</span><span class="eq">\(\displaystyle b''\approx b+4\sqrt2\,ab\kappa .\)</span></div>
+<p>There is no cubic term to hold \(b\) near a parabola. The ODE \(db/da=-4a/(b\kappa^2)\) has the solutions <span class="nw">\(b^2=4(C-a^2)/\kappa^2\),</span> ellipses centered at the EoS minimum. A start at \(a_0&gt;0\) with small \(b_0\) travels along half an ellipse and ends near <span class="nw">\(-a_0\),</span> so a sharper start ends at a flatter minimum. The degree-2 panel of Figure 3 shows this. At <span class="nw">\(\eta=0.1\),</span> starts with \(a_0=0.02,\ 0.1,\ 0.3\) end at <span class="nw">\(a=-0.0204,\ -0.109,\ -0.393\),</span> roughly the mirror image of the start. In the \((x,y)\) plane with <span class="nw">\(\eta=0.2\),</span> the starts \((3.2,\,0.25),\) \((3.35,\,0.25)\) and \((3.5,\,0.25)\) of the paper's Figure 11 have sharpness 10.28, 11.26 and 12.30 and end at 9.51, 8.39 and 6.82 (simulation readouts).</p>
+<p class="note">The paper's Section 4 writes the objective as <span class="nw">\((1-xy)^2\),</span> but its two-step map and experiments correspond to <span class="nw">\(\tfrac12(1-xy)^2\),</span> whose sharpness at a minimum is <span class="nw">\(x^2+y^2\).</span> Its ODE is also printed as \(db/da=4a/(b\kappa^2)\); the ellipses it reports require the minus sign used here. We use \(\tfrac12(1-xy)^2\) throughout.</p>
+<p>A degree-3 model separates the two behaviors. For \(\tfrac12(1-xyz)^2\) with <span class="nw">\(z=y\),</span> there are two EoS minima in the positive quadrant. Around the one where the small entry is duplicated (small <span class="nw">\(y=z\)),</span> starts concentrate just below <span class="nw">\(2/\eta\),</span> as in degree 4. Around the one where the only small entry is <span class="nw">\(x\),</span> they do not, as in degree 2 (paper Appendix A.2.3). What matters appears to be how many times the small entry is repeated, rather than the total degree.</p>
+
+<h2 id="chaos-far-from-the-minimum">Far from the minimum: bifurcation</h2>
+<p>The theorem is local, and the global picture is complicated. The boundary between converging and diverging starts is fractal (the fractal-edge view of Figure 2). From the asymmetric start \((12.5,\,0.05)\) with <span class="nw">\(\eta=0.01\),</span> close to the boundary of divergence, gradient descent first oscillates chaotically, then settles into a clean alternation across the valley, and then follows the parabola to the minimum near \((10,\,0.1)\) (paper Figure 6b). Run to convergence in our simulation, it ends at \((9.99938,\,0.100006),\) with sharpness 199.995 and <span class="nw">\(a=-1.249\times10^{-4}\approx-\kappa^3/8\).</span></p>
+<p>The two-step map explains the order of these stages. Its update of \(b\) factors as</p>
+<div class="math-block">\[b''=b\,(1+8a\kappa-16b^2).\]</div>
+<p>Since \(a\) changes slowly, we can hold it fixed and read this as a one-dimensional cubic map with parameter <span class="nw">\(a\),</span> much like the logistic map. The regimes below are our own derivation from this map, not statements in the paper. With \(s=8a\kappa\) and <span class="nw">\(u=4b\),</span> the map is <span class="nw">\(u\mapsto u(1+s-u^2)\):</span></p>
+<ul>
+  <li>For <span class="nw">\(-2&lt;s&lt;0\),</span> that is for <span class="nw">\(-1/(4\kappa)&lt;a&lt;0\),</span> the fixed point \(b=0\) is stable, and the run converges to a minimum.</li>
+  <li>For <span class="nw">\(0&lt;s&lt;1\),</span> the orbit settles at <span class="nw">\(b^2=a\kappa/2\),</span> the leading-order parabola of the previous section. Its fixed points have multiplier <span class="nw">\(1-2s\).</span> In gradient descent this is a steady period-two oscillation across the valley.</li>
+  <li>At <span class="nw">\(s=1\),</span> that is \(a=1/(8\kappa)\) (1.25 for <span class="nw">\(\kappa=0.1\)),</span> the fixed points period-double, and further doublings and chaotic bands follow as \(s\) grows.</li>
+  <li>For \(s&gt;2\) <span class="nw">(\(a&gt;2.5\)</span> for <span class="nw">\(\kappa=0.1\))</span> orbits escape, which corresponds to divergence.</li>
+</ul>
+<p>Figure 4 overlays the gradient descent run on the bifurcation diagram of this map. The run starts at <span class="nw">\(a\approx2.50\),</span> at the edge of the escape regime, and \(a\) only decreases, so it crosses the diagram from right to left. It passes through period doubling in reverse, which the paper calls de-bifurcation, joins the parabola and converges once <span class="nw">\(a&lt;0\).</span> The two sides of the oscillation differ, because the one-step update of \(b\) has a \(-3b^2\) term. Close to the minimum they bracket the parabola, with \(|b|=0.078\) and 0.063 at \(a=0.1\) against 0.071 from the parabola. Further right the match is looser, 0.276 and 0.141 at \(a=1.0\) against 0.224. These are readouts from our simulation. Ruiz-Garcia et al.&nbsp;<span class="cite">[<a href="#ref-5">5</a>]</span> observed similar oscillations in neural networks when the learning rate is raised, and attributed them to cascades across several large eigendirections. This model has only one oscillating direction, so such a cascade is not needed to produce them.</p>
+<figure class="fx" id="fx-bifurcation">
+  <div class="fx-bar bif-bar">
+    <div class="bif-ctl bif-actl">
+      <label class="lab" for="fx-bifurcation-a">along-valley <i class="bif-it">a</i></label>
+      <div class="bif-slider">
+        <div class="bif-rail" aria-hidden="true"><i class="bif-z"></i><i class="bif-s1"></i></div>
+        <input id="fx-bifurcation-a" class="bif-range" type="range" min="-0.5" max="2.6" step="0.005" value="1.6" aria-valuetext="a = 1.600, 8aκ = 1.280">
+        <div class="bif-ticks" aria-hidden="true"><span data-v="-0.5">−0.5</span><span data-v="0">0</span><span data-v="0.5">0.5</span><span data-v="1">1</span><span data-v="1.5">1.5</span><span data-v="2">2</span><span data-v="2.5">2.5</span></div>
+      </div>
+      <output class="bif-aval" id="fx-bifurcation-aval" for="fx-bifurcation-a" aria-hidden="true">a = 1.600</output>
+    </div>
+    <div class="fx-seg bif-seg" role="group" aria-label="Sweep and overlay">
+      <button type="button" class="bif-play" id="fx-bifurcation-play" aria-pressed="false" aria-label="Sweep a from right to left">play</button>
+      <button type="button" class="bif-gd" id="fx-bifurcation-gd" aria-pressed="true">show GD run</button>
+    </div>
+  </div>
+  <div class="fx-legend bif-legend" aria-hidden="true">
+    <span><i class="bif-sw bif-sw-map"></i>map, iterates 601–700 and their negatives</span>
+    <span class="bif-li-gd"><i class="bif-sw bif-sw-gd"></i>gradient descent from (12.5, 0.05)</span>
+    <span><svg class="bif-ksw" width="18" height="8" viewBox="0 0 18 8"><line x1="0" y1="4" x2="18" y2="4"/></svg>fixed points b² = aκ/2</span>
+  </div>
+  <div class="bif-panels" id="fx-bifurcation-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle"><span>Two-step map \(b \mapsto b\,(1 + 8a\kappa - 16b^2)\)</span></p>
+      <p class="fx-psub">κ = 0.1 (η = 0.01), 500 values of a</p>
+      <div class="bif-plot" id="fx-bifurcation-plot">
+        <canvas class="bif-cvs" id="fx-bifurcation-cvs" aria-hidden="true"></canvas>
+        <svg class="fx-svg" id="fx-bifurcation-svg" role="img" aria-label="Bifurcation diagram of the two-step map"></svg>
+      </div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle"><span>Orbit at this <i class="bif-it">a</i></span></p>
+      <p class="fx-psub" id="fx-bifurcation-osub">b<sub>k</sub> from b<sub>0</sub> = 0.05, k = 0 to 80</p>
+      <div class="bif-plot" id="fx-bifurcation-oplot">
+        <svg class="fx-svg" id="fx-bifurcation-osvg" role="img" tabindex="0" aria-label="Orbit of the two-step map"></svg>
+      </div>
+    </div>
+  </div>
+  <p class="fx-status" id="fx-bifurcation-status" aria-live="polite"></p>
+  <figcaption>Figure 4. The two-step map panel shows the bifurcation diagram of the paper's approximate two-step map \(b \mapsto b(1+8a\kappa-16b^2)\) with the along-valley coordinate \(a\) held fixed <span class="nw">(\(\kappa = 0.1\),</span> <span class="nw">\(\eta = 0.01\));</span> grey dots are iterates 601 to 700 from \(b_0 = 0.05\) for 500 values of <span class="nw">\(a\),</span> with their negatives, since gradient descent flips the sign of \(b\) every step. Blue is the actual gradient-descent run from \((12.5, 0.05)\) (the paper's Fig. 6b, simulated live for 150,000 steps): it starts in the chaotic band on the right, moves left as \(a\) decreases, passes through period doubling in reverse, settles on the branch \(b^2 = a\kappa/2\) (dashed) and approaches the minimum once <span class="nw">\(a &lt; 0\);</span> its two sides differ because the one-step update of \(b\) has a \(-3b^2\) term. The orbit panel shows the map's orbit at the \(a\) set with the slider, by dragging on the diagram, or with play, which sweeps \(a\) from right to left; the first 20 iterates are grey. The diagram (as in the paper's Fig. 6c), the dashed branch and the regime thresholds come from the approximate map, not from gradient descent; the branch and the thresholds are our derivation rather than statements in the paper.</figcaption>
+</figure>
+
+<h2 id="beyond-the-toy-model">Beyond the toy model</h2>
+<h3>Coupling emerges on its own</h3>
+<p>The coupled start <span class="nw">\(z_0=x_0\),</span> \(w_0=y_0\) may look artificial. In scalar networks \(\tfrac12(1-x_1\cdots x_n)^2\) whose entries all start different, the small entries often become equal by themselves (paper Appendix A.4), and Figure 5 reruns the paper's three examples at <span class="nw">\(\eta=0.2\).</span> From \((6,\,0.1,\,0.4),\) the gap \(|x_2-x_3|\) falls from 0.3 to \(3.2\times10^{-7}\) within 50 steps. From the seven-layer start \((2,\,2.5,\,3,\,0.1,\,0.2,\,0.3,\,0.4),\) the four small entries agree to within \(4\times10^{-5}\) by step 200, which gives a model like ours with a small entry repeated four times. The sharpness peaks at 36.8 and ends at 9.987. From \((6,\,0.7,\,0.3,\,0.2)\) the small entries never become equal <span class="nw">(\(|x_2-x_4|=0.107\)</span> at step 200), yet the sharpness still ends at 9.986, just below <span class="nw">\(2/\eta=10\).</span> These are simulation readouts. There is no sharp line between large and small entries.</p>
+<figure class="fx" id="fx-coupling">
+  <div class="fx-bar cpl-bar">
+    <label class="cpl-ctl"><span class="lab">initialization</span><select class="fx-select" id="fx-coupling-init" aria-label="Initialization">
+      <option value="3">3 layers: (6, 0.1, 0.4)</option>
+      <option value="7" selected>7 layers: (2, 2.5, 3, 0.1, 0.2, 0.3, 0.4)</option>
+      <option value="4">4 layers: (6, 0.7, 0.3, 0.2)</option>
+    </select></label>
+  </div>
+  <div class="fx-bar cpl-bar2">
+    <div class="fx-legend cpl-legend" aria-hidden="true">
+      <span class="cpl-lg-s"><i class="sw"></i>entry initialized below 1</span>
+      <span class="cpl-lg-l"><i class="sw"></i>above 1</span>
+    </div>
+    <div class="cpl-ctl cpl-act">
+      <div class="fx-seg" role="group" aria-label="Playback">
+        <button type="button" class="cpl-play" aria-label="Replay the run">replay</button>
+        <button type="button" class="cpl-end" aria-label="Show all 5000 steps">show all</button>
+      </div>
+      <span class="cpl-prog" aria-hidden="true"></span>
+    </div>
+  </div>
+  <div class="cpl-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle">Loss</p>
+      <p class="fx-psub" data-sub="loss">&nbsp;</p>
+      <div class="cpl-chart" data-chart="loss"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Sharpness</p>
+      <p class="fx-psub" data-sub="sharp">&nbsp;</p>
+      <div class="cpl-chart" data-chart="sharp"></div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle">Distance to the last entry</p>
+      <p class="fx-psub" data-sub="dist">&nbsp;</p>
+      <div class="cpl-chart" data-chart="dist"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 5. Gradient descent <span class="nw">(\(\eta=0.2\))</span> on \(n\)-layer scalar networks \(\tfrac12(1-x_1\cdots x_n)^2\) with all entries initialized differently, from the three initializations of the paper's Appendix A.4 (its Figures 16, 17 and 20), simulated live for 5000 steps. The distance \(|x_i-x_n|\) of each entry to the last one, over the first 200 steps, shows the small entries (blue) becoming equal geometrically, which recovers the coupled model. The sharpness, the top eigenvalue of the \(n\times n\) Hessian, rises above \(2/\eta=10\) and then settles just below it, even in the 4-layer case where the small entries never become exactly equal, while the loss decreases non-monotonically. Hover a panel, or focus it and use the arrow keys, to read the step, loss, sharpness and every entry.</figcaption>
+</figure>
+
+<h3>A five-layer network on CIFAR-10</h3>
+<p>We train a fully connected network with five layers, width 200 and no biases, with ELU or tanh activations, by full-batch gradient descent on the mean squared error over 50 CIFAR-10 images&nbsp;<span class="cite">[<a href="#ref-6">6</a>]</span>: 25 airplanes labeled \(-1\) and 25 automobiles labeled <span class="nw">\(+1\).</span> With \(\eta=0.01\) the loss goes to zero, and for ELU after 18,500 iterations the sharpness converges to 199.97, with <span class="nw">\(2/\eta=200\).</span></p>
+<p>To compare with the scalar model, we project the trajectory onto two directions: the top Hessian eigenvector at the end of training (the oscillation direction), and the direction in which the two-step average moved between iteration 5000 and the end, orthogonalized against the first (the movement direction). After about 3000 iterations, the part of the trajectory outside this plane is small. The projected trajectory first oscillates in a bifurcation-like way and then moves along a smooth curve. From iteration 5000 on it is well fit by the parabola \(x=7500y^2\) for ELU and \(x=14000y^2\) for tanh, with \(x\) the movement coordinate and \(y\) the oscillation coordinate.</p>
+
+<h3>Noise and minibatches</h3>
+<p>With label noise <span class="nw">(\(\sigma=0.01\),</span> <span class="nw">\(\eta=0.2\),</span> start <span class="nw">\((2.5,\,0.41)\)),</span> the scalar model first follows the parabola to near the EoS minimum and then, over \(10^6\) iterations, drifts along the minima to the flattest one, \((1,1),\) with sharpness 4. With noise added to the gradient it instead wanders along the minima between the two EoS minima. Minibatch SGD on the networks above <span class="nw">(\(\eta=0.005,\ 0.01,\ 0.02\),</span> batch sizes 1 to 50, 10 initializations each) ends close to \(2/\eta\) for large batches and clearly below it for small ones, with the final sharpness concentrated for each batch size. The scalar model fits a single data point, so it does not explain this.</p>
+
+<h2 id="related-work">Related work</h2>
+<p><b>The phenomenon.</b> Cohen et al.&nbsp;<span class="cite">[<a href="#ref-1">1</a>]</span> formalized the edge of stability and showed that the loss can decrease non-monotonically while <span class="nw">\(\lambda&gt;2/\eta\).</span> Non-monotone loss has also been reported in other settings&nbsp;<span class="cite">[<a href="#ref-4">4</a>, <a href="#ref-7">7</a>, <a href="#ref-8">8</a>, <a href="#ref-9">9</a>, <a href="#ref-10">10</a>, <a href="#ref-11">11</a>]</span>. Lewkowycz et al.&nbsp;<span class="cite">[<a href="#ref-9">9</a>]</span> described a catapult phase in which the loss does not diverge although the sharpness exceeds <span class="nw">\(2/\eta\).</span></p>
+<p><b>Mechanisms.</b> Ahn et al.&nbsp;<span class="cite">[<a href="#ref-12">12</a>]</span> study this unstable convergence and discuss its possible causes. Ma et al.&nbsp;<span class="cite">[<a href="#ref-13">13</a>]</span> prove the edge of stability for losses with a subquadratic property; their model shows the phenomenon but not sharpness adaptivity. Arora et al.&nbsp;<span class="cite">[<a href="#ref-2">2</a>]</span> and Lyu et al.&nbsp;<span class="cite">[<a href="#ref-14">14</a>]</span> analyze sharpness reduction near the manifold of minima, with the loss \(\sqrt L\) or normalized gradient descent, or with a scale-invariant objective. There the effective step size changes during training, so adaptivity and concentration do not apply.</p>
+<p><b>Degree two.</b> Wang et al.&nbsp;<span class="cite">[<a href="#ref-4">4</a>]</span> prove convergence of matrix factorization with step sizes beyond <span class="nw">\(2/\lambda\),</span> Chen and Bruna&nbsp;<span class="cite">[<a href="#ref-3">3</a>]</span> study convergence beyond the edge of stability, and Li et al.&nbsp;<span class="cite">[<a href="#ref-15">15</a>]</span> analyze sharpness along the trajectory of two-layer linear networks. These degree-2 settings do not show adaptivity or concentration.</p>
+<p><b>Noise.</b> The slow drift of the scalar model toward \((1,1)\) under label noise falls in the regime of sharpness reduction near the manifold of minima, studied by Damian et al.&nbsp;<span class="cite">[<a href="#ref-16">16</a>]</span> and in&nbsp;<span class="cite">[<a href="#ref-14">14</a>, <a href="#ref-15">15</a>, <a href="#ref-17">17</a>]</span>.</p>
+
+<h2 id="limitations">Limitations</h2>
+<p class="note">The rigorous result is local. The region of starts and the admissible step sizes depend on an unspecified absolute constant \(K\) (for example <span class="nw">\(\eta&lt;K^{-2}/8{,}000{,}000\)),</span> and the global dynamics, with their fractal boundary, remain unanalyzed. The model assumes coupled entries, and coupling from uncoupled starts is shown only empirically and is not always complete. The vector result needs an explicit perturbation to avoid an unstable point. The link to real networks is empirical: a two-dimensional projection and a fitted parabola, on a 50-image, two-class regression. The scalar model fits one data point, so it does not explain why minibatch SGD ends below <span class="nw">\(2/\eta\).</span></p>
+
+<h2 id="references">References</h2>
+<ol class="refs">
+<li id="ref-1">Cohen et al. <a href="https://arxiv.org/abs/2103.00065">Gradient Descent on Neural Networks Typically Occurs at the Edge of Stability</a>. <i>arXiv preprint arXiv:2103.00065</i>, 2021.</li>
+<li id="ref-2">Arora, Li and Panigrahi. <a href="https://arxiv.org/abs/2205.09745">Understanding Gradient Descent on Edge of Stability in Deep Learning</a>. <i>arXiv preprint arXiv:2205.09745</i>, 2022.</li>
+<li id="ref-3">Chen and Bruna. <a href="https://arxiv.org/abs/2206.04172">On Gradient Descent Convergence beyond the Edge of Stability</a>. <i>arXiv preprint arXiv:2206.04172</i>, 2022.</li>
+<li id="ref-4">Wang et al. <a href="https://arxiv.org/abs/2110.03677">Large Learning Rate Tames Homogeneity: Convergence and Balancing Effect</a>. <i>International Conference on Learning Representations</i>, 2022.</li>
+<li id="ref-5">Ruiz-Garcia et al. <a href="https://proceedings.mlr.press/v139/ruiz-garcia21a.html">Tilting the Playing Field: Dynamical Loss Functions for Machine Learning</a>. <i>International Conference on Machine Learning</i>, 2021.</li>
+<li id="ref-6">Krizhevsky. <a href="https://www.cs.toronto.edu/~kriz/learning-features-2009-TR.pdf">Learning Multiple Layers of Features from Tiny Images</a>. Technical report, 2009.</li>
+<li id="ref-7">Jastrzebski et al. <a href="https://arxiv.org/abs/2002.09572">The Break-Even Point on Optimization Trajectories of Deep Neural Networks</a>. <i>arXiv preprint arXiv:2002.09572</i>, 2020.</li>
+<li id="ref-8">Xing et al. <a href="https://arxiv.org/abs/1802.08770">A Walk with SGD</a>. <i>arXiv preprint arXiv:1802.08770</i>, 2018.</li>
+<li id="ref-9">Lewkowycz et al. <a href="https://arxiv.org/abs/2003.02218">The Large Learning Rate Phase of Deep Learning: the Catapult Mechanism</a>. <i>arXiv preprint arXiv:2003.02218</i>, 2020.</li>
+<li id="ref-10">Arora, Li and Lyu. <a href="https://arxiv.org/abs/1812.03981">Theoretical Analysis of Auto Rate-Tuning by Batch Normalization</a>. <i>arXiv preprint arXiv:1812.03981</i>, 2018.</li>
+<li id="ref-11">Li et al. <a href="https://arxiv.org/abs/2202.00980">Robust Training of Neural Networks Using Scale Invariant Architectures</a>. <i>International Conference on Machine Learning</i>, 2022.</li>
+<li id="ref-12">Ahn, Zhang and Sra. <a href="https://arxiv.org/abs/2204.01050">Understanding the Unstable Convergence of Gradient Descent</a>. <i>arXiv preprint arXiv:2204.01050</i>, 2022.</li>
+<li id="ref-13">Ma, Wu and Ying. <a href="https://arxiv.org/abs/2204.11326">The Multiscale Structure of Neural Network Loss Functions: The Effect on Optimization and Origin</a>. <i>arXiv preprint arXiv:2204.11326</i>, 2022.</li>
+<li id="ref-14">Lyu, Li and Arora. <a href="https://arxiv.org/abs/2206.07085">Understanding the Generalization Benefit of Normalization Layers: Sharpness Reduction</a>. <i>arXiv preprint arXiv:2206.07085</i>, 2022.</li>
+<li id="ref-15">Li, Wang and Li. <a href="https://arxiv.org/abs/2207.12678">Analyzing Sharpness along GD Trajectory: Progressive Sharpening and Edge of Stability</a>. <i>arXiv preprint arXiv:2207.12678</i>, 2022.</li>
+<li id="ref-16">Damian, Ma and Lee. <a href="https://arxiv.org/abs/2106.06530">Label Noise SGD Provably Prefers Flat Global Minimizers</a>. <i>Advances in Neural Information Processing Systems</i>, 2021.</li>
+<li id="ref-17">Li, Wang and Arora. <a href="https://arxiv.org/abs/2110.06914">What Happens after SGD Reaches Zero Loss? A Mathematical Framework</a>. <i>arXiv preprint arXiv:2110.06914</i>, 2021.</li>
+</ol>
+
+<footer id="cite">
+<pre class="bib">@inproceedings{zhu2023understanding,
+  title     = {Understanding Edge-of-Stability Training Dynamics with a Minimalist Example},
+  author    = {Zhu, Xingyu and Wang, Zixuan and Wang, Xiang and Zhou, Mo and Ge, Rong},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2023},
+  url       = {https://openreview.net/forum?id=p7EagBsMAEO}
+}</pre>
+</footer>
+</main>
+
+<script src="figures.js"></script>
+<script src="../shared/select.js"></script>
+<script src="../shared/toc.js"></script>
+<script src="../shared/theme.js"></script>
+</body>
+</html>

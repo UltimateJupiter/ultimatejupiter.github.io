@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context-Enhanced Learning</title>
+<meta name="description" content="Training with helpful text in the context but no loss on it can be exponentially more sample-efficient than plain fine-tuning, and that text is hard to recover afterwards.">
+<script src="../shared/theme-init.js"></script>
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="post.css">
+<link rel="stylesheet" href="../shared/fx.css">
+<link rel="stylesheet" href="../shared/select.css">
+<link rel="stylesheet" href="figures.css">
+<link rel="stylesheet" href="../shared/site-theme.css">
+<script src="../shared/mathjax-config.js"></script>
+<script defer src="../shared/vendor/mathjax/tex-svg.min.js"></script>
+</head>
+<body>
+<div class="site-bar"><div class="in">
+  <a class="brand" href="/" aria-label="Xingyu Zhu, home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5 3.8 16.8V7.2Z"/><path d="M12 2.5 7.6 14.6h8.8Z M7.6 14.6 3.8 7.2 M16.4 14.6 20.2 7.2 M7.6 14.6 12 21.5 16.4 14.6 M3.8 16.8 7.6 14.6 M20.2 16.8 16.4 14.6"/><circle cx="12" cy="2.5" r="1.6"/></svg><span>Xingyu Zhu</span></a>
+  <nav aria-label="Site"><ul><li><a href="/publications/">Publications</a></li><li><a href="/talks/">Talks</a></li><li><a href="/blog/" aria-current="page">Blog</a></li><li><a href="/news/">News</a></li><li><a href="/uploads/Xingyu_Zhu_CV_PhD.pdf">CV</a></li></ul></nav>
+</div></div>
+<nav class="toc" aria-label="Contents"><ol><li><a href="#summary">Summary</a></li><li><a href="#learning-with-material-in-the-context">Learning with material in the context</a></li><li><a href="#multi-level-translation">A task that is hard to learn from examples</a></li><li><a href="#ten-times-fewer-samples">Ten times fewer samples</a></li><li><a href="#where-the-phrasebooks-go">Where the phrasebooks are stored</a></li><li><a href="#an-exponential-gap">An exponential gap</a></li><li><a href="#gradient-quality">Why one missing rule at a time</a></li><li><a href="#what-the-model-reveals">What the model reveals</a></li><li><a href="#related-work">Related work</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#references">References</a></li></ol></nav>
+
+<main>
+<header>
+  <h1>On the Power of Context-Enhanced Learning in LLMs</h1>
+  <ul class="authors" aria-label="Authors">
+    <li><a href="https://ultimatejupiter.github.io/" target="_blank" rel="noopener">Xingyu Zhu</a><sup>1*</sup></li>
+    <li><a href="https://abhishekpanigrahi1996.github.io/" target="_blank" rel="noopener">Abhishek Panigrahi</a><sup>1*</sup></li>
+    <li><a href="https://www.cs.princeton.edu/~arora/" target="_blank" rel="noopener">Sanjeev Arora</a><sup>1</sup></li>
+  </ul>
+  <p class="affils"><span><sup>1</sup>Princeton Language and Intelligence, Princeton University</span></p>
+  <p class="notes"><span><sup>*</sup>Equal contribution.</span><span>ICML 2025, spotlight.</span></p>
+  <div class="links">
+    <a class="pill" href="https://arxiv.org/abs/2503.01821"><span class="k">arXiv</span>2503.01821</a>
+    <a class="pill" href="https://arxiv.org/pdf/2503.01821">PDF</a>
+    <a class="pill" href="https://openreview.net/forum?id=Gn6L4QRKf7">OpenReview</a>
+    <a class="pill" href="https://github.com/princeton-pli/Context-Enhanced-Learning">Code</a>
+    <a class="pill" href="#cite">Cite</a>
+    <button type="button" class="pill theme" id="theme-btn">◐<span class="t"> Dark</span></button>
+  </div>
+  <nav class="toc-inline" aria-label="Contents"><a href="#summary">Summary</a> <span>·</span> <a href="#learning-with-material-in-the-context">Learning with material in the context</a> <span>·</span> <a href="#multi-level-translation">A task that is hard to learn from examples</a> <span>·</span> <a href="#ten-times-fewer-samples">Ten times fewer samples</a> <span>·</span> <a href="#where-the-phrasebooks-go">Where the phrasebooks are stored</a> <span>·</span> <a href="#an-exponential-gap">An exponential gap</a> <span>·</span> <a href="#gradient-quality">Why one missing rule at a time</a> <span>·</span> <a href="#what-the-model-reveals">What the model reveals</a> <span>·</span> <a href="#related-work">Related work</a> <span>·</span> <a href="#limitations">Limitations</a> <span>·</span> <a href="#references">References</a></nav>
+</header>
+
+<h2 id="summary">Summary</h2>
+<ul>
+  <li><i>Context-enhanced learning</i> is ordinary gradient training on input–output pairs, except that helpful text is placed in the context and no loss is computed on it. It is a gradient-based analog of in-context learning (ICL), and a version for language models of learning using privileged information.</li>
+  <li>On a multi-level translation task of depth 5, a Llama 3.2 3B model that can already translate given the phrasebooks in context learns a fixed translation with about 10 times fewer samples than plain fine-tuning, when phrasebook excerpts are in the context and randomly dropped. At test time it needs no phrasebook. Without ICL capability, correct rules, or dropout, the gain disappears.</li>
+  <li>The ICL-capable model reads the five phrasebooks at increasing depth. After context-enhanced learning, each phrasebook is stored in a few layers, and each group of layers ends at (or, for the last phrasebook, one layer before) the layer where the ICL-capable model starts reading that phrasebook.</li>
+  <li>In a surrogate model, learning from input–output pairs alone needs \(n^{\Omega(d)}\) samples, while dropping one rule at a time from the context needs a polynomial in \(n\) times \(d\log d\). With a single rule missing, the gradient on that rule's weights points at it; with many missing, it becomes much less reliable.</li>
+  <li>The rules seen only in the context are hard to recover from the trained model's output probabilities: 0.00% for the intermediate phrasebooks in the main setting, and at most 3.18% across all tested models even with a filter that knows every output alphabet.</li>
+</ul>
+
+<h2 id="learning-with-material-in-the-context">Learning with material in the context</h2>
+<p>Let \(f_\theta\) be an autoregressive language model and \(g\) a task that maps inputs \(x\) to distributions over outputs. Supervised fine-tuning (SFT) minimizes the autoregressive loss \(\ell_{\text{auto}}\) on pairs \((x,y)\) from a dataset \(D_g\). Context-enhanced learning keeps the same loss tokens but puts curriculum text \(\mathrm{CURR}_g(x,t)\) in front of the input. The curriculum text can be anything helpful, such as explanations, excerpts from a textbook, or worked examples, and it may change with the training step \(t\), which makes it a curriculum. The loss is taken only on \(y\):</p>
+<div class="math-block">\[ l=\ell_{\text{auto}}\big(f_\theta([\mathrm{CURR}_g(x,t),\,x,\,y]),\;y\big). \]</div>
+<div class="algo" role="note" aria-label="Algorithm 1">
+  <p class="algo-h"><span class="algo-k">Algorithm 1</span> Context-enhanced learning</p>
+  <p class="algo-in">Input: dataset \(D_g\), curriculum text \(\mathrm{CURR}_g\), initialization \(\theta\), steps \(T\)</p>
+  <ol>
+    <li>for \(t=1,\dots,T\):</li>
+    <li class="in">sample \((x,y)\sim D_g\)</li>
+    <li class="in">\(l\leftarrow\ell_{\text{auto}}\big(f_\theta([\mathrm{CURR}_g(x,t),x,y]),y\big)\) (no loss on the curriculum tokens)</li>
+    <li class="in">update \(\theta\) with \(\nabla_\theta l\)</li>
+    <li>return \(\theta\)</li>
+  </ol>
+</div>
+<p>There is some evidence that this works. Placing helpful text in the context during fine-tuning, with no loss on it, has been used to internalize symbolic knowledge&nbsp;<span class="cite">[<a href="#ref-1">1</a>]</span>, recurring prompts&nbsp;<span class="cite">[<a href="#ref-2">2</a>]</span>, and prompts that describe how to learn the material&nbsp;<span class="cite">[<a href="#ref-3">3</a>]</span>. In pretraining, prepending source URLs to documents can improve training efficiency and memorization capacity&nbsp;<span class="cite">[<a href="#ref-4">4</a>, <a href="#ref-5">5</a>]</span>. A student solving problems with the textbook open, without trying to memorize the textbook, is doing something similar. The classical counterpart is learning using privileged information (LUPI), where extra information is available during training but not at test time&nbsp;<span class="cite">[<a href="#ref-6">6</a>]</span>.</p>
+<p>We ask three questions.</p>
+<ul>
+  <li><b>Power.</b> With the loss on the same tokens, can it be much more sample-efficient than plain SFT, and why?</li>
+  <li><b>Capability.</b> Does the model need to be capable of ICL on the task to benefit?</li>
+  <li><b>Privacy.</b> Since no gradient is taken on the curriculum text, can private material be used this way with a lower risk of later leakage?</li>
+</ul>
+
+<h2 id="multi-level-translation">A task that is hard to learn from examples</h2>
+<p>To answer these questions precisely, we need a task that is easy to learn with the right material in the context and very hard to learn from input–output pairs. Multi-level translation, \(\mathrm{MLT}(d,n)\), is built for this. It has \(d+1\) alphabets \(A_1,\dots,A_{d+1}\) of \(n\) characters each, and for each level \(i\) a phrasebook \(\pi_i:A_i^2\to A_{i+1}^2\) that maps pairs of characters bijectively to pairs. An input \(s_1\in A_1^L\) of even length \(L\) is translated one level at a time. Each level shifts the string left by one character, wrapping around, and then rewrites every consecutive pair with the phrasebook. In symbols,</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \tilde s_{i,j}=s_{i,j+1}\ \ (s_{i,L+1}:=s_{i,1}),\)</span><span class="eq">\(\displaystyle (s_{i+1,j},\,s_{i+1,j+1})=\pi_i(\tilde s_{i,j},\,\tilde s_{i,j+1})\ \ (j\text{ odd}),\)</span><span class="eq">\(\displaystyle \mathrm{MLT}_\Pi=T_{\pi_d}\circ\cdots\circ T_{\pi_1},\)</span></div>
+<p>where \(T_{\pi_i}\) is the map from \(s_i\) to \(s_{i+1}\) and \(\Pi=\{\pi_i\}\) collects the phrasebooks. The design follows Feistel ciphers&nbsp;<span class="cite">[<a href="#ref-7">7</a>]</span>, although we make no cryptographic claim. Two properties matter. First, \(\mathrm{MLT}_\Pi\) is a bijection on strings, since both the shift and the translation are invertible. Second, the shift mixes neighboring pairs, so each output character depends on \(2d\) consecutive input characters. Without the shift, the whole task would collapse into a single map on pairs. The complete task is written down in \(n^2d\) phrasebook rules, yet we show below that, in the statistical query framework, learning it from input–output pairs alone needs \(n^{\Omega(d)}\) samples.</p>
+<!--FX:mlt-task-->
+<p>A phrasebook is written as text of the form <code>a b -&gt; C D; e d -&gt; B A; …</code>, with rules in any order, and \(\mathrm{STR}(\Pi)\) is the concatenation of the \(d\) texts. The curriculum text for an input \(s_1\) is an excerpt of \(\mathrm{STR}(\Pi)\).</p>
+<p>At test time the phrasebook is absent, so the model cannot be taught an explicit chain of thought that copies rules from the context. Yet the task has \(d\) sequential steps, and the model needs room to compute them. We therefore teach it to emit a fixed number of <code>&lt;THINK&gt;</code> tokens before the answer, a silent chain of thought in the spirit of pause tokens&nbsp;<span class="cite">[<a href="#ref-8">8</a>]</span>. A model is <i>\(\mathrm{MLT}(d,n)\)-ICL-capable</i> if, for any set of phrasebooks \(\Pi\), given \([\mathrm{STR}(\Pi),s_1]\) it outputs \(\mathrm{MLT}_\Pi(s_1)\) after the <code>&lt;THINK&gt;</code> tokens. Such a model can read phrasebooks. The question is whether that ability helps it learn one particular set of phrasebooks \(\Pi^*\) that it will not see at test time.</p>
+
+<h2 id="ten-times-fewer-samples">Ten times fewer samples in Llama 3.2 3B</h2>
+<p>We start from Llama 3.2-3B-Instruct&nbsp;<span class="cite">[<a href="#ref-9">9</a>]</span> with \(d=5\) and \(n=8\) or \(10\). Training has two stages.</p>
+<p><b>Stage 1: an ICL-capable model.</b> We fine-tune on translations with random phrasebooks, all different from \(\Pi^*\), with one example per set so that no phrasebook is memorized: \(3\times10^5\) sets for \(n=8\) and \(10^6\) for \(n=10\), with inputs of length 20 to 40. We follow a standard chain-of-thought internalization pipeline&nbsp;<span class="cite">[<a href="#ref-10">10</a>, <a href="#ref-11">11</a>, <a href="#ref-12">12</a>]</span>. For the first 10% of training the targets contain every intermediate string \(s_2,\dots,s_d\). Between 10% and 60% these are replaced by <code>&lt;THINK&gt;</code> tokens, first to last, at a rate that grows linearly to 100%. We use AdamW with weight decay \(10^{-4}\), a cosine schedule with peak learning rate \(10^{-4}\) and 6% warmup, and batch size 64.</p>
+<p><b>Stage 2: learning \(\Pi^*\).</b> We fix \(\Pi^*\) and build datasets of \(10^4\) to \(10^6\) random inputs of length 20 to 40, each paired with <code>&lt;THINK&gt;</code> tokens and the answer \(\mathrm{MLT}_{\Pi^*}(s_1)\). Each dataset is used for one epoch, with the same optimizer and no weight decay. The curricula differ only in the curriculum text:</p>
+<ul>
+  <li><i>No Context</i> (plain SFT): empty.</li>
+  <li><i>Fixed Dropout</i>: the rules of \(\Pi^*\) that \(s_1\) uses, with 20% of them dropped at random.</li>
+  <li><i>Annealing Dropout</i>: the rules that \(s_1\) uses plus 25% unused rules, with a dropout rate that rises linearly from 0% to 100% over the first 60% of training and then stays at 100%.</li>
+  <li>In both dropout curricula, each training step drops rules either from all five phrasebooks or from one phrasebook chosen at random, keeping the others intact.</li>
+  <li>Ablations: <i>No Dropout</i> (all used rules, always), <i>Wrong Context</i> (Annealing Dropout with incorrect rules), and <i>No ICL</i> (Annealing Dropout from the base model, which is not ICL-capable).</li>
+</ul>
+<figure class="ill" id="fig-seq">
+  <div class="ill-controls seq-controls">
+    <div class="seq-seg" role="group" aria-label="Curriculum">
+      <button type="button" data-mode="none" aria-pressed="false">No Context</button>
+      <button type="button" data-mode="fixed" aria-pressed="true">Fixed Dropout</button>
+      <button type="button" data-mode="anneal" aria-pressed="false">Annealing Dropout</button>
+    </div>
+    <label class="seq-prog" id="seq-prog"><span class="lab">training progress</span><input type="range" id="seq-t" min="0" max="100" step="5" value="30" aria-label="Training progress for Annealing Dropout"><span class="seq-tv" id="seq-tv">30%</span></label>
+    <button type="button" id="seq-redraw">redraw</button>
+  </div>
+  <div class="ill-status" id="seq-readout" aria-live="polite"></div>
+  <div class="seq" id="seq">
+    <div class="seq-part seq-ctx"><div class="seq-tag"><b>curriculum text</b> \(\mathrm{CURR}(s_1,t)\) <span class="seq-nl">no loss</span></div><div class="seq-body" id="seq-ctx"></div></div>
+    <div class="seq-part seq-inp"><div class="seq-tag"><b>input</b> \(s_1\) <span class="seq-nl">no loss</span></div><div class="seq-body" id="seq-in"></div></div>
+    <div class="seq-part seq-out"><div class="seq-tag"><b>target</b> <span class="seq-l">loss</span></div><div class="seq-body" id="seq-out"></div></div>
+  </div>
+  <figcaption>Illustration of one training sequence for \(\mathrm{MLT}(5,8)\), built from the input and phrasebook excerpts of the worked example in the paper's Appendix I (Figures 16 and 17), with the prompt wording left out; the example's phrasebooks stand in for \(\Pi^*\). Each curriculum keeps the loss on the same target tokens and changes only the text before the input. Fixed Dropout shows the rules this input uses and drops 20% of them. Annealing Dropout adds unused rules (dashed underline) and drops a growing share as training progresses. Struck-out rules are the dropped ones, which the model does not see. The dropped rules are drawn at random here; redraw resamples them.</figcaption>
+</figure>
+<p>We measure next-token accuracy on the answer tokens of held-out inputs, with no curriculum text at all. Figure 2 shows the result.</p>
+<!--FX:sample-efficiency-->
+<ul>
+  <li>Annealing Dropout learns fastest, followed by Fixed Dropout. Both need about 10 times fewer samples than plain SFT. For \(n=10\), plain SFT stays at chance up to \(10^6\) samples.</li>
+  <li>The three ablations stay near chance, apart from a single point of Wrong Context for \(n=8\). Correct context, dropout, and ICL capability are each necessary. Without dropout, the model can keep reading the rules from the context and has no reason to store them.</li>
+  <li>With only 20% dropout during training, the model is perfect at test time with 100% dropout. It therefore combines rules that never appeared together in the context of a single training example: it learns the rules one by one and recombines them at test time.</li>
+  <li>The model stores a rule only if it is needed. When we hold out half of one phrasebook's rules from every training translation but still show them in the curriculum text, the trained model is at chance on test inputs that need those rules (Appendix C.1 of the paper, for each of the five levels). A rule is internalized only when dropping it from the context raises the training loss.</li>
+</ul>
+
+<h2 id="where-the-phrasebooks-go">Where the phrasebooks are stored</h2>
+<p><b>Reading.</b> We first ask how the ICL-capable model uses phrasebooks in its context. For \(\mathrm{MLT}(5,8)\) we feed the phrasebooks, the input, the <code>&lt;THINK&gt;</code> tokens, and the answer, then replace the outputs of 10 rules of \(\pi_i\) that \(s_1\) uses, and record the \(\ell_2\) change of each layer's hidden states at the <code>&lt;THINK&gt;</code> and answer tokens. The first layer with a clear change is where the model starts reading \(\pi_i\). Later phrasebooks are read by later layers. Perturbing rules that \(s_1\) does not use changes almost nothing, so the depth reflects the content of the rules, not their position in the prompt.</p>
+<p><b>Storage.</b> We then train this model with Annealing Dropout on 100,000 samples and ask where \(\Pi^*\) ends up. For every range of layers \(L_{\text{start}}\) to \(L_{\text{end}}\) we build a stitched model, the ICL-capable model with those layers replaced by the trained model's layers&nbsp;<span class="cite">[<a href="#ref-13">13</a>]</span>, and evaluate it with \(\mathrm{STR}(\pi_i^*)\) removed from the context and the other phrasebooks present. A range that restores accuracy stores \(\pi_i^*\).</p>
+<div class="tablewrap"><table class="layers">
+<thead><tr><th>Phrasebook</th><th>read from layer</th><th>stored in layers</th></tr></thead>
+<tbody>
+<tr><td>\(\pi_1\)</td><td>10</td><td>4–10</td></tr>
+<tr><td>\(\pi_2\)</td><td>17</td><td>14–17</td></tr>
+<tr><td>\(\pi_3\)</td><td>19</td><td>18–19</td></tr>
+<tr><td>\(\pi_4\)</td><td>22</td><td>20–22</td></tr>
+<tr><td>\(\pi_5\)</td><td>26</td><td>25</td></tr>
+</tbody></table></div>
+<p class="note">\(\mathrm{MLT}(5,8)\); Llama 3.2 3B has 28 layers. The layer where the ICL-capable model starts reading each phrasebook is annotated in the paper's Figure 3, and the layers that store it after context-enhanced learning (Annealing Dropout, 100,000 samples) in its Figure 4.</p>
+<p>Each phrasebook is recovered by a small group of layers, the groups do not overlap, and each group ends at the layer where the ICL-capable model begins reading that phrasebook (25 against 26 for \(\pi_5\)). Our reading is that the model does not store the phrasebooks as one block. It re-learns each translation step locally, to make up for that step's rules when they are dropped from the context, and it does so in a group of layers that ends where the ICL-capable model starts reading that step's phrasebook. We conjecture that context-enhanced learning helps by localizing learning in parameter space in this way. Across dataset sizes, later phrasebooks are internalized with fewer samples than earlier ones. With Fixed Dropout the locations are similar, so they are set mainly by the ICL-capable initialization rather than by the dropout schedule.</p>
+
+<h2 id="an-exponential-gap">An exponential gap in a surrogate model</h2>
+<p>Gradient training of a 28-layer transformer is out of reach for current theory, so we build a surrogate that has the structure we just observed: one layer per translation step, with each layer reading its phrasebook from the context. The surrogate, SURR-MLT, uses the alphabet \(\{1,\dots,n\}\) at every level and encodes a pair \((a,b)\) as the one-hot vector \(v(a,b)=e_a\otimes e_b\in\mathbb R^{n^2}\). A string becomes a matrix \(V_1\in\mathbb R^{n^2\times L/2}\) with one column per pair, and each layer computes</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle V_{i+1}=\operatorname{HardMax}(C_i+W_i)\,\operatorname{Shift}(V_i),\)</span><span class="eq">\(\displaystyle \operatorname{Shift}(V)^{(j)}=QV^{(j)}\odot Q^\top V^{(j+1)},\)</span><span class="eq">\(\displaystyle Q=(I_n\otimes\mathbf 1_n)(\mathbf 1_n\otimes I_n)^\top .\)</span></div>
+<p>Shift turns two neighboring pairs \((a,b),(c,d)\) into the straddling pair \((b,c)\), with the last column paired with the first, and HardMax makes each column one-hot at its largest entry. \(C_i\) is the phrasebook given in the context, the matrix whose column for input pair \(p\) is one-hot at \(\pi_i(p)\), with a zero column for every dropped rule. \(W_i\) is trainable. With \(W=0\) and the phrasebooks in context the model solves any task, so it is ICL-capable. With no context and \(\operatorname{HardMax}(W_i)\) equal to the matrix of \(\pi_i^*\), it solves \(\mathrm{MLT}_{\Pi^*}\) on its own. A transformer with \(2d\) attention layers, \(2d\) MLP layers, and embedding dimension \(2n^2+2d+4\) can simulate SURR-MLT exactly, so the results below apply to that transformer as well.</p>
+<div class="thm" role="note" aria-label="Theorem 1"><p class="thm-h"><span class="thm-k">Theorem 1</span><span class="thm-i">informal, Theorem 5.4 in the paper</span></p><p class="t">Plain SFT needs exponentially many samples.</p>
+<p>The statistical query dimension of \(\mathrm{MLT}(d,n)\) under uniform inputs is at least \(n^{\Omega(d)}\). Consequently, for some tasks in the family, SGD trained without context, that is with every \(C_i=0\), needs \(n^{\Omega(d)}\) samples.</p></div>
+<p>The statistical query framework&nbsp;<span class="cite">[<a href="#ref-14">14</a>, <a href="#ref-15">15</a>]</span> covers algorithms that only use expectations over samples, which includes minibatch gradient methods, and the step from dimension to SGD follows the argument for sparse parities&nbsp;<span class="cite">[<a href="#ref-16">16</a>]</span>. For \(n=2\), two random sets of phrasebooks give translations whose outputs are uncorrelated with probability at least \(1-\tfrac13(\tfrac79)^{d-1}\). The Lovász local lemma then yields exponentially many pairwise uncorrelated tasks, and larger \(n\) reduces to this case through binary encodings.</p>
+<div class="thm" role="note" aria-label="Theorem 2"><p class="thm-h"><span class="thm-k">Theorem 2</span><span class="thm-i">informal, Theorems 5.5 and 5.6 in the paper</span></p><p class="t">Dropping one rule at a time makes learning polynomial.</p>
+<p>Fix a random input of length \(2n^2\log(nd/\delta)\), long enough that every pair occurs at every level with probability at least \(1-\delta\). If all rules but one are in the context, the loss is zero exactly when the trainable column for the missing rule is correct. Dropping the rules one at a time and searching the \(n^2\) candidates for each learns \(\Pi^*\) with sample complexity \(O(n^6d\log d)\). For \(d=2\), gradient descent needs only two steps per column of \(W_1\) and one per column of \(W_2\), for sample complexity \(O(n^4)\).</p></div>
+<p>The gradient result is proved only for \(d=2\), but it holds in simulation at larger depth. The paper trains a softmax relaxation of SURR-MLT (column softmax at temperature \(1/25\), cross-entropy, learning rate 100, weights clipped to \([0,1]\)) with a curriculum that cycles through every rule of every level and drops one at each step. On \(\mathrm{MLT}(10,10)\), every layer learns its full phrasebook, whether each step updates only the layer whose rule is missing or all layers. The same holds for \(\mathrm{MLT}(5,10)\) and \(\mathrm{MLT}(20,10)\), and, with Adam and rules dropped from randomly chosen layers, for the hand-built transformer on \(\mathrm{MLT}(5,10)\). Figure 3 runs this procedure in the browser at a smaller size, next to the same model trained without context.</p>
+<!--FX:surr-train-->
+<p>In this simulation, at the default settings and with context, the curves for all layers climb to 1 within the cycles shown. Without context, which the paper does not simulate, the model gets the same inputs and targets and the same learning rate, yet its weights match the phrasebooks no better than chance, \(1/n^2\) per rule.</p>
+
+<h2 id="gradient-quality">Why one missing rule at a time</h2>
+<p>The proof of Theorem 2 rests on one fact. When a single column of \(C_1\) is zeroed out, the gradient with respect to the matching column of \(W_1\) points toward the missing rule. This relies on the other rules being present. Intuitively, the network then computes everything except one step, so the error at the output can be traced back to it. When many rules are missing, errors from different steps mix.</p>
+<p>To measure this, we define the <i>gradient prediction accuracy</i>. Drop each column of \(C_i\) independently with probability \(p_i\), and for a dropped column \(j\) of \(C_1\) check whether the largest entry of the negative gradient on \(W_1^{(j)}\) is the correct rule:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \mathbb E_{\{C_i\}}\;\mathbb E_{j:\,C_1^{(j)}=0}\;\mathbf 1\Big[\operatorname{HardMax}\big(-\nabla_{W_1^{(j)}}\mathcal L\big)\)</span><span class="eq cont">\(\displaystyle =\mathrm{Matrix}(\pi_1^*)^{(j)}\Big].\)</span></div>
+<p>We use the first layer because it is the deepest, where noise from dropped rules downstream should intuitively accumulate most, and we evaluate at initialization (\(W=0\)), where the model reads everything from the context. The loss can be the expectation over inputs or the average over a random batch.</p>
+<!--FX:grad-acc-->
+<ul>
+  <li>Accuracy falls as the dropping rate rises. With a few rules missing, the gradient almost always names the right rule, and with most rules missing it is close to chance.</li>
+  <li>Larger batches help, but they do not fully make up for a high dropping rate.</li>
+  <li>Dropping rules from several phrasebooks at once lowers accuracy quickly, even at moderate rates.</li>
+</ul>
+<p>This suggests why the dropout curricula work in the Llama experiments, although the paper measures gradient quality only in the surrogate model and leaves the LLM case open. In the surrogate, correct context with few rules missing gives an informative gradient for exactly the missing rules. Plain SFT is the extreme case in which every rule of every phrasebook is missing. The paper defines the accuracy with the argmax, as above, while the released code checks whether the gradient entry of the correct rule is negative, for which chance is 1/2 rather than \(1/n^2\). The floor of about 0.5 in the paper's Figure 6 matches the second criterion. Figure 4 shows both, and they agree on every trend. Also as in the released code, Figure 4 drops a fixed number of columns at each rate rather than each column independently, and in its second view it drops the same columns from every affected phrasebook.</p>
+
+<h2 id="what-the-model-reveals">What the trained model reveals about its context</h2>
+<p>The phrasebooks were in the context throughout training but never received any loss. We test whether the trained model reproduces them. We feed it the phrasebook text and, for each rule <code>a b -&gt; C D</code>, check whether it completes <code>a b -&gt;</code> with <code>C D</code>, by greedy decoding (both tokens are the top prediction) and by sampling at temperature 1 (the product of the two probabilities). An adversary can also filter the output: forbid the <code>&lt;THINK&gt;</code> token, or, knowing the intermediate alphabets, keep only characters of the rule's output alphabet. Each rate is averaged over 20 orderings of the phrasebook text and over every rule. A random guess of the pair succeeds with probability \(1/n^2\), 1.56% for \(n=8\) and 1% for \(n=10\).</p>
+<!--FX:recovery-->
+<p>For \(\mathrm{MLT}(5,10)\) trained with Annealing Dropout on 100,000 samples (the paper's Table 2), the rules of the intermediate phrasebooks \(\pi_1\) to \(\pi_4\) are recovered 0.00% of the time without a filter, by greedy decoding and by sampling. The last phrasebook is near chance, at 0.20% and 0.89%. The strongest filter brings the intermediate phrasebooks to 1.66% with greedy decoding, above chance but far from recovering the phrasebook. Across all ten models in the paper's Tables 4 and 5, every one of which translates almost perfectly without context, intermediate recovery without a filter is at most 0.26%, and with any filter at most 3.18%.</p>
+<p>A model can thus rely on material it saw only in its context while revealing little of it through its output probabilities. This could let privileged data be used in training with a lower risk of leakage. The flip side is that text which should not be used for training could be used in a way that such queries might not detect. Both points are hypothetical: we did not try adversarial prompting, and the setting is synthetic.</p>
+
+<h2 id="related-work">Related work</h2>
+<p><b>Privileged information.</b> Learning using privileged information was introduced for kernel SVMs&nbsp;<span class="cite">[<a href="#ref-6">6</a>]</span>, analyzed for classification&nbsp;<span class="cite">[<a href="#ref-17">17</a>]</span>, and used to explain knowledge distillation&nbsp;<span class="cite">[<a href="#ref-18">18</a>]</span>. For autoregressive language models two new questions arise: whether a loss on the extra text is needed, and how the extra text changes training. Context-enhanced learning places no loss on the extra text at all.</p>
+<p><b>In-context and in-weights learning.</b> Properties of the training data affect whether transformers learn in context or in their weights&nbsp;<span class="cite">[<a href="#ref-19">19</a>, <a href="#ref-20">20</a>, <a href="#ref-21">21</a>]</span>. Here strong ICL is used to speed up in-weights learning of a specific task. The silent computation builds on chain-of-thought internalization&nbsp;<span class="cite">[<a href="#ref-10">10</a>, <a href="#ref-11">11</a>, <a href="#ref-12">12</a>]</span> and pause tokens&nbsp;<span class="cite">[<a href="#ref-8">8</a>]</span>.</p>
+<p><b>Hardness and localization.</b> The lower bound uses statistical query arguments developed for parity-like problems&nbsp;<span class="cite">[<a href="#ref-14">14</a>, <a href="#ref-15">15</a>, <a href="#ref-16">16</a>]</span>, and the layer analysis uses stitching, as in skill localization after fine-tuning&nbsp;<span class="cite">[<a href="#ref-13">13</a>]</span>. Unlike masked language modeling and infilling, no loss is ever placed on the text that is removed from the context.</p>
+
+<h2 id="limitations">Limitations</h2>
+<p class="note">The task is synthetic, chosen to be absent from pretraining and too hard for plain SFT, and whether the gains carry over to tasks such as math or coding is open. The convergence analysis uses a surrogate model, and the gradient result is proved only for \(d=2\). The detectability test uses likelihood-based queries, not adversarial prompting. Implications for privacy and copyright&nbsp;<span class="cite">[<a href="#ref-22">22</a>, <a href="#ref-23">23</a>]</span> are hypothetical in this toy setting.</p>
+
+<h2 id="references">References</h2>
+<ol class="refs">
+<li id="ref-1">Liao et al. <a href="https://arxiv.org/abs/2409.13183">SKIntern: Internalizing Symbolic Knowledge for Distilling Better CoT Capabilities into Small Language Models</a>. <i>arXiv preprint arXiv:2409.13183</i>, 2024.</li>
+<li id="ref-2">Zou et al. <a href="https://arxiv.org/abs/2407.02211">PromptIntern: Saving Inference Costs by Internalizing Recurrent Prompt during Large Language Model Fine-tuning</a>. <i>arXiv preprint arXiv:2407.02211</i>, 2024.</li>
+<li id="ref-3">Choi et al. <a href="https://arxiv.org/abs/2503.09032">Teaching LLMs How to Learn with Contextual Fine-Tuning</a>. <i>arXiv preprint arXiv:2503.09032</i>, 2025.</li>
+<li id="ref-4">Allen-Zhu and Li. <a href="https://arxiv.org/abs/2404.05405">Physics of Language Models: Part 3.3, Knowledge Capacity Scaling Laws</a>. <i>arXiv preprint arXiv:2404.05405</i>, 2024.</li>
+<li id="ref-5">Gao et al. <a href="https://arxiv.org/abs/2501.01956">Metadata Conditioning Accelerates Language Model Pre-training</a>. <i>arXiv preprint arXiv:2501.01956</i>, 2025.</li>
+<li id="ref-6">Vapnik and Vashist. <a href="https://doi.org/10.1016/j.neunet.2009.06.042">A New Learning Paradigm: Learning Using Privileged Information</a>. <i>Neural Networks</i>, 22(5–6), 2009.</li>
+<li id="ref-7">Knudsen. <a href="https://doi.org/10.1007/3-540-58108-1_26">Practically Secure Feistel Ciphers</a>. <i>Fast Software Encryption</i>, 1993.</li>
+<li id="ref-8">Goyal et al. <a href="https://arxiv.org/abs/2310.02226">Think Before You Speak: Training Language Models With Pause Tokens</a>. <i>arXiv preprint arXiv:2310.02226</i>, 2023.</li>
+<li id="ref-9">Dubey et al. <a href="https://arxiv.org/abs/2407.21783">The Llama 3 Herd of Models</a>. <i>arXiv preprint arXiv:2407.21783</i>, 2024.</li>
+<li id="ref-10">Deng et al. <a href="https://arxiv.org/abs/2405.14838">From Explicit CoT to Implicit CoT: Learning to Internalize CoT Step by Step</a>. <i>arXiv preprint arXiv:2405.14838</i>, 2024.</li>
+<li id="ref-11">Pfau et al. <a href="https://arxiv.org/abs/2404.15758">Let&#x27;s Think Dot by Dot: Hidden Computation in Transformer Language Models</a>. <i>arXiv preprint arXiv:2404.15758</i>, 2024.</li>
+<li id="ref-12">Hao et al. <a href="https://arxiv.org/abs/2412.06769">Training Large Language Models to Reason in a Continuous Latent Space</a>. <i>arXiv preprint arXiv:2412.06769</i>, 2024.</li>
+<li id="ref-13">Panigrahi et al. <a href="https://arxiv.org/abs/2302.06600">Task-Specific Skill Localization in Fine-tuned Language Models</a>. <i>International Conference on Machine Learning</i>, 2023.</li>
+<li id="ref-14">Kearns. <a href="https://doi.org/10.1145/293347.293351">Efficient Noise-Tolerant Learning from Statistical Queries</a>. <i>Journal of the ACM</i>, 45(6), 1998.</li>
+<li id="ref-15">Blum et al. <a href="https://doi.org/10.1145/195058.195147">Weakly Learning DNF and Characterizing Statistical Query Learning Using Fourier Analysis</a>. <i>ACM Symposium on Theory of Computing</i>, 1994.</li>
+<li id="ref-16">Edelman et al. <a href="https://arxiv.org/abs/2309.03800">Pareto Frontiers in Neural Feature Learning: Data, Compute, Width, and Luck</a>. <i>arXiv preprint arXiv:2309.03800</i>, 2023.</li>
+<li id="ref-17">Pechyony and Vapnik. On the Theory of Learning with Privileged Information. <i>Advances in Neural Information Processing Systems</i>, 2010.</li>
+<li id="ref-18">Lopez-Paz et al. <a href="https://arxiv.org/abs/1511.03643">Unifying Distillation and Privileged Information</a>. <i>arXiv preprint arXiv:1511.03643</i>, 2015.</li>
+<li id="ref-19">Chan et al. <a href="https://arxiv.org/abs/2205.05055">Data Distributional Properties Drive Emergent In-Context Learning in Transformers</a>. <i>Advances in Neural Information Processing Systems</i>, 2022.</li>
+<li id="ref-20">Singh et al. <a href="https://arxiv.org/abs/2311.08360">The Transient Nature of Emergent In-Context Learning in Transformers</a>. <i>Advances in Neural Information Processing Systems</i>, 2023.</li>
+<li id="ref-21">Reddy. <a href="https://arxiv.org/abs/2312.03002">The Mechanistic Basis of Data Dependence and Abrupt Learning in an In-Context Classification Task</a>. <i>International Conference on Learning Representations</i>, 2024.</li>
+<li id="ref-22">Carlini et al. <a href="https://arxiv.org/abs/2012.07805">Extracting Training Data from Large Language Models</a>. <i>USENIX Security Symposium</i>, 2021.</li>
+<li id="ref-23">Karamolegkou et al. <a href="https://arxiv.org/abs/2310.13771">Copyright Violations and Large Language Models</a>. <i>arXiv preprint arXiv:2310.13771</i>, 2023.</li>
+</ol>
+
+<footer id="cite">
+<pre class="bib">@inproceedings{zhu2025on,
+  title     = {On the Power of Context-Enhanced Learning in {LLM}s},
+  author    = {Zhu, Xingyu and Panigrahi, Abhishek and Arora, Sanjeev},
+  booktitle = {Forty-second International Conference on Machine Learning},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=Gn6L4QRKf7}
+}</pre>
+</footer>
+</main>
+
+<script src="illustrations.js"></script>
+<script src="figures.js"></script>
+<script src="../shared/select.js"></script>
+<script src="../shared/toc.js"></script>
+<script src="../shared/theme.js"></script>
+</body>
+</html>

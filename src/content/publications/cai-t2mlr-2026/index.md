@@ -16,6 +16,8 @@ caption: T2MLR relaxes the information bottleneck in transformer inference by pa
 links:
 - name: OpenReview
   url: https://openreview.net/forum?id=fQbk1EQWBO
+- name: Interactive post
+  url: /blog/t2mlr/
 abstract: We introduce Transformers with Temporal Middle-Layer Recurrence (T2MLR), a generalized
   Transformer architecture that integrates attention and recurrence by routing a lightweight
   temporal pathway through the middle layers. Motivated by latent-reasoning and looped-Transformer

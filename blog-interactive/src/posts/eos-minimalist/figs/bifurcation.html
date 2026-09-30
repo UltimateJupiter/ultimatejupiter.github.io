@@ -1,0 +1,41 @@
+<figure class="fx" id="fx-bifurcation">
+  <div class="fx-bar bif-bar">
+    <div class="bif-ctl bif-actl">
+      <label class="lab" for="fx-bifurcation-a">along-valley <i class="bif-it">a</i></label>
+      <div class="bif-slider">
+        <div class="bif-rail" aria-hidden="true"><i class="bif-z"></i><i class="bif-s1"></i></div>
+        <input id="fx-bifurcation-a" class="bif-range" type="range" min="-0.5" max="2.6" step="0.005" value="1.6" aria-valuetext="a = 1.600, 8aκ = 1.280">
+        <div class="bif-ticks" aria-hidden="true"><span data-v="-0.5">−0.5</span><span data-v="0">0</span><span data-v="0.5">0.5</span><span data-v="1">1</span><span data-v="1.5">1.5</span><span data-v="2">2</span><span data-v="2.5">2.5</span></div>
+      </div>
+      <output class="bif-aval" id="fx-bifurcation-aval" for="fx-bifurcation-a" aria-hidden="true">a = 1.600</output>
+    </div>
+    <div class="fx-seg bif-seg" role="group" aria-label="Sweep and overlay">
+      <button type="button" class="bif-play" id="fx-bifurcation-play" aria-pressed="false" aria-label="Sweep a from right to left">play</button>
+      <button type="button" class="bif-gd" id="fx-bifurcation-gd" aria-pressed="true">show GD run</button>
+    </div>
+  </div>
+  <div class="fx-legend bif-legend" aria-hidden="true">
+    <span><i class="bif-sw bif-sw-map"></i>map, iterates 601–700 and their negatives</span>
+    <span class="bif-li-gd"><i class="bif-sw bif-sw-gd"></i>gradient descent from (12.5, 0.05)</span>
+    <span><svg class="bif-ksw" width="18" height="8" viewBox="0 0 18 8"><line x1="0" y1="4" x2="18" y2="4"/></svg>fixed points b² = aκ/2</span>
+  </div>
+  <div class="bif-panels" id="fx-bifurcation-panels">
+    <div class="fx-panel">
+      <p class="fx-ptitle"><span>Two-step map \(b \mapsto b\,(1 + 8a\kappa - 16b^2)\)</span></p>
+      <p class="fx-psub">κ = 0.1 (η = 0.01), 500 values of a</p>
+      <div class="bif-plot" id="fx-bifurcation-plot">
+        <canvas class="bif-cvs" id="fx-bifurcation-cvs" aria-hidden="true"></canvas>
+        <svg class="fx-svg" id="fx-bifurcation-svg" role="img" aria-label="Bifurcation diagram of the two-step map"></svg>
+      </div>
+    </div>
+    <div class="fx-panel">
+      <p class="fx-ptitle"><span>Orbit at this <i class="bif-it">a</i></span></p>
+      <p class="fx-psub" id="fx-bifurcation-osub">b<sub>k</sub> from b<sub>0</sub> = 0.05, k = 0 to 80</p>
+      <div class="bif-plot" id="fx-bifurcation-oplot">
+        <svg class="fx-svg" id="fx-bifurcation-osvg" role="img" tabindex="0" aria-label="Orbit of the two-step map"></svg>
+      </div>
+    </div>
+  </div>
+  <p class="fx-status" id="fx-bifurcation-status" aria-live="polite"></p>
+  <figcaption>Figure 4. The two-step map panel shows the bifurcation diagram of the paper's approximate two-step map \(b \mapsto b(1+8a\kappa-16b^2)\) with the along-valley coordinate \(a\) held fixed <span class="nw">(\(\kappa = 0.1\),</span> <span class="nw">\(\eta = 0.01\));</span> grey dots are iterates 601 to 700 from \(b_0 = 0.05\) for 500 values of <span class="nw">\(a\),</span> with their negatives, since gradient descent flips the sign of \(b\) every step. Blue is the actual gradient-descent run from \((12.5, 0.05)\) (the paper's Fig. 6b, simulated live for 150,000 steps): it starts in the chaotic band on the right, moves left as \(a\) decreases, passes through period doubling in reverse, settles on the branch \(b^2 = a\kappa/2\) (dashed) and approaches the minimum once <span class="nw">\(a &lt; 0\);</span> its two sides differ because the one-step update of \(b\) has a \(-3b^2\) term. The orbit panel shows the map's orbit at the \(a\) set with the slider, by dragging on the diagram, or with play, which sweeps \(a\) from right to left; the first 20 iterates are grey. The diagram (as in the paper's Fig. 6c), the dashed branch and the regime thresholds come from the approximate map, not from gradient descent; the branch and the thresholds are our derivation rather than statements in the paper.</figcaption>
+</figure>

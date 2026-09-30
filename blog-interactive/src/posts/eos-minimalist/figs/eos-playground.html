@@ -1,0 +1,49 @@
+<figure class="fx" id="fx-eos-playground">
+  <div class="fx-bar eosp-bar">
+    <label class="eosp-ctl"><span class="lab">objective</span><select class="fx-select" id="fx-eos-playground-obj" aria-label="Objective">
+      <option value="4">degree 4: ¼(1 − x²y²)²</option>
+      <option value="2">degree 2: ½(1 − xy)²</option>
+    </select></label>
+    <div class="eosp-ctl">
+      <span class="lab" id="fx-eos-playground-steplab">step size</span>
+      <div class="fx-seg" role="group" aria-labelledby="fx-eos-playground-steplab">
+        <button type="button" data-mode="one" aria-pressed="false">one step size</button>
+        <button type="button" data-mode="three" aria-pressed="true">compare three</button>
+      </div>
+    </div>
+  </div>
+  <div class="fx-bar eosp-bar2">
+    <div class="eosp-ctl eosp-kctl" hidden>
+      <label class="lab" for="fx-eos-playground-k">2/η</label>
+      <div class="eosp-slider">
+        <div class="eosp-rail" aria-hidden="true"><i class="eosp-fill"></i></div>
+        <input id="fx-eos-playground-k" class="eosp-range" type="range" min="6" max="14" step="0.5" value="10" aria-valuetext="2/η = 10, η = 0.2">
+        <div class="eosp-ticks" aria-hidden="true"><span data-v="6">6</span><span data-v="8">8</span><span data-v="10">10</span><span data-v="12">12</span><span data-v="14">14</span></div>
+      </div>
+      <output class="eosp-kval" for="fx-eos-playground-k" aria-hidden="true">10</output>
+    </div>
+    <div class="fx-legend eosp-legend" aria-hidden="true"></div>
+    <div class="eosp-ctl eosp-act">
+      <div class="fx-seg" role="group" aria-label="Playback and starting point">
+        <button type="button" class="eosp-play" aria-label="Replay the iterations">replay</button>
+        <button type="button" class="eosp-reset" aria-label="Reset the starting point">reset start</button>
+      </div>
+      <span class="eosp-prog" aria-hidden="true"></span>
+    </div>
+  </div>
+  <div class="fx-panels eosp-panels">
+    <div class="fx-panel eosp-left">
+      <p class="fx-ptitle">Loss</p>
+      <div class="eosp-chart" data-chart="loss"></div>
+      <p class="fx-ptitle eosp-t2">Sharpness \(\lambda_1\)</p>
+      <div class="eosp-chart" data-chart="sharp"></div>
+    </div>
+    <div class="fx-panel eosp-right">
+      <p class="fx-ptitle">(x, y) trajectory</p>
+      <p class="fx-psub eosp-hint" id="fx-eos-playground-hint">&nbsp;</p>
+      <div class="eosp-chart" data-chart="plane"></div>
+    </div>
+  </div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 1. Gradient descent on the 4-layer scalar network \(\tfrac12(1-xyzw)^2\) with coupled entries <span class="nw">\((z=x,\ w=y)\),</span> which is gradient descent on <span class="nw">\(\tfrac14(1-x^2y^2)^2\),</span> simulated live in the browser. The loss and sharpness panels (sharpness is \(\lambda_1\) of the paper's Eq. 3, which is the top Hessian eigenvalue near the minima) show runs at \(2/\eta = 8, 10, 12\) from the same start, 1000 steps each, with dashed lines at <span class="nw">\(2/\eta\).</span> The trajectory panel shows the iterates in the \((x, y)\) plane, even steps filled and odd steps hollow. The curve \(xy = 1\) is the set of global minima, its ticks give their sharpness, and diamonds mark the minimum whose sharpness is exactly <span class="nw">\(2/\eta\).</span> Click the plane (or focus it and use the arrow keys) to choose another start, or switch to the degree-2 objective <span class="nw">\(\tfrac12(1-xy)^2\),</span> 100 steps at <span class="nw">\(2/\eta = 10, 9.5, 9\),</span> to see the gap to \(2/\eta\) grow instead.</figcaption>
+</figure>

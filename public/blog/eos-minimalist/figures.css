@@ -1,0 +1,434 @@
+/* data figures, bundled from figs/*.css by build.py */
+/* ---- eos-playground ---- */
+/* Figure 1 · EoS playground (fx-eos-playground). Every selector is scoped to #fx-eos-playground. */
+#fx-eos-playground .eosp-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-eos-playground .eosp-ctl .lab{white-space:nowrap}
+#fx-eos-playground .eosp-ctl[hidden]{display:none}
+#fx-eos-playground .fx-bar .fx-select{max-width:calc(100vw - 150px)}
+#fx-eos-playground .eosp-bar2{margin-top:-4px;min-height:30px}
+#fx-eos-playground .eosp-act{margin-left:auto;gap:10px}
+#fx-eos-playground .fx-seg button{white-space:nowrap}
+#fx-eos-playground .eosp-prog:empty{display:none}
+#fx-eos-playground .eosp-prog{order:-1;text-align:right;font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em}
+#fx-eos-playground .eosp-legend{gap:4px 14px}
+#fx-eos-playground .eosp-legend[hidden]{display:none}
+#fx-eos-playground .eosp-legend span{white-space:nowrap}
+#fx-eos-playground .eosp-legend .sw{border-top-width:2.5px}
+
+/* run colours: a run group carries data-r and every mark reads --rc */
+#fx-eos-playground [data-r="0"]{--rc:var(--fx-c1)}
+#fx-eos-playground [data-r="1"]{--rc:var(--fx-c2)}
+#fx-eos-playground [data-r="2"]{--rc:var(--fx-c3)}
+#fx-eos-playground [data-r="s"]{--rc:var(--accent)}
+#fx-eos-playground .eosp-legend [data-r]{color:var(--rc)}
+#fx-eos-playground .eosp-legend [data-r] b{font-weight:400;color:var(--muted)}
+
+/* 2/η slider: native range over a drawn rail (keyboard, touch and a11y come from the input) */
+#fx-eos-playground .eosp-kctl{align-items:flex-start;gap:10px}
+#fx-eos-playground .eosp-kctl .lab,#fx-eos-playground .eosp-kval{padding-top:5px}
+#fx-eos-playground .eosp-kval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:7.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-eos-playground .eosp-slider{--tw:28px;position:relative;width:190px;height:42px;flex:0 1 190px;min-width:150px}
+#fx-eos-playground .eosp-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-eos-playground .eosp-fill{position:absolute;left:0;top:0;height:2px;width:50%;border-radius:1px;background:var(--accent)}
+#fx-eos-playground .eosp-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-eos-playground .eosp-range:focus{outline:none}
+#fx-eos-playground .eosp-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-eos-playground .eosp-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-eos-playground .eosp-range::-moz-range-progress{background:transparent}
+#fx-eos-playground .eosp-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-eos-playground .eosp-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-eos-playground .eosp-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-eos-playground .eosp-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-eos-playground .eosp-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
+#fx-eos-playground .eosp-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-eos-playground .eosp-ticks span:nth-child(1){left:0}
+#fx-eos-playground .eosp-ticks span:nth-child(2){left:25%}
+#fx-eos-playground .eosp-ticks span:nth-child(3){left:50%}
+#fx-eos-playground .eosp-ticks span:nth-child(4){left:75%}
+#fx-eos-playground .eosp-ticks span:nth-child(5){left:100%}
+#fx-eos-playground .eosp-ticks span:hover,#fx-eos-playground .eosp-ticks span.on{color:var(--fg)}
+
+/* panels */
+#fx-eos-playground .eosp-panels{gap:18px 22px}
+#fx-eos-playground .eosp-left{gap:4px}
+#fx-eos-playground .eosp-t2{margin-top:8px}
+#fx-eos-playground .eosp-right .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-eos-playground .eosp-chart{position:relative;min-width:0}
+#fx-eos-playground .fx-svg:focus{outline:none}
+#fx-eos-playground .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+#fx-eos-playground .fx-svg .hit{fill:transparent}
+#fx-eos-playground [data-chart="loss"] .hit,#fx-eos-playground [data-chart="sharp"] .hit{cursor:crosshair}
+#fx-eos-playground [data-chart="plane"] .fx-svg{cursor:crosshair}
+#fx-eos-playground .fx-svg text.axn{font-family:var(--sans);font-size:12.5px;fill:var(--fg)}
+#fx-eos-playground .fx-svg text.sup{font-size:8px}
+
+/* series */
+#fx-eos-playground .fx-svg .ln{fill:none;stroke:var(--rc);stroke-width:.5;stroke-opacity:.2;stroke-linejoin:round}
+#fx-eos-playground .fx-svg .dots{fill:var(--rc);stroke:none}
+#fx-eos-playground .fx-svg .thr{stroke:var(--rc);stroke-width:1.1;stroke-dasharray:5 3.5;fill:none;shape-rendering:crispEdges}
+#fx-eos-playground .fx-svg text.thr-lab{fill:var(--rc);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-eos-playground .fx-svg .cur{fill:var(--rc);stroke:var(--bg);stroke-width:1.2}
+
+/* plane */
+#fx-eos-playground .fx-svg .minc{fill:none;stroke:var(--fx-base2);stroke-width:1.5}
+#fx-eos-playground .fx-svg .mtk{stroke:var(--fx-base2);stroke-width:1.2}
+#fx-eos-playground .fx-svg text.mtk-lab,#fx-eos-playground .fx-svg text.minc-lab{paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-eos-playground .fx-svg text.minc-lab{font-family:var(--sans);font-size:12px}
+#fx-eos-playground .fx-svg .path{fill:none;stroke:var(--rc);stroke-width:.5;stroke-opacity:.25;stroke-linejoin:round}
+#fx-eos-playground .fx-svg .ev{fill:var(--rc);stroke:none}
+#fx-eos-playground .fx-svg .od{fill:none;stroke:var(--rc);stroke-width:.8}
+#fx-eos-playground .fx-svg .dia{fill:none;stroke:var(--rc);stroke-width:1.4;stroke-linejoin:miter}
+#fx-eos-playground .fx-svg .dia-bg{fill:none;stroke:var(--bg);stroke-width:3.6;stroke-opacity:.85}
+#fx-eos-playground .fx-svg .init{stroke:var(--fg);stroke-width:1.6;stroke-linecap:round;fill:none}
+#fx-eos-playground .fx-svg .init-bg{stroke:var(--bg);stroke-width:4.5;stroke-linecap:round;fill:none}
+#fx-eos-playground .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1.2;pointer-events:none}
+#fx-eos-playground .fx-svg .ring-bg{fill:none;stroke:var(--bg);stroke-width:3.2;pointer-events:none}
+
+/* tooltip */
+#fx-eos-playground .fx-tip{font-variant-numeric:tabular-nums}
+#fx-eos-playground .fx-tip .eosp-tt{display:grid;column-gap:12px;margin-top:2px}
+#fx-eos-playground .fx-tip .eosp-tt span{text-align:right}
+#fx-eos-playground .fx-tip .eosp-tt span.k{text-align:left}
+#fx-eos-playground .fx-tip .eosp-tt span.h{color:var(--rc)}
+
+@media (max-width:480px){
+  #fx-eos-playground .eosp-kctl{flex-wrap:wrap;justify-content:space-between;row-gap:2px;flex:1 1 100%}
+  #fx-eos-playground .eosp-kctl .lab,#fx-eos-playground .eosp-kval{padding-top:0}
+  #fx-eos-playground .eosp-kval{min-width:0;text-align:right}
+  #fx-eos-playground .eosp-slider{order:3;flex:1 1 100%;width:auto;max-width:none}
+  #fx-eos-playground .eosp-act{margin-left:0}
+  #fx-eos-playground #fx-eos-playground-steplab{display:none}
+}
+/* larger touch target for the tick shortcuts, without moving the labels */
+#fx-eos-playground .eosp-ticks span::after{content:'';position:absolute;inset:0 -7px -9px}
+
+/* ---- init-map ---- */
+/* Figure 2 · sharpness reached from each initialization (fx-init-map). Everything scoped to #fx-init-map.
+   The raster is a 160×160 <canvas> scaled with nearest-neighbour sampling; axes, curves and markers are an SVG on top.
+   Cell colours are resolved from these same token expressions in JS, so the legend and the raster always agree. */
+
+/* layout: plot with a narrow key column beside it (stacked under it when narrow) */
+#fx-init-map .fx-bar .im-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-init-map .fx-bar .fx-select{max-width:100%}
+#fx-init-map .im-main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px 22px;align-items:start}
+#fx-init-map .im-main.wide{grid-template-columns:minmax(0,1fr) 158px}
+#fx-init-map .im-plot{position:relative;min-width:0}
+#fx-init-map .im-cvs{position:absolute;left:0;top:0;width:10px;height:10px;display:block;z-index:0;
+  image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}
+#fx-init-map .im-plot.has-path .im-cvs{opacity:.42}
+#fx-init-map .im-cvs{transition:opacity .2s}
+#fx-init-map .im-plot .fx-svg{position:relative;z-index:1;cursor:crosshair;-webkit-tap-highlight-color:transparent;touch-action:pan-y}
+#fx-init-map .im-plot .fx-svg:focus{outline:none}
+#fx-init-map .im-plot .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px;border-radius:2px}
+#fx-init-map .im-side{display:flex;flex-direction:column;gap:16px;min-width:0;padding-top:26px}
+#fx-init-map .im-main:not(.wide) .im-side{padding-top:0;gap:8px}
+
+/* legend: swatch column + text column, so wrapped text stays aligned */
+#fx-init-map .im-leg{gap:5px 16px}
+#fx-init-map .im-main.wide .im-leg{flex-direction:column;flex-wrap:nowrap;gap:6px}
+#fx-init-map .im-li{display:inline-grid;grid-template-columns:auto minmax(0,auto);align-items:center;column-gap:7px;line-height:1.35}
+#fx-init-map .im-main.wide .im-li{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start}
+#fx-init-map .im-main.wide .im-li>:first-child{margin-top:3px;justify-self:start}
+#fx-init-map .im-main .im-leg .im-li[hidden]{display:none}
+#fx-init-map .im-li .box{display:block;width:10px;height:10px;border-radius:1px}
+#fx-init-map .im-sw-band{background:var(--accent)}
+#fx-init-map .im-sw-div{background:color-mix(in oklab,var(--loss) 15%,var(--bg))}
+#fx-init-map .im-sw-unc{background:var(--fx-base1)}
+#fx-init-map .im-ramp{display:flex}
+#fx-init-map .im-ramp i{display:block;width:10px;height:10px}
+#fx-init-map .im-rl{white-space:nowrap}
+#fx-init-map .im-r1{background:color-mix(in oklab,var(--fx-base3) 14%,var(--bg))}
+#fx-init-map .im-r2{background:color-mix(in oklab,var(--fx-base3) 43%,var(--bg))}
+#fx-init-map .im-r3{background:color-mix(in oklab,var(--fx-base3) 71%,var(--bg))}
+#fx-init-map .im-ksw{display:block;overflow:visible}
+#fx-init-map .im-ksw line{stroke:var(--fg);stroke-opacity:.6;stroke-width:1.25;stroke-dasharray:4 3}
+#fx-init-map .im-ksw path.h{fill:none;stroke:var(--bg);stroke-width:3.2}
+#fx-init-map .im-ksw path.d{fill:none;stroke:var(--fg);stroke-width:1.4}
+#fx-init-map .im-hint,#fx-init-map .im-path{margin:0}
+#fx-init-map .im-path[hidden]{display:none}
+#fx-init-map .im-clear{font:300 11.5px/1.4 var(--mono);color:var(--fg);background:transparent;border:1px solid var(--line);
+  border-radius:2px;padding:1px 7px;margin-left:2px;cursor:pointer;white-space:nowrap}
+#fx-init-map .im-clear:hover{border-color:var(--accent)}
+#fx-init-map .im-clear:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+
+/* overlay marks */
+#fx-init-map .fx-svg .im-frame{fill:none;stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-init-map .fx-svg .im-tick{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-init-map .fx-svg .im-min{fill:none;stroke:var(--fg);stroke-opacity:.6;stroke-width:1.25;stroke-dasharray:5 4}
+#fx-init-map .fx-svg .im-dh{fill:none;stroke:var(--bg);stroke-width:3.4;stroke-linejoin:round}
+#fx-init-map .fx-svg .im-dd{fill:none;stroke:var(--fg);stroke-width:1.5;stroke-linejoin:round}
+#fx-init-map .fx-svg text.im-lab{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-init-map .fx-svg tspan.tn{font-family:var(--sans);font-style:italic;font-size:14px;font-weight:400;fill:var(--fg)}
+#fx-init-map .fx-svg .im-cell{fill:none;stroke:var(--fg);stroke-width:1.25;pointer-events:none}
+#fx-init-map .fx-svg .im-cellh{fill:none;stroke:var(--bg);stroke-width:3;pointer-events:none}
+#fx-init-map .fx-svg .im-p0{fill:color-mix(in srgb,var(--fg) 70%,transparent);stroke:none}
+#fx-init-map .fx-svg .im-p1{fill:none;stroke:color-mix(in srgb,var(--fg) 70%,transparent);stroke-width:.8}
+#fx-init-map .fx-svg .im-ps{fill:none;stroke:var(--fg);stroke-width:1.5}
+#fx-init-map .fx-svg .im-psh{fill:none;stroke:var(--bg);stroke-width:3.5}
+
+/* tooltip */
+#fx-init-map .fx-tip .im-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px;font-variant-numeric:tabular-nums}
+#fx-init-map .fx-tip .im-tt span:nth-child(even){text-align:right}
+#fx-init-map .fx-tip .im-tt .v-band{color:var(--accent)}
+#fx-init-map .fx-tip .im-tt .v-div{color:var(--loss)}
+#fx-init-map .fx-tip .im-hintl{display:block;margin-top:3px}
+
+/* probe used to resolve token colours for the canvas */
+#fx-init-map .im-probe{position:absolute;width:1px;height:1px;left:0;top:0;opacity:0;pointer-events:none}
+
+/* ---- two-step ---- */
+/* Figure 3 · two-step dynamics in (a, b) (fx-two-step). Every selector is scoped to #fx-two-step. */
+#fx-two-step .tws-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-two-step .tws-ctl .lab{white-space:nowrap}
+#fx-two-step .fx-bar .fx-select{max-width:calc(100vw - 130px)}
+#fx-two-step .tws-bar2{align-items:flex-start;margin-top:-2px}
+#fx-two-step .tws-act{margin-left:auto;padding-top:1px}
+
+/* a0 slider: native range (keyboard, touch, a11y) over a drawn rail; --tw = thumb box = hit area */
+#fx-two-step .tws-actl{align-items:flex-start;gap:10px;flex:0 1 auto}
+#fx-two-step .tws-actl .lab,#fx-two-step .tws-aval{padding-top:5px}
+#fx-two-step .tws-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:2.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-two-step .tws-slider{--tw:28px;position:relative;width:220px;flex:0 1 220px;min-width:150px;height:42px}
+#fx-two-step .tws-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-two-step .tws-fill{position:absolute;left:0;top:0;height:2px;width:0;border-radius:1px;background:var(--accent)}
+#fx-two-step .tws-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-two-step .tws-range:focus{outline:none}
+#fx-two-step .tws-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-two-step .tws-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-two-step .tws-range::-moz-range-progress{background:transparent}
+#fx-two-step .tws-range::-moz-focus-outer{border:0}
+#fx-two-step .tws-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-two-step .tws-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-two-step .tws-range:hover::-webkit-slider-thumb,#fx-two-step .tws-range:active::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-two-step .tws-range:hover::-moz-range-thumb,#fx-two-step .tws-range:active::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-two-step .tws-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-two-step .tws-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-two-step .tws-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
+#fx-two-step .tws-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 2px 4px;font:400 10.5px/1 var(--mono);color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-two-step .tws-ticks span:hover,#fx-two-step .tws-ticks span.on{color:var(--fg)}
+
+/* legend glyphs (same marks as the charts) */
+#fx-two-step .tws-legend{gap:4px 16px;margin-top:-4px}
+#fx-two-step .tws-legend span{white-space:nowrap;display:inline-flex;align-items:center}
+#fx-two-step .tws-sw{display:inline-block;margin-right:6px;overflow:visible}
+#fx-two-step .tws-sw .s-ev{fill:var(--accent)}
+#fx-two-step .tws-sw .s-od{fill:none;stroke:var(--fx-base2);stroke-width:1}
+#fx-two-step .tws-sw .s-st{stroke:var(--fg);stroke-width:1.5;stroke-linecap:round;fill:none}
+#fx-two-step .tws-sw .s-en{fill:none;stroke:var(--fg);stroke-width:1.3}
+#fx-two-step .tws-sw .s-cv{stroke:var(--fx-base3);stroke-width:1.25;stroke-dasharray:4 3}
+
+/* panels */
+#fx-two-step .tws-panels{gap:18px 22px}
+#fx-two-step .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+#fx-two-step .tws-chart{position:relative;min-width:0}
+#fx-two-step .fx-svg{cursor:crosshair}
+#fx-two-step .fx-svg:focus{outline:none}
+#fx-two-step .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+#fx-two-step .fx-svg text.axn{font-family:var(--sans);font-size:12px;fill:var(--muted)}
+#fx-two-step .fx-svg .zero{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-two-step .fx-svg .eos{stroke:var(--fg);stroke-opacity:.45;stroke-width:1;shape-rendering:crispEdges}
+#fx-two-step .fx-svg .curve{fill:none;stroke:var(--fx-base3);stroke-width:1.25;stroke-dasharray:4 3;stroke-linejoin:round}
+#fx-two-step .fx-svg .mk{stroke:var(--fg);stroke-width:1.2}
+#fx-two-step .fx-svg text.lab{font-family:var(--sans);font-size:12px;fill:var(--fg)}
+#fx-two-step .fx-svg text.lab.m{fill:var(--muted)}
+#fx-two-step .fx-svg text.lab,#fx-two-step .fx-svg text.halo{paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round}
+#fx-two-step .fx-svg .ev{fill:var(--accent);stroke:none}
+#fx-two-step .fx-svg .od{fill:none;stroke:var(--fx-base2);stroke-width:.8}
+#fx-two-step .fx-svg .st{stroke:var(--fg);stroke-width:1.6;stroke-linecap:round;fill:none}
+#fx-two-step .fx-svg .st-bg{stroke:var(--bg);stroke-width:4.5;stroke-linecap:round;fill:none}
+#fx-two-step .fx-svg .en{fill:none;stroke:var(--fg);stroke-width:1.4}
+#fx-two-step .fx-svg .en-bg{fill:none;stroke:var(--bg);stroke-width:3.4}
+#fx-two-step .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1.2;pointer-events:none}
+#fx-two-step .fx-svg .ring-bg{fill:none;stroke:var(--bg);stroke-width:3.2;pointer-events:none}
+#fx-two-step .fx-svg .hit{fill:transparent}
+
+/* tooltip */
+#fx-two-step .fx-tip{font-variant-numeric:tabular-nums}
+#fx-two-step .fx-tip .tws-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px}
+#fx-two-step .fx-tip .tws-tt span:nth-child(even){text-align:right}
+
+@media (max-width:480px){
+  #fx-two-step .tws-actl{flex:1 1 100%;flex-wrap:wrap;justify-content:space-between;row-gap:2px}
+  #fx-two-step .tws-actl .lab,#fx-two-step .tws-aval{padding-top:0}
+  #fx-two-step .tws-aval{min-width:0;text-align:right}
+  #fx-two-step .tws-slider{order:3;flex:1 1 100%;width:auto}
+  #fx-two-step .tws-act{margin-left:0}
+}
+#fx-two-step .fx-status .nw{white-space:nowrap}
+#fx-two-step .fx-svg text tspan.sub{font-size:9px}
+/* larger touch target for the tick shortcuts, without moving the labels */
+#fx-two-step .tws-ticks span::after{content:'';position:absolute;inset:0 -7px -9px}
+
+/* ---- bifurcation ---- */
+/* Figure 4 · bifurcation of the two-step map (fx-bifurcation). Every selector is scoped to #fx-bifurcation.
+   The diagram's dots are drawn on a <canvas> under an SVG that carries axes, overlays and the cursor.
+   Canvas colours are resolved from the same tokens in JS, so the legend and the dots agree in both themes. */
+#fx-bifurcation .bif-it{font-family:var(--sans);font-style:italic;font-size:1.08em}
+#fx-bifurcation .bif-bar{align-items:flex-start;gap:8px 18px}
+#fx-bifurcation .bif-ctl{display:inline-flex;align-items:flex-start;gap:10px;min-width:0;max-width:100%}
+#fx-bifurcation .bif-ctl .lab{white-space:nowrap;padding-top:5px}
+#fx-bifurcation .bif-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:6.2em;white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:5px}
+#fx-bifurcation .bif-seg{margin-top:2px}
+#fx-bifurcation .bif-seg button{white-space:nowrap}
+#fx-bifurcation .bif-play{min-width:4.6em}
+
+/* slider: native range over a drawn rail (keyboard, touch and a11y come from the input) */
+#fx-bifurcation .bif-slider{--tw:28px;position:relative;width:250px;height:42px;flex:0 1 250px;min-width:170px}
+#fx-bifurcation .bif-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-bifurcation .bif-rail i{position:absolute;top:-3px;width:1px;height:8px;background:var(--muted);opacity:.6}
+#fx-bifurcation .bif-rail .bif-z{left:16.129%}
+#fx-bifurcation .bif-rail .bif-s1{left:56.452%}
+#fx-bifurcation .bif-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-bifurcation .bif-range:focus{outline:none}
+#fx-bifurcation .bif-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-bifurcation .bif-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-bifurcation .bif-range::-moz-range-progress{background:transparent}
+#fx-bifurcation .bif-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-bifurcation .bif-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-bifurcation .bif-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-bifurcation .bif-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-bifurcation .bif-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
+#fx-bifurcation .bif-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-bifurcation .bif-ticks span:nth-child(1){left:0}
+#fx-bifurcation .bif-ticks span:nth-child(2){left:16.129%}
+#fx-bifurcation .bif-ticks span:nth-child(3){left:32.258%}
+#fx-bifurcation .bif-ticks span:nth-child(4){left:48.387%}
+#fx-bifurcation .bif-ticks span:nth-child(5){left:64.516%}
+#fx-bifurcation .bif-ticks span:nth-child(6){left:80.645%}
+#fx-bifurcation .bif-ticks span:nth-child(7){left:96.774%}
+#fx-bifurcation .bif-ticks span:hover{color:var(--fg)}
+
+/* legend */
+#fx-bifurcation .bif-legend{gap:4px 16px;margin-top:-4px}
+#fx-bifurcation .bif-legend span{display:inline-flex;align-items:center;gap:7px}
+#fx-bifurcation .bif-legend .bif-li-gd[hidden]{display:none}
+#fx-bifurcation .bif-sw{display:inline-block;width:6px;height:6px;border-radius:50%}
+#fx-bifurcation .bif-sw-map{background:var(--fx-base2)}
+#fx-bifurcation .bif-sw-gd{background:var(--accent)}
+#fx-bifurcation .bif-ksw{display:block;overflow:visible}
+#fx-bifurcation .bif-ksw line{stroke:var(--fg);stroke-opacity:.7;stroke-width:1.25;stroke-dasharray:4 3}
+
+/* panels: diagram wider than the orbit; stacked when the figure is narrow */
+#fx-bifurcation .bif-panels{display:grid;grid-template-columns:minmax(0,1fr);gap:18px 22px;align-items:start}
+#fx-bifurcation .bif-panels.wide{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+#fx-bifurcation .fx-panel{gap:4px}
+#fx-bifurcation .fx-ptitle{min-height:24px;display:flex;align-items:center;white-space:nowrap}
+#fx-bifurcation .fx-status{min-height:3em}
+#fx-bifurcation .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fx-bifurcation .bif-plot{position:relative;min-width:0}
+#fx-bifurcation .bif-cvs{position:absolute;left:0;top:0;width:10px;height:10px;display:block;z-index:0;pointer-events:none}
+#fx-bifurcation .bif-plot .fx-svg{position:relative;-webkit-user-select:none;user-select:none;z-index:1;-webkit-tap-highlight-color:transparent}
+#fx-bifurcation #fx-bifurcation-svg{cursor:ew-resize}
+#fx-bifurcation #fx-bifurcation-osvg{cursor:crosshair}
+#fx-bifurcation .fx-svg:focus{outline:none}
+#fx-bifurcation .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+
+/* marks */
+#fx-bifurcation .fx-svg .bif-tick{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-bifurcation .fx-svg text.axn{font-family:var(--sans);font-style:italic;font-size:13px;fill:var(--fg)}
+#fx-bifurcation .fx-svg .bif-ref{stroke:var(--muted);stroke-opacity:.55;stroke-width:1;stroke-dasharray:2 3;shape-rendering:crispEdges}
+#fx-bifurcation .fx-svg text.bif-reflab{font-size:10px}
+#fx-bifurcation .fx-svg .bif-par{fill:none;stroke:var(--fg);stroke-opacity:.75;stroke-width:1.25;stroke-dasharray:4 3}
+#fx-bifurcation .fx-svg text.bif-parlab{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-bifurcation .fx-svg .bif-cur{stroke:var(--fg);stroke-opacity:.6}
+#fx-bifurcation .fx-svg .bif-grip{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-bifurcation .fx-svg .bif-hov{stroke-dasharray:3 3}
+#fx-bifurcation .fx-svg .bif-oline{fill:none;stroke:var(--fx-base2);stroke-opacity:.7;stroke-width:1;stroke-linejoin:round}
+#fx-bifurcation .fx-svg .bif-otr{fill:var(--fx-base2)}
+#fx-bifurcation .fx-svg .bif-ost{fill:var(--accent)}
+#fx-bifurcation .fx-svg .bif-ring{fill:none;stroke:var(--fg);stroke-width:1.3}
+#fx-bifurcation .fx-svg .bif-ringh{fill:none;stroke:var(--bg);stroke-width:3.4}
+#fx-bifurcation .fx-svg text.bif-esclab{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+
+/* tooltip */
+#fx-bifurcation .fx-tip{white-space:normal;max-width:250px;font-variant-numeric:tabular-nums}
+#fx-bifurcation .fx-tip .bif-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px}
+#fx-bifurcation .fx-tip .bif-tt span:nth-child(even){text-align:right}
+#fx-bifurcation .fx-tip .bif-reg{display:block;margin-top:4px;line-height:1.4}
+
+/* probe used to resolve token colours for the canvas */
+#fx-bifurcation .bif-probe{position:absolute;width:1px;height:1px;left:0;top:0;opacity:0;pointer-events:none}
+
+@media (max-width:480px){
+  #fx-bifurcation .bif-actl{flex-wrap:wrap;justify-content:space-between;row-gap:2px;flex:1 1 100%}
+  #fx-bifurcation .bif-actl .lab,#fx-bifurcation .bif-aval{padding-top:0}
+  #fx-bifurcation .bif-aval{min-width:0;text-align:right}
+  #fx-bifurcation .bif-slider{order:3;flex:1 1 100%;width:auto;max-width:none}
+}
+/* larger touch target for the tick shortcuts, without moving the labels */
+#fx-bifurcation .bif-ticks span::after{content:'';position:absolute;inset:0 -7px -9px}
+
+/* ---- coupling ---- */
+/* Figure 5 · coupling of small entries in n-layer scalar networks (fx-coupling). Every selector is scoped to #fx-coupling. */
+#fx-coupling .cpl-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-coupling .cpl-ctl .lab{white-space:nowrap}
+#fx-coupling .cpl-bar .cpl-ctl{flex-wrap:wrap;row-gap:6px}
+#fx-coupling .fx-bar .fx-select{max-width:calc(100vw - 44px)}
+#fx-coupling .cpl-bar2{margin-top:-4px;min-height:30px}
+#fx-coupling .cpl-act{margin-left:auto;gap:10px}
+#fx-coupling .cpl-prog{font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:8.5em}
+#fx-coupling .cpl-legend{gap:4px 14px}
+#fx-coupling .cpl-legend span{white-space:nowrap}
+#fx-coupling .cpl-legend .sw{border-top-width:2px}
+#fx-coupling .cpl-legend span{color:var(--muted)}
+#fx-coupling .cpl-lg-s .sw{color:var(--accent)}
+#fx-coupling .cpl-lg-l .sw{color:var(--fx-base2)}
+
+/* three small multiples; stacked on phones */
+#fx-coupling .cpl-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 16px;align-items:start}
+@media (max-width:600px){#fx-coupling .cpl-panels{grid-template-columns:1fr}}
+#fx-coupling .fx-panel{gap:2px}
+#fx-coupling .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+#fx-coupling .cpl-chart{position:relative;min-width:0;margin-top:4px}
+#fx-coupling .fx-svg{cursor:crosshair}
+#fx-coupling .fx-svg:focus{outline:none}
+#fx-coupling .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+#fx-coupling .fx-svg .hit{fill:transparent}
+#fx-coupling .fx-svg text.sup{font-size:8px}
+#fx-coupling .fx-svg text .sub{font-size:8.5px}
+
+/* series */
+#fx-coupling .fx-svg .ln{fill:none;stroke:var(--accent);stroke-width:1.1;stroke-linejoin:round}
+#fx-coupling .fx-svg .thr{stroke:var(--fx-base3);stroke-width:1;stroke-dasharray:5 3.5;fill:none;shape-rendering:crispEdges}
+#fx-coupling .fx-svg text.thr-lab{fill:var(--fx-base3);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-coupling .fx-svg .dl{fill:none;stroke-width:1.5;stroke-linejoin:round}
+#fx-coupling .fx-svg [data-k="s0"]{--ec:var(--accent)}
+#fx-coupling .fx-svg [data-k="s1"]{--ec:color-mix(in oklab,var(--accent) 75%,var(--bg))}
+#fx-coupling .fx-svg [data-k="s2"]{--ec:color-mix(in oklab,var(--accent) 55%,var(--bg))}
+#fx-coupling .fx-svg [data-k="l"]{--ec:var(--fx-base2)}
+#fx-coupling .fx-svg .dl{stroke:var(--ec)}
+#fx-coupling .fx-svg text.elab{fill:var(--ec);font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-coupling .fx-svg .lead{stroke:var(--ec);stroke-width:.75;stroke-opacity:.6}
+#fx-coupling .fx-svg .cur{fill:var(--accent);stroke:var(--bg);stroke-width:1.2}
+#fx-coupling .fx-svg .cur[data-k]{fill:var(--ec)}
+#fx-coupling .fx-svg .fade{fill:var(--bg);fill-opacity:.6;pointer-events:none}
+
+/* tooltip */
+#fx-coupling .fx-tip{font-variant-numeric:tabular-nums}
+#fx-coupling .fx-tip .cpl-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px}
+#fx-coupling .fx-tip .cpl-tt span{text-align:right}
+#fx-coupling .fx-tip .cpl-tt span.k{text-align:left}
+#fx-coupling .fx-tip .cpl-tt span.s{color:var(--accent)}
+#fx-coupling .fx-tip sub{font-size:.75em;line-height:0}
+
+@media (max-width:480px){
+  #fx-coupling .cpl-act{margin-left:0}
+}

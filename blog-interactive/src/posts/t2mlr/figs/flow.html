@@ -1,0 +1,34 @@
+<figure class="fx" id="fx-flow">
+  <div class="fx-bar flw-bar">
+    <label class="flw-ctl"><span class="lab">architecture</span><select class="fx-select" id="fx-flow-arch" aria-label="Architecture"></select></label>
+    <div class="flw-ctl flw-rng" id="fx-flow-rng">
+      <div class="flw-sl">
+        <label class="lab" for="fx-flow-ls">ℓ<sub>start</sub></label>
+        <div class="flw-slider"><i class="flw-rail" aria-hidden="true"><i class="flw-fill"></i></i><input id="fx-flow-ls" class="flw-range" type="range" min="1" max="30" step="1" value="13"></div>
+        <output class="flw-val" for="fx-flow-ls" id="fx-flow-lsv">13</output>
+      </div>
+      <div class="flw-sl">
+        <label class="lab" for="fx-flow-le">ℓ<sub>end</sub></label>
+        <div class="flw-slider"><i class="flw-rail" aria-hidden="true"><i class="flw-fill"></i></i><input id="fx-flow-le" class="flw-range" type="range" min="1" max="30" step="1" value="18"></div>
+        <output class="flw-val" for="fx-flow-le" id="fx-flow-lev">18</output>
+      </div>
+    </div>
+  </div>
+  <div class="fx-bar flw-bar">
+    <span class="lab" id="fx-flow-toklab">output at token</span>
+    <div class="fx-seg" id="fx-flow-tok" role="group" aria-labelledby="fx-flow-toklab"></div>
+  </div>
+  <div class="fx-panels flw-panels">
+    <div class="fx-panel flw-main" id="fx-flow-mainp">
+      <p class="fx-ptitle">data flow: one column per token, one cell per layer</p>
+      <svg class="fx-svg" id="fx-flow-svg" tabindex="0" role="img" aria-label="Data flow"></svg>
+      <div class="fx-legend flw-leg" id="fx-flow-leg" aria-hidden="true"></div>
+    </div>
+    <div class="fx-panel flw-side" id="fx-flow-sidep">
+      <p class="fx-ptitle">longest chain vs token position</p>
+      <svg class="fx-svg" id="fx-flow-csvg" role="img" aria-label="Serial depth by token position"></svg>
+    </div>
+  </div>
+  <p class="fx-status" id="fx-flow-status" aria-live="polite"></p>
+  <figcaption>Figure 1. Data flow in a 30-layer model. Each column is one token and each cell one layer. In T2MLR the state after layer \(\ell_{\text{end}}\) at token \(t-1\) is carried in \(\mathbf R_{t-1}\) and fused into the input of layer \(\ell_{\text{start}}\) at token \(t\) (arrows). Each token still runs every layer once, but the longest chain of layer applications behind token \(t\)'s output grows as \(L+(t-1)D\), highlighted for the selected token. A Transformer's chain stays at \(L\), and a looped Transformer lengthens it only by paying for extra layers at every token (each pass drawn attending within its own pass). Choose a configuration, or set \(\ell_{\text{start}}\) and \(\ell_{\text{end}}\), and click a token. Depths are computed exactly from the architecture; nothing is measured.</figcaption>
+</figure>

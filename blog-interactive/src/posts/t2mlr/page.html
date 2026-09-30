@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T2MLR</title>
+<meta name="description" content="T2MLR feeds a middle-layer state from the previous token into an earlier layer of the next, adding latent recurrence at almost no inference cost.">
+<script src="../shared/theme-init.js"></script>
+<link rel="stylesheet" href="../shared/fonts.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="post.css">
+<link rel="stylesheet" href="../shared/fx.css">
+<link rel="stylesheet" href="../shared/select.css">
+<link rel="stylesheet" href="figures.css">
+<link rel="stylesheet" href="../shared/site-theme.css">
+<script src="../shared/mathjax-config.js"></script>
+<script defer src="../shared/vendor/mathjax/tex-svg.min.js"></script>
+</head>
+<body>
+<div class="site-bar"><div class="in">
+  <a class="brand" href="/" aria-label="Xingyu Zhu, home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.2 7.2v9.6L12 21.5 3.8 16.8V7.2Z"/><path d="M12 2.5 7.6 14.6h8.8Z M7.6 14.6 3.8 7.2 M16.4 14.6 20.2 7.2 M7.6 14.6 12 21.5 16.4 14.6 M3.8 16.8 7.6 14.6 M20.2 16.8 16.4 14.6"/><circle cx="12" cy="2.5" r="1.6"/></svg><span>Xingyu Zhu</span></a>
+  <nav aria-label="Site"><ul><li><a href="/publications/">Publications</a></li><li><a href="/talks/">Talks</a></li><li><a href="/blog/" aria-current="page">Blog</a></li><li><a href="/news/">News</a></li><li><a href="/uploads/Xingyu_Zhu_CV_PhD.pdf">CV</a></li></ul></nav>
+</div></div>
+<nav class="toc" aria-label="Contents"><ol><li><a href="#summary">Summary</a></li><li><a href="#the-depth-time-barrier">The depth–time barrier</a></li><li><a href="#middle-layer-recurrence">Middle-layer recurrence</a></li><li><a href="#training-in-parallel">Training in parallel</a></li><li><a href="#state-tracking-and-retrieval">State tracking with retrieval</a></li><li><a href="#where-to-put-the-loop">Where to put the loop</a></li><li><a href="#scale-and-retrofitting">Scale and retrofitting</a></li><li><a href="#related-work">Related work</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#references">References</a></li></ol></nav>
+
+<main>
+<header>
+  <h1>T2MLR: Transformer with Temporal Middle-Layer Recurrence</h1>
+  <ul class="authors" aria-label="Authors">
+    <li>Ziyang Cai<sup>1*</sup></li>
+    <li><a href="https://ultimatejupiter.github.io/" target="_blank" rel="noopener">Xingyu Zhu</a><sup>1*</sup></li>
+    <li>Yihe Dong<sup>1†</sup></li>
+    <li>Yinghui He<sup>1</sup></li>
+    <li><a href="https://www.cs.princeton.edu/~arora/" target="_blank" rel="noopener">Sanjeev Arora</a><sup>1</sup></li>
+  </ul>
+  <p class="affils"><span><sup>1</sup>Princeton Language and Intelligence, Department of Computer Science, Princeton University</span></p>
+  <p class="notes"><span><sup>*</sup>Joint first authors, equal contribution.</span><span><sup>†</sup>Core contribution.</span><span>LIT Workshop @ ICLR 2026. This post follows the extended arXiv version.</span></p>
+  <div class="links">
+    <a class="pill" href="https://arxiv.org/abs/2607.15178"><span class="k">arXiv</span>2607.15178</a>
+    <a class="pill" href="https://arxiv.org/pdf/2607.15178">PDF</a>
+    <a class="pill" href="https://openreview.net/forum?id=fQbk1EQWBO">OpenReview</a>
+    <a class="pill" href="https://github.com/princeton-pli/T2MLR">Code</a>
+    <a class="pill" href="#cite">Cite</a>
+    <button type="button" class="pill theme" id="theme-btn">◐<span class="t"> Dark</span></button>
+  </div>
+  <nav class="toc-inline" aria-label="Contents"><a href="#summary">Summary</a> <span>·</span> <a href="#the-depth-time-barrier">The depth–time barrier</a> <span>·</span> <a href="#middle-layer-recurrence">Middle-layer recurrence</a> <span>·</span> <a href="#training-in-parallel">Training in parallel</a> <span>·</span> <a href="#state-tracking-and-retrieval">State tracking with retrieval</a> <span>·</span> <a href="#where-to-put-the-loop">Where to put the loop</a> <span>·</span> <a href="#scale-and-retrofitting">Scale and retrofitting</a> <span>·</span> <a href="#related-work">Related work</a> <span>·</span> <a href="#limitations">Limitations</a> <span>·</span> <a href="#references">References</a></nav>
+</header>
+
+<h2 id="summary">Summary</h2>
+<ul>
+  <li>At each decoding step, a Transformer sees the past only through tokens and through key–value caches at the same depth. The shallow layers of token \(t\) cannot read the deep representation that was computed for token \(t-1\). T2MLR adds one recurrent vector \(\mathbf R_t\). It is taken after layer \(\ell_{\text{end}}\) at token \(t-1\) and fused, through a gated module, into the input of layer \(\ell_{\text{start}}\) at token \(t\).</li>
+  <li>Inference still runs each of the \(L\) layers once per token, plus one small fusion. In our measurements, generation takes 1.041 to 1.082 times the wall-clock time of a parameter-matched Transformer. For training, a fixed number of Jacobi iterations approximates the recurrence in parallel, and in a 1B-token comparison the result matches training with the exact recurrence.</li>
+  <li>On \(S_5\)-Retrieval, which needs both group state tracking and in-context lookup, a 4-layer T2MLR succeeds where parameter-matched Transformers and LSTMs fail.</li>
+  <li>Recurrence over a middle block usually works better than recurrence over the whole stack. At 135M parameters, recurring over layers 13–18 (20% of 30 layers) gives the best zero-shot average, 44.14 against 42.83 for the baseline, and a block of the same width placed early or late helps much less or not at all. After finetuning, Variable Assignment accuracy is 0.494 for the baseline, 0.773 with full recurrence, and 0.945 with layers 13–18.</li>
+  <li>The gains persist at about 370M and 1B parameters and with 50B training tokens. Retrofitting a pretrained SmolLM2-1.7B-Instruct raises GSM8K from 35.78 to 39.88 and MATH500 from 12.80 to 18.00. The cost is training time: 2 to 4 times the wall-clock of a Transformer.</li>
+</ul>
+
+<h2 id="the-depth-time-barrier">The depth–time barrier</h2>
+<p>An autoregressive Transformer projects its last hidden state onto the vocabulary, emits one token, and starts the next forward pass from that token's embedding. Whatever the network computed for the previous position reaches the next one only through this unembed–decode–embed bottleneck, or through attention. Attention, in turn, connects positions only at equal depth: layer \(\ell\) of token \(t\) reads the keys and values that layer \(\ell\) wrote for earlier tokens.</p>
+<p>Mechanistic analyses place much of the abstract computation of a Transformer in its middle layers&nbsp;<span class="cite">[<a href="#ref-1">1</a>, <a href="#ref-2">2</a>, <a href="#ref-3">3</a>, <a href="#ref-4">4</a>, <a href="#ref-5">5</a>]</span>. The middle-layer state of token \(t-1\) is already in memory when token \(t\) is processed, but the early layers of token \(t\) have no path to it. To use it, the model has to rebuild it by traversing the same depth again and reading it indirectly through attention, or recover it from the emitted token.</p>
+<p>Two lines of work relax this. Latent-reasoning methods such as Coconut and CODI feed a last-layer hidden state back as the next input, and soft-token methods feed mixtures of token embeddings&nbsp;<span class="cite">[<a href="#ref-6">6</a>, <a href="#ref-7">7</a>, <a href="#ref-8">8</a>, <a href="#ref-9">9</a>, <a href="#ref-10">10</a>]</span>. In both cases the recurrent signal typically enters at the embedding, outside the middle layers. Looped Transformers run a block several times per token&nbsp;<span class="cite">[<a href="#ref-11">11</a>, <a href="#ref-12">12</a>, <a href="#ref-13">13</a>]</span>, which adds depth but multiplies the cost of every decoding step by the number of loops.</p>
+<p>T2MLR adds a pathway from deep to shallow layers across time. Decoding stays standard autoregressive decoding, training keeps dense teacher-forced supervision on every token, and the per-token inference cost stays that of a Transformer.</p>
+
+<h2 id="middle-layer-recurrence">Middle-layer recurrence</h2>
+<p>Write the \(\ell\)-th block of an \(L\)-layer decoder as a map that takes the current token's representation and the layer's past key–value cache, and returns the new representation and the extended cache. Here \(\mathbf h_t^{(0)}\) is the input embedding of token \(x_t\):</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \big(\mathbf h_t^{(\ell)},\,\mathbf{KV}^{(\ell)}_{1:t}\big)=\mathcal F_\ell\big(\mathbf h_t^{(\ell-1)},\,\mathbf{KV}^{(\ell)}_{1:t-1}\big),\)</span><span class="eq">\(\displaystyle \ell=1,\dots,L.\)</span></div>
+<p>T2MLR picks two layers \(1\le\ell_{\text{start}}\le\ell_{\text{end}}\le L\) and keeps a recurrent cache \(\mathbf R_t\in\mathbb R^d\) of constant size. Only layer \(\ell_{\text{start}}\) changes. Its input is the current representation fused with the cache from the previous step:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \big(\mathbf h_t^{(\ell_{\text{start}})},\,\mathbf{KV}^{(\ell_{\text{start}})}_{1:t}\big)\)</span><span class="eq cont">\(\displaystyle {}=\mathcal F_{\ell_{\text{start}}}\Big(\Phi\big(\mathbf h_t^{(\ell_{\text{start}}-1)},\,\mathbf R_{t-1}\big),\,\mathbf{KV}^{(\ell_{\text{start}})}_{1:t-1}\Big).\)</span></div>
+<p>The fusion \(\Phi\) is gated. With \(\mathbf h=\mathbf h_t^{(\ell_{\text{start}}-1)}\) and \(\mathbf R=\mathbf R_{t-1}\),</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \Phi(\mathbf h,\mathbf R)=\mathbf h\)</span><span class="eq cont">\(\displaystyle {}+\tanh(\gamma_{\text{cur}})\,\sigma\big(f_{\text{cur}}([\mathbf h,\mathbf R])\big)\odot\mathbf h\)</span><span class="eq cont">\(\displaystyle {}+\tanh(\gamma_{\text{rec}})\,\sigma\big(f_{\text{rec}}([\mathbf h,\mathbf R])\big)\odot\mathbf W_{\text{rec}}\mathbf R,\)</span></div>
+<p>where \(f_{\text{cur}},f_{\text{rec}}:\mathbb R^{2d}\to\mathbb R^d\) are learned linear layers applied to the concatenation, \(\mathbf W_{\text{rec}}\) is a learned \(d\times d\) projection, and \(\sigma\) is the elementwise sigmoid. The scalars \(\tanh(\gamma_{\text{cur}})\) and \(\tanh(\gamma_{\text{rec}})\) are input-independent gates, and the sigmoids are input-dependent, per-channel gates. After layer \(\ell_{\text{end}}\), the cache is updated with a temporal residual:</p>
+<div class="math-block">\[\mathbf R_t=\operatorname{RMSNorm}\big(\mathbf h_t^{(\ell_{\text{end}})}+\mathbf R_{t-1}\big).\]</div>
+<p>Both \(\gamma\) start at zero, so at initialization \(\Phi(\mathbf h,\mathbf R)=\mathbf h\) and the model is exactly a standard Transformer. It departs from one only as far as training moves the gates. Across all tasks we studied, \(\gamma_{\text{rec}}\) converges to positive values and \(\gamma_{\text{cur}}\) to negative ones. We read this as the model treating the recurrent term as an additive refinement of the residual stream rather than a replacement for it.</p>
+<div class="thm" role="note" aria-label="Special cases"><p class="thm-h"><span class="thm-k">Special cases</span><span class="thm-i">Appendix E.1</span></p><p class="t">T2MLR contains both a Transformer and a recurrent network.</p>
+<p>With \(\gamma_{\text{cur}}=\gamma_{\text{rec}}=0\), the fusion is the identity and T2MLR is a standard Transformer. If the attention pattern reduces to the identity, so that each position attends only to itself, the only link between tokens is \(\mathbf R_t\) and the model is a fully recurrent network.</p></div>
+<p>We write \(D=\ell_{\text{end}}-\ell_{\text{start}}+1\) for the number of recurrent layers and name a model T2MLR\((\ell_{\text{start}},\ell_{\text{end}})\). For the 30-layer backbone used below, T2MLR(1,30) recurs over the whole stack and T2MLR(13,18) over six middle layers.</p>
+<p>The cost per token does not change: every token runs each of the \(L\) layers once, plus one fusion. What changes is the longest chain of computation behind an output. The recurrent block of token \(t-1\) feeds the recurrent block of token \(t\), so the output at token \(t\) sits at the end of a chain of \(L+(t-1)D\) layer applications, while in a Transformer that chain has length \(L\) at every position. A looped Transformer lengthens the chain too, but only by running more layers at every token. Figure 1 draws these data paths for the configurations studied in the paper.</p>
+<!--FX:flow-->
+
+<h2 id="training-in-parallel">Training in parallel</h2>
+<p>A Transformer trains on all positions of a sequence at once, since with teacher forcing every position's input is known in advance. The recurrence breaks this: \(\mathbf R_{t-1}\) must be known before token \(t\) passes layer \(\ell_{\text{start}}\), and it depends on the forward pass of token \(t-1\). Running the positions one after another gives up the sequence parallelism that makes pretraining on 2048-token sequences scalable.</p>
+<p>We instead approximate the caches of all positions at once with Jacobi fixed-point iterations, following the parallel continuous chain of thought of Wu et al.&nbsp;<span class="cite">[<a href="#ref-14">14</a>]</span>. Let \(\mathbf H^{(\ell)}\) stack the layer-\(\ell\) states of all positions, and let \(\mathcal S\) (ShiftRight) move every row one position later and put a zero vector at position 1. Layers \(1,\dots,\ell_{\text{start}}-1\) run once. The middle block \(\mathcal F_{\ell_{\text{start}}:\ell_{\text{end}}}\) then runs repeatedly:</p>
+<ol class="algo">
+  <li>Run the middle block once without any cache and set \(\mathbf R^{\langle 1\rangle}=\mathcal S\big(\mathbf H^{(\ell_{\text{end}})}_{\langle 0\rangle}\big)\).</li>
+  <li>For \(k=2,\dots,d_{\text{forward}}\): fuse the current cache into the block's input and rerun only the middle block,
+  <div class="math-block eqwrap"><span class="eq">\(\displaystyle \mathbf H^{(\ell_{\text{end}})}_{\langle k-1\rangle}\)</span><span class="eq cont">\(\displaystyle {}=\mathcal F_{\ell_{\text{start}}:\ell_{\text{end}}}\big(\Phi(\mathbf H^{(\ell_{\text{start}}-1)},\mathbf R^{\langle k-1\rangle})\big),\)</span><span class="eq">\(\displaystyle \mathbf R^{\langle k\rangle}=\operatorname{RMSNorm}\big(\mathcal S(\mathbf H^{(\ell_{\text{end}})}_{\langle k-1\rangle}+\mathbf R^{\langle k-1\rangle})\big).\)</span></div></li>
+  <li>Fuse \(\mathbf R^{\langle d_{\text{forward}}\rangle}\) once more and run layers \(\ell_{\text{start}},\dots,L\) to the output.</li>
+</ol>
+<p>Every step is differentiable. Gradients pass through at most \(d_{\text{backward}}\) of the iterations, analogous to truncated backpropagation through time&nbsp;<span class="cite">[<a href="#ref-15">15</a>]</span>. All experiments use \(d_{\text{forward}}=16\) and \(d_{\text{backward}}=4\) unless stated otherwise.</p>
+<div class="thm" role="note" aria-label="Exactness of the parallel scheme"><p class="thm-h"><span class="thm-k">Observation</span><span class="thm-i">Appendix B.3</span></p><p class="t">Exactness spreads one position per iteration.</p>
+<p>Because of the shift, the cache at position \(t\) depends only on positions before \(t\). After \(k\) iterations, the caches read by the first \(k\) positions equal those of the exact sequential recurrence, whatever the weights.</p></div>
+<p>With 16 iterations and 2048 tokens, this guarantee covers 16 positions. The rest of the sequence relies on the approximation being good long before it is exact. We do not measure the cache error of trained models directly; we check the approximation through gradients and end-to-end training below. Figure 2 runs the scheme on a small random middle block, with the paper's fusion and cache update, against the exact recurrence.</p>
+<!--FX:jacobi-->
+<p>The toy shows the mechanism. Whether 16 iterations suffice for a trained language model is an empirical question. We took an intermediate checkpoint of T2MLR(5,26) from the pretraining runs below and compared its gradients on one random batch of 2048-token sequences under different \((d_{\text{forward}},d_{\text{backward}})\) with the gradients under \((32,32)\) (Figure 3). With \(d_{\text{forward}}\ge 8\) and \(d_{\text{backward}}\ge 4\) the gradients stay close to that anchor: cosine similarity is at least 0.97 for all parameters, the fusion module, and layer 15, and 1.00 over all parameters at the training setting (16, 4). With four iterations or fewer they are far off, for example 0.48 at (4, 4) over all parameters and 0.26 for the fusion module.</p>
+<!--FX:grad-->
+<p>The end-to-end check is to train the same models with the exact recurrence. Exact training on 2048-token sequences is expensive, so this comparison uses the first 1B tokens of FineWeb-Edu, \(\ell_{\text{start}}=8\), and the same truncation \(d_{\text{backward}}=4\) for both methods. The Jacobi-trained models reach the same validation loss as the exactly trained ones, marginally lower at every size, and evaluating them with Jacobi iterations instead of the exact rollout changes the loss by at most 0.0001.</p>
+<div class="tablewrap"><table class="t2-tab">
+<thead><tr><th>Size</th><th>Transformer</th><th>exact</th><th>Jacobi</th><th>Jacobi, Jacobi eval.</th></tr></thead>
+<tbody>
+<tr><td>135M</td><td>3.9514</td><td>3.9083</td><td class="hi">3.9073</td><td>3.9073</td></tr>
+<tr><td>360M</td><td>3.3803</td><td>3.3246</td><td class="hi">3.3204</td><td>3.3205</td></tr>
+<tr><td>1B</td><td>3.1562</td><td>3.1148</td><td class="hi">3.1103</td><td>3.1102</td></tr>
+</tbody></table></div>
+<p class="note">Validation loss after the first 1B FineWeb-Edu tokens. The T2MLR columns name the training method. T2MLR models are evaluated with the exact sequential rollout, except in the last column. Values from Table 6 of the paper.</p>
+<p>The price is paid in training. Per sequence, a Transformer costs \(O\big(L(N^2d+Nd^2)\big)\) for length \(N\) and width \(d\), while T2MLR costs \(O\big((L+d_{\text{forward}}D)(N^2d+Nd^2)\big)\), since the middle block runs \(d_{\text{forward}}\) times. Generation needs no iterations: each new token reads the exact \(\mathbf R_{t-1}\) left by the previous one. The recurrent state adds less than 0.1% to peak GPU memory, and the measured slowdown is at most about 8%:</p>
+<div class="tablewrap"><table class="t2-tab">
+<thead><tr><th>Tokens</th><th>135M (1,30)</th><th>135M (5,26)</th><th>135M (9,22)</th><th>361M (9,24)</th><th>1B (9,24)</th></tr></thead>
+<tbody>
+<tr><td>512</td><td>1.070</td><td>1.076</td><td>1.082</td><td>1.065</td><td>1.067</td></tr>
+<tr><td>1024</td><td>1.064</td><td>1.068</td><td>1.078</td><td>1.057</td><td>1.057</td></tr>
+<tr><td>2048</td><td>1.067</td><td>1.076</td><td>1.078</td><td>1.056</td><td>1.041</td></tr>
+</tbody></table></div>
+<p class="note">Wall-clock time to generate the given number of tokens with T2MLR, relative to a parameter-matched Transformer. Values from Table 7 of the paper.</p>
+<p>The prompt can also be prefilled with Jacobi iterations instead of token by token. For T2MLR(5,26) with 16 iterations, prefill is 11.1 times faster than exact prefill, and the zero-shot average is 0.435 against 0.437.</p>
+
+<h2 id="state-tracking-and-retrieval">State tracking with retrieval</h2>
+<p>Before language modeling, we test the inductive bias on a synthetic task that separates Transformers from recurrent networks in both directions. In \(S_5\) state tracking&nbsp;<span class="cite">[<a href="#ref-16">16</a>]</span>, the input is a sequence of permutations \(a_1,\dots,a_N\) of five elements and the output is the sequence of running products \(a_1,\ a_1\circ a_2,\ \dots,\ a_1\circ\cdots\circ a_N\), the states. A Transformer needs \(\Omega(\log N)\) layers to solve this exactly&nbsp;<span class="cite">[<a href="#ref-17">17</a>]</span>, and the shallowest solution known to be learned, a parallel associative scan, uses \(\lceil\log_2 N\rceil\) layers&nbsp;<span class="cite">[<a href="#ref-18">18</a>]</span>. A 4-layer scan therefore covers at most 16 states. A recurrent network tracks the state with constant depth, since its depth grows along time, but it has to store any key–value associations in its fixed-size state.</p>
+<p>\(S_5\)-Retrieval needs both abilities. Each sequence comes with a fresh random dictionary \(\mathcal D\) that maps each of the 120 permutations to a four-character string, written out in the context. After each state, the model must also output that state's entry:</p>
+<div class="math-block eqwrap"><span class="eq">\(\displaystyle \big(a_1,\ \mathcal D(a_1),\ a_1\circ a_2,\ \mathcal D(a_1\circ a_2),\)</span><span class="eq cont">\(\displaystyle \dots,\ a_1\circ\cdots\circ a_N,\ \mathcal D(a_1\circ\cdots\circ a_N)\big).\)</span></div>
+<p>That is five tokens per state, or 240 tokens at \(N=48\). Figure 4 generates instances of the task.</p>
+<!--FX:s5-->
+<p>We compare a 4-layer LSTM, a 4-layer, 6-head Llama-style Transformer, and T2MLR(1,4) built on that Transformer, so that all four layers recur. The three have matched parameter counts. Training uses \(N\) drawn uniformly from 1 to 32, and evaluation covers \(N=1,\dots,48\). T2MLR trains for 150k steps and the baselines for 400k.</p>
+<p>T2MLR reaches near-perfect exact match on whole sequences within the training range, beyond the 16 states that a 4-layer scan can cover, and keeps non-trivial per-token accuracy at lengths beyond 32. Both baselines collapse on exact match at every length and keep only modest per-token accuracy. These descriptions come from the curves in the paper's Figure 4, which print no values. This matches the intended inductive bias: the recurrent pathway can carry the state from step to step, while attention keeps access to the dictionary for the lookup.</p>
+
+<h2 id="where-to-put-the-loop">Where to put the loop</h2>
+<p>For language modeling we start from SmolLM2-135M&nbsp;<span class="cite">[<a href="#ref-19">19</a>]</span>, a 30-layer Llama-style model, and build T2MLR variants with different recurrence boundaries on the same backbone. The fusion module adds parameters, so we widen the baseline from 576 to 584 dimensions. Every model then has about 136.4M parameters, with the baseline slightly larger. All models train for one epoch on the 10B-token sample of FineWeb-Edu&nbsp;<span class="cite">[<a href="#ref-20">20</a>]</span> with identical hyperparameters and are evaluated zero-shot on seven benchmarks.</p>
+<p>Every variant improves on the baseline's zero-shot average of 42.83, though T2MLR(15,16) only barely, at 42.89. The best is not full recurrence. T2MLR(13,18), with \(D=6\), reaches 44.14, followed by (9,22) at 44.01, (5,26) at 43.73, and (1,30) at 43.36. Validation loss follows a different trend. Apart from full recurrence and the 2-layer block, which do not beat the baseline, loss after 16k steps mostly falls as more layers recur. Saunshi et al. observed a similar gap for stacking middle layers, which helps reasoning in ways that perplexity does not show&nbsp;<span class="cite">[<a href="#ref-4">4</a>]</span>.</p>
+<p>Size is not the only variable. Holding the block width fixed and moving the block isolates location. With six layers, the middle block 13–18 averages 44.14, against 42.74 for layers 1–6 and 42.87 for layers 25–30. With fourteen layers, the middle block 9–22 averages 44.01, against 42.21 for layers 1–14 and 43.14 for layers 17–30. Both early blocks end below the baseline, and the late blocks gain at most 0.31 points over it.</p>
+<p>We also compared against other ways of spending more compute at the same parameter count and data: a 2× pause-token model&nbsp;<span class="cite">[<a href="#ref-21">21</a>]</span> (43.31), a Transformer that loops its full stack twice (42.99), and one that loops layers 9–22 three times (42.68). All three pay for the extra compute at every decoding step. T2MLR adds only the fusion step (at most about 8% in wall-clock), and every variant of the first sweep with at least six recurrent layers averages higher (43.36 to 44.14). Figure 5 gathers these comparisons.</p>
+<!--FX:placement-->
+<p>Zero-shot averages differ from the baseline by at most 1.31 points. The larger differences appear after finetuning on reasoning tasks: Variable Assignment from the reasoning primitives of Saunshi et al.&nbsp;<span class="cite">[<a href="#ref-4">4</a>]</span> at depth 5, ProsQA-Hard&nbsp;<span class="cite">[<a href="#ref-6">6</a>]</span>, the easy subset of HotpotQA&nbsp;<span class="cite">[<a href="#ref-22">22</a>]</span> with chain-of-thought traces, and GSM-Aug in symbolic and natural-language form&nbsp;<span class="cite">[<a href="#ref-23">23</a>]</span>. Every finetuned T2MLR variant beats the baseline on every task (bar labels of the paper's Figure 6), and on every task the best score comes from a middle variant rather than full recurrence. The gap is largest on Variable Assignment, where full recurrence reaches 0.773 and T2MLR(13,18) reaches 0.945. On GSM-Aug the best middle variant is 0.045 above full recurrence in the symbolic form (0.436 against 0.391) and 0.046 above it in natural language (0.314 against 0.268). The middle variants are not uniformly better, though: on HotpotQA, T2MLR(13,18) scores 0.216, barely above the baseline's 0.214 and below full recurrence at 0.246.</p>
+
+<h2 id="scale-and-retrofitting">Scale and retrofitting</h2>
+<p>The gains persist at larger scale. With \(\ell_{\text{start}}=8\) and 10B training tokens, the zero-shot average rises from 48.48 to 49.22 at about 370M parameters and from 51.38 to 52.37 at about 1B. Extending training to 50B tokens, it rises from 48.35 to 49.42 at 135M with T2MLR(9,22), and from 52.83 to 54.78 at 370M with T2MLR(9,24). Finetuned reasoning improves more:</p>
+<div class="tablewrap"><table class="t2-tab t2-arrow">
+<thead><tr><th>Model, tokens</th><th>HotpotQA-Easy</th><th>GSM-Aug-NL</th><th>GSM-Aug-Sym</th></tr></thead>
+<tbody>
+<tr><td>370M, 10B</td><td>24.43 → <b>28.28</b></td><td>31.08 → <b>34.12</b></td><td>39.35 → <b>42.46</b></td></tr>
+<tr><td>1B, 10B</td><td>23.28 → <b>26.52</b></td><td>32.37 → <b>36.69</b></td><td>43.97 → <b>44.96</b></td></tr>
+<tr><td>135M, 50B</td><td>–</td><td>26.46 → <b>30.48</b></td><td>38.67 → <b>41.55</b></td></tr>
+<tr><td>370M, 50B</td><td>–</td><td>40.18 → <b>44.35</b></td><td>42.53 → <b>46.63</b></td></tr>
+</tbody></table></div>
+<p class="note">Accuracy in percent, parameter-matched Transformer → T2MLR after finetuning. A dash means not evaluated. Values from Tables 9 and 10 of the paper.</p>
+<p>T2MLR does not have to be pretrained from scratch. We inserted the recurrent pathway, as T2MLR(5,28), into the pretrained SmolLM2-1.7B-Instruct (32 layers) and finetuned for one epoch on OpenMathReasoning&nbsp;<span class="cite">[<a href="#ref-24">24</a>]</span>. Against the same model finetuned in the same way without the pathway, GSM8K rises from 35.78 to 39.88 and MATH500 from 12.80 to 18.00.</p>
+<p>One consequence of the recurrence is visible in probes. The loss at token \(t+1\) backpropagates through \(\mathbf R_t\) into the computation of token \(t\), which rewards states that anticipate what comes next. Two-layer MLP probes trained to predict the next token from the intermediate layers of token \(t\) reach lower loss on T2MLR than on the baseline. With the recurrent block ending three layers below the output head, probes one and two layers below the head reach losses of 5.091 and 5.088, against 5.135 and 5.131 for the baseline.</p>
+<p>These comparisons fix parameters, data, and inference compute, not training compute. A Transformer trained for 2.24 epochs, which matches the training wall-clock of T2MLR(13,18), averages 45.30 zero-shot and beats T2MLR's 44.14. The contribution of T2MLR is architectural, and it shows at inference time, not as a saving in training compute.</p>
+
+<h2 id="related-work">Related work</h2>
+<p><b>Latent reasoning.</b> Coconut&nbsp;<span class="cite">[<a href="#ref-6">6</a>]</span> and CODI&nbsp;<span class="cite">[<a href="#ref-7">7</a>]</span> replace parts of a textual chain of thought with last-layer hidden states that are fed back after the embedding. Soft Thinking, Multiplex Thinking, and related methods feed back mixtures of token embeddings&nbsp;<span class="cite">[<a href="#ref-8">8</a>, <a href="#ref-9">9</a>]</span>. The closest prior work is HRPO&nbsp;<span class="cite">[<a href="#ref-10">10</a>]</span>, which also uses gated fusion but feeds its latent through the embedding and trains with reinforcement learning, without gradients through past tokens. T2MLR injects a middle-layer state into an earlier middle layer and trains through time with dense supervision.</p>
+<div class="tablewrap"><table class="t2-tab t2-rel">
+<thead><tr><th>Method</th><th>fed back</th><th>enters at</th><th>fusion</th><th>BPTT</th></tr></thead>
+<tbody>
+<tr><td>Coconut</td><td>last-layer state</td><td>after embedding</td><td>identity</td><td>yes</td></tr>
+<tr><td>CODI</td><td>last-layer state</td><td>after embedding</td><td>2-layer MLP</td><td>yes</td></tr>
+<tr><td>Multiplex Thinking</td><td>soft token mixture</td><td>after embedding</td><td>identity</td><td>no</td></tr>
+<tr><td>HRPO</td><td>soft token mixture</td><td>after embedding</td><td>gated</td><td>no</td></tr>
+<tr><td>T2MLR</td><td>middle-layer state</td><td>earlier middle layer</td><td>gated</td><td>yes</td></tr>
+</tbody></table></div>
+<p class="note">After Table 4 of the paper. For HRPO and T2MLR, the discrete token still enters through the input embedding as usual.</p>
+<p><b>Looped Transformers.</b> Universal Transformers&nbsp;<span class="cite">[<a href="#ref-25">25</a>]</span> and later looped models&nbsp;<span class="cite">[<a href="#ref-26">26</a>, <a href="#ref-11">11</a>, <a href="#ref-12">12</a>, <a href="#ref-13">13</a>]</span> reuse a block several times per token, and their inference cost grows with the number of loops. Geiping et al.&nbsp;<span class="cite">[<a href="#ref-12">12</a>]</span> and Ouro&nbsp;<span class="cite">[<a href="#ref-13">13</a>]</span> let earlier loops read key–value caches written by later loops, which is another shortcut from deep to shallow representations.</p>
+<p><b>State-space, hybrid, and memory models.</b> Mamba, RetNet, Griffin, and DeltaNet replace or interleave attention with recurrent sequence mixers&nbsp;<span class="cite">[<a href="#ref-27">27</a>, <a href="#ref-28">28</a>, <a href="#ref-29">29</a>, <a href="#ref-30">30</a>]</span>, usually for long-context efficiency. Transformer-XL, the Compressive Transformer, the Recurrent Memory Transformer, and Titans carry memory across segments for long contexts&nbsp;<span class="cite">[<a href="#ref-31">31</a>, <a href="#ref-32">32</a>, <a href="#ref-33">33</a>, <a href="#ref-34">34</a>]</span>. T2MLR leaves attention unchanged and adds one residual pathway across decoding steps, aimed at reasoning within the context rather than at extending it.</p>
+
+<h2 id="limitations">Limitations</h2>
+<ul>
+  <li>Training takes 2 to 4 times the wall-clock of a Transformer, depending on the block size, and a Transformer trained for the same time wins on zero-shot benchmarks.</li>
+  <li>Models trained from scratch have 135M to 1B parameters, and the retrofit uses 1.7B. Multi-seed variance estimates are not reported.</li>
+  <li>Which fusion parameterization and recurrence boundaries work best is still open, and what information travels through \(\mathbf R_t\) is not yet understood mechanistically.</li>
+  <li>The \(S_5\)-Retrieval comparison covers one small configuration per architecture, and its results are reported only as curves.</li>
+</ul>
+
+<h2 id="references">References</h2>
+<ol class="refs">
+<li id="ref-1">Tenney et al. <a href="https://aclanthology.org/P19-1452/">BERT Rediscovers the Classical NLP Pipeline</a>. <i>Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics</i>, 2019.</li>
+<li id="ref-2">Geva et al. <a href="https://aclanthology.org/2021.emnlp-main.446/">Transformer Feed-Forward Layers Are Key-Value Memories</a>. <i>Conference on Empirical Methods in Natural Language Processing</i>, 2021.</li>
+<li id="ref-3">Meng et al. <a href="https://arxiv.org/abs/2202.05262">Locating and Editing Factual Associations in GPT</a>. <i>Advances in Neural Information Processing Systems</i>, 2022.</li>
+<li id="ref-4">Saunshi et al. <a href="https://arxiv.org/abs/2409.19044">On the Inductive Bias of Stacking Towards Improving Reasoning</a>. <i>Advances in Neural Information Processing Systems</i>, 2024.</li>
+<li id="ref-5">Atanas and Liu. <a href="https://arxiv.org/abs/2503.17645">A Modular Dataset to Demonstrate LLM Abstraction Capability</a>. <i>arXiv preprint arXiv:2503.17645</i>, 2025.</li>
+<li id="ref-6">Hao et al. <a href="https://arxiv.org/abs/2412.06769">Training Large Language Models to Reason in a Continuous Latent Space</a>. <i>arXiv preprint arXiv:2412.06769</i>, 2024.</li>
+<li id="ref-7">Shen et al. <a href="https://arxiv.org/abs/2502.21074">CODI: Compressing Chain-of-Thought into Continuous Space via Self-Distillation</a>. <i>arXiv preprint arXiv:2502.21074</i>, 2025.</li>
+<li id="ref-8">Zhang et al. <a href="https://openreview.net/forum?id=ByQdHPGKgU">Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space</a>. <i>Advances in Neural Information Processing Systems</i>, 2025.</li>
+<li id="ref-9">Tang et al. <a href="https://arxiv.org/abs/2601.08808">Multiplex Thinking: Reasoning via Token-wise Branch-and-Merge</a>. <i>arXiv preprint arXiv:2601.08808</i>, 2026.</li>
+<li id="ref-10">Yue et al. <a href="https://arxiv.org/abs/2505.18454">Hybrid Latent Reasoning via Reinforcement Learning</a>. <i>arXiv preprint arXiv:2505.18454</i>, 2025.</li>
+<li id="ref-11">Saunshi et al. <a href="https://arxiv.org/abs/2502.17416">Reasoning with Latent Thoughts: On the Power of Looped Transformers</a>. <i>International Conference on Learning Representations</i>, 2025.</li>
+<li id="ref-12">Geiping et al. <a href="https://openreview.net/forum?id=S3GhJooWIC">Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach</a>. <i>Advances in Neural Information Processing Systems</i>, 2025.</li>
+<li id="ref-13">Zhu et al. <a href="https://arxiv.org/abs/2510.25741">Scaling Latent Reasoning via Looped Language Models</a>. <i>arXiv preprint arXiv:2510.25741</i>, 2025.</li>
+<li id="ref-14">Wu, Teng, and Tu. <a href="https://aclanthology.org/2025.emnlp-main.47/">Parallel Continuous Chain-of-Thought with Jacobi Iteration</a>. <i>Conference on Empirical Methods in Natural Language Processing</i>, 2025.</li>
+<li id="ref-15">Williams and Zipser. Gradient-Based Learning Algorithms for Recurrent Networks and Their Computational Complexity. In <i>Backpropagation</i>, pp. 433–486, 2013.</li>
+<li id="ref-16">Liu et al. <a href="https://openreview.net/forum?id=De4FYqjFueZ">Transformers Learn Shortcuts to Automata</a>. <i>International Conference on Learning Representations</i>, 2023.</li>
+<li id="ref-17">Merrill, Petty, and Sabharwal. <a href="https://openreview.net/forum?id=QZgo9JZpLq">The Illusion of State in State-Space Models</a>. <i>International Conference on Machine Learning</i>, 2024.</li>
+<li id="ref-18">Li, Guo, and Andreas. <a href="https://openreview.net/forum?id=8SXosAVIFH">(How) Do Language Models Track State?</a> <i>International Conference on Machine Learning</i>, 2025.</li>
+<li id="ref-19">Allal et al. <a href="https://arxiv.org/abs/2502.02737">SmolLM2: When Smol Goes Big – Data-Centric Training of a Small Language Model</a>. <i>arXiv preprint arXiv:2502.02737</i>, 2025.</li>
+<li id="ref-20">Penedo et al. <a href="https://arxiv.org/abs/2406.17557">The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale</a>. <i>arXiv preprint arXiv:2406.17557</i>, 2024.</li>
+<li id="ref-21">Goyal et al. <a href="https://arxiv.org/abs/2310.02226">Think Before You Speak: Training Language Models with Pause Tokens</a>. <i>International Conference on Learning Representations</i>, 2024.</li>
+<li id="ref-22">Yang et al. <a href="https://aclanthology.org/D18-1259/">HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering</a>. <i>Conference on Empirical Methods in Natural Language Processing</i>, 2018.</li>
+<li id="ref-23">Deng et al. <a href="https://arxiv.org/abs/2311.01460">Implicit Chain of Thought Reasoning via Knowledge Distillation</a>. <i>arXiv preprint arXiv:2311.01460</i>, 2023.</li>
+<li id="ref-24">Moshkov et al. <a href="https://arxiv.org/abs/2504.16891">AIMO-2 Winning Solution: Building State-of-the-Art Mathematical Reasoning Models with OpenMathReasoning Dataset</a>. <i>arXiv preprint arXiv:2504.16891</i>, 2025.</li>
+<li id="ref-25">Dehghani et al. <a href="https://arxiv.org/abs/1807.03819">Universal Transformers</a>. <i>International Conference on Learning Representations</i>, 2019.</li>
+<li id="ref-26">Giannou et al. <a href="https://arxiv.org/abs/2301.13196">Looped Transformers as Programmable Computers</a>. <i>International Conference on Machine Learning</i>, 2023.</li>
+<li id="ref-27">Gu and Dao. <a href="https://arxiv.org/abs/2312.00752">Mamba: Linear-Time Sequence Modeling with Selective State Spaces</a>. <i>arXiv preprint arXiv:2312.00752</i>, 2023.</li>
+<li id="ref-28">Sun et al. <a href="https://arxiv.org/abs/2307.08621">Retentive Network: A Successor to Transformer for Large Language Models</a>. <i>arXiv preprint arXiv:2307.08621</i>, 2023.</li>
+<li id="ref-29">De et al. <a href="https://arxiv.org/abs/2402.19427">Griffin: Mixing Gated Linear Recurrences with Local Attention for Efficient Language Models</a>. <i>arXiv preprint arXiv:2402.19427</i>, 2024.</li>
+<li id="ref-30">Yang et al. <a href="https://arxiv.org/abs/2406.06484">Parallelizing Linear Transformers with the Delta Rule over Sequence Length</a>. <i>Advances in Neural Information Processing Systems</i>, 2024.</li>
+<li id="ref-31">Dai et al. <a href="https://arxiv.org/abs/1901.02860">Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context</a>. <i>arXiv preprint arXiv:1901.02860</i>, 2019.</li>
+<li id="ref-32">Rae et al. <a href="https://openreview.net/forum?id=SylKikSYDH">Compressive Transformers for Long-Range Sequence Modelling</a>. <i>International Conference on Learning Representations</i>, 2020.</li>
+<li id="ref-33">Bulatov, Kuratov, and Burtsev. <a href="https://arxiv.org/abs/2207.06881">Recurrent Memory Transformer</a>. <i>arXiv preprint arXiv:2207.06881</i>, 2022.</li>
+<li id="ref-34">Behrouz, Zhong, and Mirrokni. <a href="https://arxiv.org/abs/2501.00663">Titans: Learning to Memorize at Test Time</a>. <i>arXiv preprint arXiv:2501.00663</i>, 2024.</li>
+</ol>
+
+<footer id="cite">
+<pre class="bib">@inproceedings{cai_t2mlr_2026,
+  title     = {T2MLR: Transformer with Temporal Middle-Layer Recurrence},
+  author    = {Cai, Ziyang and Zhu, Xingyu and Dong, Yihe and He, Yinghui and Arora, Sanjeev},
+  booktitle = {LIT Workshop @ ICLR 2026},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=fQbk1EQWBO}
+}
+
+@article{cai2026t2mlr,
+  title   = {T2MLR: Transformer with Temporal Middle-Layer Recurrence},
+  author  = {Cai, Ziyang and Zhu, Xingyu and Dong, Yihe and He, Yinghui and Arora, Sanjeev},
+  journal = {arXiv preprint arXiv:2607.15178},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2607.15178}
+}</pre>
+</footer>
+</main>
+
+<script src="figures.js"></script>
+<script src="../shared/select.js"></script>
+<script src="../shared/toc.js"></script>
+<script src="../shared/theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+/* Figure 5 · where the recurrent block sits (fx-placement). Everything is scoped to #fx-placement. */
+#fx-placement .fx-placement-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-placement .fx-placement-met .fx-select{flex:0 1 auto;min-width:0;text-overflow:ellipsis}
+#fx-placement .fx-seg .s{display:none}
+@media (max-width:560px){
+  #fx-placement .fx-placement-grp{display:flex;width:100%}
+  #fx-placement .fx-placement-grp .fx-seg{display:grid;grid-template-columns:1fr 1fr;flex:1 1 auto;min-width:0}
+  #fx-placement .fx-seg button{padding:4px 6px}
+  #fx-placement .fx-seg button:nth-child(3){border-left:0}
+  #fx-placement .fx-seg button:nth-child(n+3){border-top:1px solid var(--line)}
+  #fx-placement .fx-seg .l{display:none}
+  #fx-placement .fx-seg .s{display:inline}
+}
+
+/* legend */
+#fx-placement .fx-legend{gap:4px 14px;margin-top:-4px}
+#fx-placement .fx-placement-sw{display:inline-block;width:14px;height:9px;border-radius:1px;vertical-align:-1px;margin-right:6px}
+#fx-placement .fx-placement-sw.rec{background:color-mix(in oklab,var(--accent) 70%,var(--bg))}
+#fx-placement .fx-placement-sw.loop{background:repeating-linear-gradient(135deg,var(--accent) 0 1.2px,color-mix(in oklab,var(--accent) 16%,var(--bg)) 1.2px 3.2px)}
+#fx-placement .fx-placement-dot{display:inline-block;width:7px;height:7px;border-radius:50%;vertical-align:0;margin-right:6px}
+#fx-placement .fx-placement-dot.up{background:var(--accent)}
+#fx-placement .fx-placement-dot.dn{background:var(--loss)}
+#fx-placement .fx-placement-bl{display:inline-block;width:0;height:11px;border-left:1px dashed var(--fg);opacity:.55;vertical-align:-1px;margin:0 7px 0 3px}
+
+/* chart */
+#fx-placement .fx-placement-chart{min-width:0;line-height:0}
+#fx-placement .fx-placement-chart svg{cursor:default;-webkit-tap-highlight-color:transparent}
+#fx-placement .fx-placement-chart svg:focus{outline:none}
+#fx-placement .fx-placement-chart svg:focus-visible .band.on{stroke:var(--accent);stroke-width:1}
+#fx-placement .fx-svg .band{fill:var(--fx-band);shape-rendering:crispEdges;pointer-events:none}
+#fx-placement .fx-svg text.nm{fill:var(--fg);font-size:11px}
+#fx-placement .fx-svg text.nm .ds{fill:var(--muted)}
+#fx-placement .fx-svg text.sec{fill:var(--muted);font-size:10.5px;letter-spacing:.02em;paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
+#fx-placement .fx-svg text.halo{paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+#fx-placement .fx-svg text.hd{fill:var(--fg)}
+#fx-placement .fx-svg text.val{fill:var(--fg)}
+#fx-placement .fx-svg text.ne{fill:var(--muted);font-style:italic}
+#fx-placement .fx-svg text.ann{fill:var(--accent)}
+#fx-placement .fx-svg .cell{shape-rendering:crispEdges}
+#fx-placement .fx-svg .cell.off{fill:color-mix(in oklab,var(--fg) 11%,var(--bg))}
+#fx-placement .fx-svg .cell.rec{fill:color-mix(in oklab,var(--accent) 70%,var(--bg))}
+#fx-placement .fx-svg .cell.loop{fill:url(#fx-placement-hatch)}
+#fx-placement .fx-svg .hb{fill:color-mix(in oklab,var(--accent) 16%,var(--bg))}
+#fx-placement .fx-svg .hl{stroke:var(--accent);stroke-width:1.2}
+#fx-placement .fx-svg .sepl{stroke:var(--rule);stroke-width:1;shape-rendering:crispEdges}
+#fx-placement .fx-svg .bl{stroke:var(--fg);stroke-opacity:.55;stroke-width:1;stroke-dasharray:3 3;shape-rendering:crispEdges;pointer-events:none}
+#fx-placement .fx-svg .stem{stroke-width:1.5;stroke-opacity:.45}
+#fx-placement .fx-svg .up{fill:var(--accent);stroke:var(--accent)}
+#fx-placement .fx-svg .dn{fill:var(--loss);stroke:var(--loss)}
+#fx-placement .fx-svg .eq{fill:var(--fx-base2);stroke:var(--fx-base2)}
+
+/* tooltip */
+#fx-placement .fx-tip{white-space:normal;max-width:300px}
+#fx-placement .fx-tip .t1{font-weight:400;color:var(--fg)}
+#fx-placement .fx-tip .t2{color:var(--muted);margin-bottom:4px}
+#fx-placement .fx-tip .tt{display:grid;grid-template-columns:auto auto auto;column-gap:12px;row-gap:0}
+#fx-placement .fx-tip .tt span{white-space:nowrap}
+#fx-placement .fx-tip .tt .n{color:var(--muted)}
+#fx-placement .fx-tip .tt .v{text-align:right;color:var(--fg)}
+#fx-placement .fx-tip .tt .d{text-align:right;color:var(--muted)}
+#fx-placement .fx-tip .tt .d.up{color:var(--accent)}
+#fx-placement .fx-tip .tt .d.dn{color:var(--loss)}
+#fx-placement .fx-tip .tt .on{color:var(--fg);font-weight:400}
+#fx-placement .fx-tip .tt .hh{grid-column:1 / -1;color:var(--muted);margin-top:4px;border-top:1px solid var(--rule);padding-top:3px}

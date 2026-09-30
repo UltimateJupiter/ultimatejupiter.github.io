@@ -1,0 +1,55 @@
+/* Figure 5 · coupling of small entries in n-layer scalar networks (fx-coupling). Every selector is scoped to #fx-coupling. */
+#fx-coupling .cpl-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-coupling .cpl-ctl .lab{white-space:nowrap}
+#fx-coupling .cpl-bar .cpl-ctl{flex-wrap:wrap;row-gap:6px}
+#fx-coupling .fx-bar .fx-select{max-width:calc(100vw - 44px)}
+#fx-coupling .cpl-bar2{margin-top:-4px;min-height:30px}
+#fx-coupling .cpl-act{margin-left:auto;gap:10px}
+#fx-coupling .cpl-prog{font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:8.5em}
+#fx-coupling .cpl-legend{gap:4px 14px}
+#fx-coupling .cpl-legend span{white-space:nowrap}
+#fx-coupling .cpl-legend .sw{border-top-width:2px}
+#fx-coupling .cpl-legend span{color:var(--muted)}
+#fx-coupling .cpl-lg-s .sw{color:var(--accent)}
+#fx-coupling .cpl-lg-l .sw{color:var(--fx-base2)}
+
+/* three small multiples; stacked on phones */
+#fx-coupling .cpl-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 16px;align-items:start}
+@media (max-width:600px){#fx-coupling .cpl-panels{grid-template-columns:1fr}}
+#fx-coupling .fx-panel{gap:2px}
+#fx-coupling .fx-psub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+#fx-coupling .cpl-chart{position:relative;min-width:0;margin-top:4px}
+#fx-coupling .fx-svg{cursor:crosshair}
+#fx-coupling .fx-svg:focus{outline:none}
+#fx-coupling .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:3px;border-radius:1px}
+#fx-coupling .fx-svg .hit{fill:transparent}
+#fx-coupling .fx-svg text.sup{font-size:8px}
+#fx-coupling .fx-svg text .sub{font-size:8.5px}
+
+/* series */
+#fx-coupling .fx-svg .ln{fill:none;stroke:var(--accent);stroke-width:1.1;stroke-linejoin:round}
+#fx-coupling .fx-svg .thr{stroke:var(--fx-base3);stroke-width:1;stroke-dasharray:5 3.5;fill:none;shape-rendering:crispEdges}
+#fx-coupling .fx-svg text.thr-lab{fill:var(--fx-base3);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-coupling .fx-svg .dl{fill:none;stroke-width:1.5;stroke-linejoin:round}
+#fx-coupling .fx-svg [data-k="s0"]{--ec:var(--accent)}
+#fx-coupling .fx-svg [data-k="s1"]{--ec:color-mix(in oklab,var(--accent) 75%,var(--bg))}
+#fx-coupling .fx-svg [data-k="s2"]{--ec:color-mix(in oklab,var(--accent) 55%,var(--bg))}
+#fx-coupling .fx-svg [data-k="l"]{--ec:var(--fx-base2)}
+#fx-coupling .fx-svg .dl{stroke:var(--ec)}
+#fx-coupling .fx-svg text.elab{fill:var(--ec);font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-coupling .fx-svg .lead{stroke:var(--ec);stroke-width:.75;stroke-opacity:.6}
+#fx-coupling .fx-svg .cur{fill:var(--accent);stroke:var(--bg);stroke-width:1.2}
+#fx-coupling .fx-svg .cur[data-k]{fill:var(--ec)}
+#fx-coupling .fx-svg .fade{fill:var(--bg);fill-opacity:.6;pointer-events:none}
+
+/* tooltip */
+#fx-coupling .fx-tip{font-variant-numeric:tabular-nums}
+#fx-coupling .fx-tip .cpl-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px}
+#fx-coupling .fx-tip .cpl-tt span{text-align:right}
+#fx-coupling .fx-tip .cpl-tt span.k{text-align:left}
+#fx-coupling .fx-tip .cpl-tt span.s{color:var(--accent)}
+#fx-coupling .fx-tip sub{font-size:.75em;line-height:0}
+
+@media (max-width:480px){
+  #fx-coupling .cpl-act{margin-left:0}
+}

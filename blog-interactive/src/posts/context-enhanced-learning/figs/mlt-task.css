@@ -1,0 +1,34 @@
+/* Figure 1 · the multi-level translation task (fx-mlt-task). Everything is scoped to #fx-mlt-task. */
+#fx-mlt-task .fx-mlt-task-ctl{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px 8px;min-width:0}
+#fx-mlt-task #fx-mlt-task-depth button{padding:4px 9px}
+@media (max-width:479px){#fx-mlt-task .fx-mlt-task-w{display:none}}
+
+#fx-mlt-task .fx-mlt-task-block{position:relative;min-width:0;line-height:0}
+#fx-mlt-task .fx-svg text{fill:var(--fg)}
+#fx-mlt-task .fx-svg text.lb{fill:var(--muted);font-size:11px}
+#fx-mlt-task .fx-svg text.ch{text-anchor:middle;transition:opacity .15s}
+#fx-mlt-task .fx-svg.narrow text.ch{font-size:9.5px}
+#fx-mlt-task .fx-svg text.ch.dim{opacity:.38}
+#fx-mlt-task .fx-svg text.ch.on{fill:var(--accent);font-weight:500}
+#fx-mlt-task .fx-svg .bg{fill:color-mix(in srgb,var(--accent) 14%,var(--bg));shape-rendering:crispEdges}
+#fx-mlt-task .fx-svg .band{fill:var(--fx-band);shape-rendering:crispEdges}
+#fx-mlt-task .fx-svg .sel{fill:none;stroke:var(--accent);stroke-width:1;shape-rendering:crispEdges}
+#fx-mlt-task .fx-svg .cn{fill:none;stroke:var(--accent);stroke-width:1;stroke-opacity:.75;stroke-linecap:round}
+#fx-mlt-task .fx-svg .cn.wrap{stroke-dasharray:2 2}
+
+/* Output-pair buttons laid over the bottom row. */
+#fx-mlt-task .fx-mlt-task-hit{position:absolute;inset:0;pointer-events:none}
+#fx-mlt-task .fx-mlt-task-hit button{position:absolute;pointer-events:auto;background:transparent;border:0;padding:0;margin:0;
+  cursor:pointer;border-radius:2px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#fx-mlt-task .fx-mlt-task-hit button:focus{outline:none}
+#fx-mlt-task .fx-mlt-task-hit button:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+
+/* Rules used, one line per level. */
+#fx-mlt-task .fx-mlt-task-rules{display:flex;flex-direction:column;gap:4px;min-width:0}
+#fx-mlt-task .fx-mlt-task-rlist{display:flex;flex-direction:column;gap:3px;font:300 11px/1.55 var(--mono);color:var(--fg)}
+#fx-mlt-task .fx-mlt-task-rlist .ln{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:baseline}
+#fx-mlt-task .fx-mlt-task-rlist .lv{color:var(--muted)}
+#fx-mlt-task .fx-mlt-task-rlist .rs{display:flex;flex-wrap:wrap;gap:0 7px;min-width:0}
+#fx-mlt-task .fx-mlt-task-rlist .r{white-space:nowrap}
+#fx-mlt-task .fx-mlt-task-rlist .r .a,#fx-mlt-task .fx-mlt-task-rlist .r .x,#fx-mlt-task .fx-mlt-task-rlist .sep{color:var(--muted)}
+#fx-mlt-task .fx-mlt-task-rlist .n{color:var(--muted)}

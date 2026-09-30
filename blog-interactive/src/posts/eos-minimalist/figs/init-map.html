@@ -1,0 +1,40 @@
+<figure class="fx" id="fx-init-map">
+  <div class="fx-bar">
+    <span class="im-ctl"><label class="lab" for="fx-init-map-obj">objective</label>
+    <select class="fx-select" id="fx-init-map-obj" aria-label="Objective">
+      <option value="4" selected>degree 4 · ¼(1 − x²y²)²</option>
+      <option value="2">degree 2 · ½(1 − xy)²</option>
+    </select></span>
+    <span class="im-ctl"><label class="lab" for="fx-init-map-eta">step size</label>
+    <select class="fx-select" id="fx-init-map-eta" aria-label="Step size">
+      <option value="0.2" selected>η = 0.2</option>
+      <option value="0.3">η = 0.3</option>
+      <option value="0.4">η = 0.4</option>
+    </select></span>
+    <span class="im-ctl"><span class="lab" id="fx-init-map-viewlab">view</span>
+    <div class="fx-seg" id="fx-init-map-view" role="group" aria-labelledby="fx-init-map-viewlab">
+      <button type="button" data-view="full" aria-pressed="true">full</button>
+      <button type="button" data-view="edge" aria-pressed="false">fractal edge</button>
+    </div></span>
+  </div>
+  <div class="im-main" id="fx-init-map-main">
+    <div class="im-plot" id="fx-init-map-plot">
+      <canvas class="im-cvs" id="fx-init-map-cvs" width="160" height="160" aria-hidden="true"></canvas>
+      <svg class="fx-svg" id="fx-init-map-svg" role="img" tabindex="0" aria-label="Map of starting points colored by the sharpness of the minimum gradient descent reaches"></svg>
+    </div>
+    <div class="im-side" id="fx-init-map-side">
+      <div class="fx-legend im-leg" id="fx-init-map-leg">
+        <span class="im-li"><i class="box im-sw-band"></i><span>ends within 0.1 of 2/η</span></span>
+        <span class="im-li"><span class="im-ramp" aria-hidden="true"><i class="im-r1"></i><i class="im-r2"></i><i class="im-r3"></i></span><span>ends flatter <span class="im-rl">(0 → 2/η)</span></span></span>
+        <span class="im-li"><i class="box im-sw-div"></i><span>diverges</span></span>
+        <span class="im-li" id="fx-init-map-unc" hidden><i class="box im-sw-unc"></i><span>not converged in 50,000 steps</span></span>
+        <span class="im-li"><svg class="im-ksw" width="16" height="10" viewBox="0 0 16 10" aria-hidden="true"><line x1="0" y1="5" x2="16" y2="5"/></svg><span>minima xy = 1</span></span>
+        <span class="im-li"><svg class="im-ksw" width="16" height="10" viewBox="0 0 16 10" aria-hidden="true"><path class="h" d="M8 1.2 L11.8 5 L8 8.8 L4.2 5 Z"/><path class="d" d="M8 1.2 L11.8 5 L8 8.8 L4.2 5 Z"/></svg><span>minima with sharpness 2/η</span></span>
+      </div>
+      <p class="fx-note im-hint" id="fx-init-map-hint"></p>
+      <p class="fx-note im-path" id="fx-init-map-path" hidden><span id="fx-init-map-pathtxt"></span> <button type="button" class="im-clear" id="fx-init-map-clear">clear path</button></p>
+    </div>
+  </div>
+  <p class="fx-status" id="fx-init-map-status" aria-live="polite"></p>
+  <figcaption>Figure 2. Each cell of a 160 × 160 grid is a starting point \((x_0, y_0)\) for gradient descent on \(\tfrac14(1-x^2y^2)^2\) (degree 4) or \(\tfrac12(1-xy)^2\) (degree 2), run live in your browser for up to 50,000 steps and colored by the sharpness of the minimum it reaches. Blue cells end within 0.1 of \(2/\eta\) (the band used in the paper's Fig. 2b), grey cells end flatter (the stronger the grey, the closer to <span class="nw">\(2/\eta\)),</span> and red-tinted cells diverge; a run counts as converged once \(|x^2y^2-1|\) (or <span class="nw">\(|xy-1|\))</span> falls below \(10^{-12}\) and as diverged once \(|x|\) or \(|y|\) exceeds <span class="nw">\(10^4\).</span> The dashed curve is the set of minima <span class="nw">\(xy = 1\),</span> and diamonds mark the two minima whose sharpness is exactly <span class="nw">\(2/\eta\).</span> Hover for a cell's outcome and click to draw its first 400 steps; the fractal-edge view zooms into the boundary between converging and diverging starts (the paper's Fig. 6a).</figcaption>
+</figure>

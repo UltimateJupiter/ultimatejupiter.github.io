@@ -1,0 +1,25 @@
+<figure class="fx" id="fx-recovery">
+  <div class="fx-bar">
+    <label class="fxr-ctl fxr-model"><span class="lab">model</span><select class="fx-select" id="fx-recovery-model" aria-label="Trained model (task and curriculum)"></select></label>
+    <span class="fxr-ctl"><span class="lab" id="fx-recovery-scale-lab">scale</span><span class="fx-seg" role="group" aria-labelledby="fx-recovery-scale-lab"><button type="button" aria-pressed="true" data-v="4" aria-label="x axis from 0 to 4 percent">0–4%</button><button type="button" aria-pressed="false" data-v="100" aria-label="x axis from 0 to 100 percent">0–100%</button></span></span>
+  </div>
+  <div class="fx-panels">
+    <div class="fx-panel" data-k="g">
+      <p class="fx-ptitle">Greedy decoding</p>
+      <p class="fx-psub">both argmax tokens correct</p>
+      <div class="fxr-plot"></div>
+    </div>
+    <div class="fx-panel" data-k="s">
+      <p class="fx-ptitle">Sampling, T = 1</p>
+      <p class="fx-psub">probability of the correct pair</p>
+      <div class="fxr-plot"></div>
+    </div>
+  </div>
+  <div class="fx-legend" aria-hidden="true">
+    <span><i class="fxr-sw mid"></i>π₁–π₄ (hidden steps)</span>
+    <span><i class="fxr-sw last"></i>π₅ (last step)</span>
+    <span><i class="fxr-sw rnd"></i>random guess</span>
+  </div>
+  <p class="fx-status" id="fx-recovery-status" aria-live="polite"></p>
+  <figcaption>Figure 5. How often the trained model completes a phrasebook rule &ldquo;a b -&gt;&rdquo; with its correct output pair when the phrasebook text is fed back to it, for rules of the intermediate phrasebooks (\(\pi_1\)–\(\pi_4\), filled) and the last one (\(\pi_5\), hollow). Greedy decoding counts a rule as recovered when both tokens are the argmax; sampling reports the probability of the correct pair at temperature 1. Rows add token filters that help an adversary: forbidding &lt;THINK&gt;, or keeping only characters of the rule&rsquo;s output alphabet. The dashed line is a random guess of the pair (\(1/n^2\)). Values are means over 20 permutations of the phrasebook text, from Tables 2, 4 and 5 of the paper; the menu selects the model, and the scale control compares them with perfect recall.</figcaption>
+</figure>

@@ -14,6 +14,8 @@ caption: GD trajectory on EoS for a minimalist model
 links:
 - name: arXiv
   url: https://arxiv.org/abs/2210.03294
+- name: Interactive post
+  url: /blog/eos-minimalist/
 abstract: 'Recently, researchers observed that gradient descent for deep neural networks operates
   in an ``edge-of-stability'''' (EoS) regime: the sharpness (maximum eigenvalue of the Hessian)
   is often larger than stability threshold $2/\eta$ (where $\eta$ is the step size). Despite

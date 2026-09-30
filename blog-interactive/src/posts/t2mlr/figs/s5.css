@@ -1,0 +1,136 @@
+/* Figure 4 · S5-Retrieval, generated live (fx-s5). Every selector is scoped to #fx-s5. */
+#fx-s5{--s5-labw:96px}
+#fx-s5.s5-narrow{--s5-labw:54px}
+
+/* ---- toolbar: N slider + new instance ---- */
+#fx-s5 .s5-bar{align-items:flex-start;justify-content:space-between}
+#fx-s5 .s5-nctl{display:flex;align-items:flex-start;gap:10px;flex:1 1 380px;min-width:0}
+#fx-s5 .s5-nctl .lab,#fx-s5 .s5-nval{padding-top:5px;white-space:nowrap}
+#fx-s5 .s5-nval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:4.4em;font-variant-numeric:tabular-nums}
+#fx-s5 .s5-nval.over{color:var(--loss)}
+#fx-s5 .s5-inst{display:flex;align-items:center;gap:10px;padding-top:1px}
+#fx-s5 .s5-seed{font:300 12px/1.4 var(--mono);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* native range (keyboard, touch, a11y) over a hand-drawn rail; --tw = thumb box = hit area */
+#fx-s5 .s5-slider{--tw:28px;position:relative;flex:1 1 240px;min-width:0;max-width:360px;height:52px}
+#fx-s5 .s5-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
+#fx-s5 .s5-rail i{position:absolute;top:0;height:2px;border-radius:1px}
+#fx-s5 .s5-fa{left:0;background:var(--accent)}
+#fx-s5 .s5-fl{background:var(--loss)}
+#fx-s5 .s5-rail i.s5-tk{top:-3.5px;width:1px;height:9px;margin-left:-.5px;background:var(--muted);border-radius:0}
+#fx-s5 .s5-range{position:absolute;left:0;top:0;display:block;width:100%;height:var(--tw);margin:0;padding:0;background:transparent;
+  -webkit-appearance:none;appearance:none;cursor:pointer;touch-action:pan-y;-webkit-tap-highlight-color:transparent}
+#fx-s5 .s5-range:focus{outline:none}
+#fx-s5 .s5-range::-webkit-slider-runnable-track{height:var(--tw);background:transparent;border:0}
+#fx-s5 .s5-range::-moz-range-track{height:var(--tw);background:transparent;border:0}
+#fx-s5 .s5-range::-moz-range-progress{background:transparent}
+#fx-s5 .s5-range::-moz-focus-outer{border:0}
+#fx-s5 .s5-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:var(--tw);height:var(--tw);margin:0;border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-s5 .s5-range::-moz-range-thumb{width:var(--tw);height:var(--tw);border:0;border-radius:50%;cursor:grab;
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,transparent 7.3px)}
+#fx-s5 .s5-range:hover::-webkit-slider-thumb,#fx-s5 .s5-range:active::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-s5 .s5-range:hover::-moz-range-thumb,#fx-s5 .s5-range:active::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 4.8px,var(--accent) 5.4px 6.9px,transparent 7.5px)}
+#fx-s5 .s5-range:active::-webkit-slider-thumb{cursor:grabbing}
+#fx-s5 .s5-range:active::-moz-range-thumb{cursor:grabbing}
+#fx-s5 .s5-range:focus-visible::-webkit-slider-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-s5 .s5-range:focus-visible::-moz-range-thumb{
+  background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
+#fx-s5 .s5-ticks{position:absolute;left:0;right:0;top:24px;height:28px}
+#fx-s5 .s5-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 3px 2px;font:400 10.5px/1 var(--mono);color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-s5 .s5-ticks span:hover,#fx-s5 .s5-ticks span.on{color:var(--fg)}
+#fx-s5 .s5-cap{position:absolute;top:14px;font:300 9.5px/1.2 var(--mono);color:var(--muted);white-space:nowrap;cursor:pointer}
+#fx-s5 .s5-c16{transform:translateX(-100%);padding-right:2px}
+#fx-s5 .s5-c32{padding-left:2px}
+#fx-s5 .s5-cap:hover{color:var(--fg)}
+/* narrow: label and value share a line, the slider gets the full row */
+#fx-s5.s5-narrow .s5-nctl{flex-wrap:wrap;justify-content:space-between;row-gap:2px;flex-basis:100%}
+#fx-s5.s5-narrow .s5-nctl .lab,#fx-s5.s5-narrow .s5-nval{padding-top:0}
+#fx-s5.s5-narrow .s5-nval{min-width:0;text-align:right}
+#fx-s5.s5-narrow .s5-slider{order:3;flex:1 1 100%;max-width:none}
+
+/* ---- panel A: context line ---- */
+#fx-s5 .s5-ctx{display:flex;align-items:center;gap:10px;font:300 11px/1.4 var(--mono);color:var(--muted);min-width:0;margin-top:2px}
+#fx-s5 .s5-ctxlab,#fx-s5 .s5-ctxn{flex:none;white-space:nowrap}
+#fx-s5 .s5-ctxscroll{position:relative;flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding:3px 0 6px;
+  font:400 11px/1.4 var(--mono);color:var(--fg);outline:none;scrollbar-width:thin}
+/* fade only the edge that hides content (classes set by edges() in s5.js) */
+#fx-s5 .s5-mL:not(.s5-mR){-webkit-mask-image:linear-gradient(90deg,transparent,var(--fg) 22px);mask-image:linear-gradient(90deg,transparent,var(--fg) 22px)}
+#fx-s5 .s5-mR:not(.s5-mL){-webkit-mask-image:linear-gradient(90deg,var(--fg) calc(100% - 22px),transparent);mask-image:linear-gradient(90deg,var(--fg) calc(100% - 22px),transparent)}
+#fx-s5 .s5-mL.s5-mR{-webkit-mask-image:linear-gradient(90deg,transparent,var(--fg) 22px,var(--fg) calc(100% - 22px),transparent);
+  mask-image:linear-gradient(90deg,transparent,var(--fg) 22px,var(--fg) calc(100% - 22px),transparent)}
+#fx-s5 .s5-ctxscroll:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+#fx-s5 .s5-e{padding:1px 2px;border-radius:2px}
+#fx-s5 .s5-e .k{color:var(--muted)}
+#fx-s5 .s5-e.on{background:color-mix(in srgb,var(--accent) 25%,transparent)}
+#fx-s5 .s5-e.on .k{color:var(--fg)}
+#fx-s5.s5-narrow .s5-ctxn{display:none}
+
+/* ---- panel A: rows of chips ---- */
+#fx-s5 .s5-rows{display:flex;flex-direction:column;gap:10px;outline:none;border-radius:2px;margin-top:4px}
+#fx-s5 .s5-rows:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-s5 .s5-grp{display:grid;grid-template-columns:var(--s5-labw) repeat(var(--s5-per,8),minmax(0,1fr));gap:3px 4px;align-items:center}
+#fx-s5 .s5-lab{font:300 10.5px/1.15 var(--mono);color:var(--muted);padding-right:6px}
+#fx-s5 .s5-lab.sh{font-style:italic;text-align:right;padding-right:10px}
+#fx-s5 .s5-ix{font:400 9.5px/1 var(--mono);color:var(--muted);text-align:center;padding-bottom:1px;font-variant-numeric:tabular-nums}
+#fx-s5 .s5-ix.on{color:var(--fg)}
+#fx-s5 .s5-ch{font:400 11px/1 var(--mono);color:var(--fg);text-align:center;padding:5px 0;border-radius:2px;cursor:pointer;
+  background:color-mix(in srgb,var(--fg) 4.5%,transparent);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;
+  transition:background-color .12s,box-shadow .12s}
+#fx-s5 .s5-ch.d{color:var(--muted)}
+#fx-s5 .s5-ch.a.in{box-shadow:inset 0 -2px 0 var(--accent)}
+#fx-s5 .s5-ch.s.on,#fx-s5 .s5-ch.d.on{background:color-mix(in srgb,var(--accent) 25%,transparent);color:var(--fg)}
+#fx-s5 .s5-ch.s.pick{box-shadow:inset 0 0 0 1px var(--accent)}
+#fx-s5 .s5-gap{font:300 11px/1.4 var(--mono);color:var(--muted);padding-left:var(--s5-labw)}
+#fx-s5.s5-narrow .s5-lab{font-size:10px}
+
+/* ---- panel B: prefix-scan network ---- */
+#fx-s5 .s5-pb{margin-top:10px}
+#fx-s5 .s5-net{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:16px;align-items:start}
+#fx-s5.s5-narrow .s5-net{grid-template-columns:minmax(0,1fr);gap:4px}
+#fx-s5 .s5-svgwrap{position:relative;min-width:0;outline:none;border-radius:2px}
+#fx-s5 .s5-svgwrap:focus-visible{outline:1px solid var(--accent);outline-offset:4px}
+#fx-s5 .s5-svgwrap .fx-svg{cursor:pointer}
+#fx-s5 .fx-svg .e{stroke:var(--fx-base2);stroke-width:1;stroke-opacity:.75}
+#fx-s5 .fx-svg .e.cp{stroke:var(--fx-base1);stroke-opacity:1}
+#fx-s5 .fx-svg .e.x{stroke:var(--loss);stroke-opacity:.7}
+#fx-s5 .fx-svg .e.x.cp{stroke-opacity:.3}
+#fx-s5 .fx-svg .n{fill:var(--fx-base2)}
+#fx-s5 .fx-svg .n.end{fill:var(--fx-base3)}
+#fx-s5 .fx-svg .n.x{fill:var(--loss)}
+#fx-s5 .fx-svg .ce{stroke:var(--accent);stroke-width:1.75;stroke-linecap:round}
+#fx-s5 .fx-svg .cn{fill:var(--accent);stroke:var(--bg);stroke-width:.75}
+#fx-s5 .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1.25}
+#fx-s5 .fx-svg .lim{stroke:var(--loss);stroke-width:1;stroke-dasharray:4 3;stroke-opacity:.75;shape-rendering:crispEdges}
+#fx-s5 .fx-svg text.lx{fill:var(--loss)}
+#fx-s5 .fx-svg text.fa{fill:var(--fx-base1)}
+#fx-s5 .fx-svg text.on{fill:var(--fg)}
+#fx-s5 .s5-read{font:300 12px/1.45 var(--mono);color:var(--muted);padding-top:62px}
+#fx-s5 .s5-rbig{font:400 15px/1.35 var(--mono);color:var(--fg);white-space:nowrap}
+#fx-s5 .s5-rl{color:var(--fg)}
+#fx-s5 .s5-rs{margin-top:4px}
+#fx-s5 .s5-read.over .s5-rbig,#fx-s5 .s5-read.over .s5-rl,#fx-s5 .s5-read.over .s5-rs{color:var(--loss)}
+#fx-s5.s5-narrow .s5-read{padding-top:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 8px}
+#fx-s5.s5-narrow .s5-rs{margin-top:0;flex-basis:100%}
+
+/* ---- the recurrent chain ---- */
+#fx-s5 .s5-t2{margin-top:12px}
+#fx-s5 .s5-chain{display:flex;align-items:flex-end;overflow-x:auto;overflow-y:hidden;padding:2px 0 8px;position:relative;outline:none;scrollbar-width:thin}
+#fx-s5 .s5-chain:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+#fx-s5 .s5-k{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+#fx-s5 .s5-k small{font:400 9.5px/1 var(--mono);color:var(--muted)}
+#fx-s5 .s5-k .v{font:400 10.5px/1 var(--mono);color:var(--fg);padding:4px 5px;border-radius:2px;font-variant-numeric:tabular-nums;
+  background:color-mix(in srgb,var(--fg) 4.5%,transparent);transition:background-color .12s}
+#fx-s5 .s5-k.on .v{background:color-mix(in srgb,var(--accent) 25%,transparent)}
+#fx-s5 .s5-k.on small{color:var(--fg)}
+#fx-s5 .s5-ar{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;font:300 11px/1 var(--mono);color:var(--fx-base2);padding:0 4px 4px}
+#fx-s5 .s5-ar small{font:400 9px/1 var(--mono);color:var(--muted)}
+#fx-s5 .s5-ar.in{color:var(--accent)}
+#fx-s5 .s5-ar.in small{color:var(--accent)}
+#fx-s5 .s5-cnote{margin:0}
+#fx-s5 sub{font-size:.78em;line-height:0;vertical-align:-.25em}
+#fx-s5 .fx-svg.dense .e{stroke-width:.6}

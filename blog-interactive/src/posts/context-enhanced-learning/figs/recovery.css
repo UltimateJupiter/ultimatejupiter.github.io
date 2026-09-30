@@ -1,0 +1,37 @@
+/* Figure 5 (fx-recovery): recovery rate of phrasebook rules, dot plot per query method. Scoped to #fx-recovery. */
+
+/* controls: model menu takes the remaining width, the scale toggle wraps below it on narrow columns */
+#fx-recovery .fx-bar{column-gap:16px}
+#fx-recovery .fxr-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-recovery .fxr-model{flex:0 1 auto}
+#fx-recovery .fxr-model .fx-select{flex:0 1 auto;min-width:0;text-overflow:ellipsis}
+
+#fx-recovery .fx-panels{row-gap:26px}
+#fx-recovery .fxr-plot{min-width:0;line-height:0}
+
+/* chart marks */
+#fx-recovery .fx-svg{-webkit-tap-highlight-color:transparent}
+#fx-recovery .fx-svg .trk{stroke:var(--rule);stroke-width:1;shape-rendering:crispEdges}
+#fx-recovery .fx-svg text.rl{fill:var(--fg);font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-recovery .fx-svg text.at{fill:var(--muted)}
+#fx-recovery .fx-svg .rnd{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;shape-rendering:crispEdges}
+#fx-recovery .fx-svg text.rndl{fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-recovery .fx-svg .mk{cursor:default;outline:none}
+#fx-recovery .fx-svg .mk.mid{fill:var(--accent);stroke:var(--bg);stroke-width:1}
+#fx-recovery .fx-svg .mk.last{fill:var(--bg);stroke:var(--fg);stroke-width:1.5}
+#fx-recovery .fx-svg .ring{fill:none;stroke:var(--fg);stroke-width:1;pointer-events:none}
+#fx-recovery .fx-svg .ring.kb{stroke:var(--accent);stroke-width:1.5}
+#fx-recovery .fx-svg .hv{visibility:hidden}
+#fx-recovery .fx-svg .hv.on{visibility:visible}
+#fx-recovery .fx-svg text.hvl{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+
+/* legend swatches: filled dot, hollow dot, dashed rule */
+#fx-recovery .fxr-sw{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:0;box-sizing:border-box}
+#fx-recovery .fxr-sw.mid{background:var(--accent)}
+#fx-recovery .fxr-sw.last{border:1.5px solid var(--fg);background:var(--bg)}
+#fx-recovery .fxr-sw.rnd{width:0;height:12px;border-radius:0;border-left:1px dashed var(--muted);margin:0 8px 0 3px;vertical-align:-2px}
+
+/* tooltip */
+#fx-recovery .fx-tip{left:0;top:0}
+#fx-recovery .fx-tip .v{color:var(--fg);font-variant-numeric:tabular-nums}
+#fx-recovery .fx-tip .fxr-sw{vertical-align:0}

@@ -1,0 +1,19 @@
+<figure class="fx" id="fx-grad-acc">
+  <div class="fx-bar">
+    <span class="gacc-ctl"><span class="lab" id="fx-grad-acc-vlab">drop from</span><span class="fx-seg" role="group" aria-labelledby="fx-grad-acc-vlab" data-k="view"><button type="button" data-v="one" aria-pressed="true" aria-label="Drop rules from the first phrasebook only">π₁</button><button type="button" data-v="multi" aria-pressed="false" aria-label="Drop the same rules from phrasebooks 1 to k">π₁ … π<sub>k</sub></button></span></span>
+    <span class="gacc-ctl"><span class="lab" id="fx-grad-acc-clab">criterion</span><span class="fx-seg" role="group" aria-labelledby="fx-grad-acc-clab" data-k="crit"><button type="button" data-v="A" aria-pressed="true" aria-label="argmax of the negative gradient is the correct rule (Definition B.1)">argmax</button><button type="button" data-v="B" aria-pressed="false" aria-label="gradient entry of the correct rule is negative">sign</button></span></span>
+    <span class="gacc-ctl gacc-ctl-batch"><span class="lab" id="fx-grad-acc-blab">batch</span><span class="fx-seg" role="group" aria-labelledby="fx-grad-acc-blab" data-k="batch"><button type="button" data-v="1" aria-pressed="true" aria-label="batch size 1"><i class="sw"></i>1</button><button type="button" data-v="10" aria-pressed="true" aria-label="batch size 10"><i class="sw"></i>10</button><button type="button" data-v="100" aria-pressed="false" aria-label="batch size 100"><i class="sw"></i>100</button></span></span>
+    <span class="gacc-ctl gacc-ctl-rate" hidden><span class="lab" id="fx-grad-acc-rlab">highlight rate</span><span class="fx-seg" role="group" aria-labelledby="fx-grad-acc-rlab" data-k="rate"><button type="button" data-v="0.1" aria-pressed="false" aria-label="highlight dropping rate 0.1">0.1</button><button type="button" data-v="0.3" aria-pressed="true" aria-label="highlight dropping rate 0.3">0.3</button><button type="button" data-v="0.5" aria-pressed="false" aria-label="highlight dropping rate 0.5">0.5</button></span></span>
+  </div>
+  <div class="gacc-head">
+    <div class="gacc-titles">
+      <p class="fx-ptitle">&#8203;</p>
+      <p class="fx-psub">&#8203;</p>
+    </div>
+    <span class="fx-seg gacc-run" role="group" aria-label="computation"><button type="button" data-act="run">Pause</button><button type="button" data-act="reset" aria-label="Reset: discard all samples and start again">Reset</button></span>
+  </div>
+  <div class="gacc-plot"></div>
+  <div class="fx-legend" aria-hidden="true"></div>
+  <p class="fx-status" aria-live="polite"></p>
+  <figcaption>Figure 4. How informative the gradient is when rules are missing from the context, computed live in the soft surrogate model (temperature 1/25) with \(n = 10\), \(d = 10\) at initialization (\(W_i = 0\) in every layer), on random strings of 1,000 pairs. A dropped rule of \(\pi_1\) counts as predicted when the largest entry of the negative gradient on its column of \(W_1\) is the correct output pair (Definition B.1, chance 0.01); the sign option asks only that the correct entry's gradient be negative (chance 0.5), the quantity the released code computes for the paper's Figure 6. The first view drops rules from \(\pi_1\) only, for the pressed batch sizes; the second drops the same rules from \(\pi_1, \dots, \pi_k\), batch 10. Bands are 95% Wilson intervals over the dropped rules evaluated so far, treating them as independent (rules dropped in the same batch share strings, so the bands are somewhat narrow).</figcaption>
+</figure>

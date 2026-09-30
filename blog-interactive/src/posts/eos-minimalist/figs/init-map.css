@@ -1,0 +1,72 @@
+/* Figure 2 · sharpness reached from each initialization (fx-init-map). Everything scoped to #fx-init-map.
+   The raster is a 160×160 <canvas> scaled with nearest-neighbour sampling; axes, curves and markers are an SVG on top.
+   Cell colours are resolved from these same token expressions in JS, so the legend and the raster always agree. */
+
+/* layout: plot with a narrow key column beside it (stacked under it when narrow) */
+#fx-init-map .fx-bar .im-ctl{display:inline-flex;align-items:center;gap:8px;min-width:0;max-width:100%}
+#fx-init-map .fx-bar .fx-select{max-width:100%}
+#fx-init-map .im-main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px 22px;align-items:start}
+#fx-init-map .im-main.wide{grid-template-columns:minmax(0,1fr) 158px}
+#fx-init-map .im-plot{position:relative;min-width:0}
+#fx-init-map .im-cvs{position:absolute;left:0;top:0;width:10px;height:10px;display:block;z-index:0;
+  image-rendering:pixelated;image-rendering:crisp-edges;pointer-events:none}
+#fx-init-map .im-plot.has-path .im-cvs{opacity:.42}
+#fx-init-map .im-cvs{transition:opacity .2s}
+#fx-init-map .im-plot .fx-svg{position:relative;z-index:1;cursor:crosshair;-webkit-tap-highlight-color:transparent;touch-action:pan-y}
+#fx-init-map .im-plot .fx-svg:focus{outline:none}
+#fx-init-map .im-plot .fx-svg:focus-visible{outline:1px solid var(--accent);outline-offset:4px;border-radius:2px}
+#fx-init-map .im-side{display:flex;flex-direction:column;gap:16px;min-width:0;padding-top:26px}
+#fx-init-map .im-main:not(.wide) .im-side{padding-top:0;gap:8px}
+
+/* legend: swatch column + text column, so wrapped text stays aligned */
+#fx-init-map .im-leg{gap:5px 16px}
+#fx-init-map .im-main.wide .im-leg{flex-direction:column;flex-wrap:nowrap;gap:6px}
+#fx-init-map .im-li{display:inline-grid;grid-template-columns:auto minmax(0,auto);align-items:center;column-gap:7px;line-height:1.35}
+#fx-init-map .im-main.wide .im-li{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:start}
+#fx-init-map .im-main.wide .im-li>:first-child{margin-top:3px;justify-self:start}
+#fx-init-map .im-main .im-leg .im-li[hidden]{display:none}
+#fx-init-map .im-li .box{display:block;width:10px;height:10px;border-radius:1px}
+#fx-init-map .im-sw-band{background:var(--accent)}
+#fx-init-map .im-sw-div{background:color-mix(in oklab,var(--loss) 15%,var(--bg))}
+#fx-init-map .im-sw-unc{background:var(--fx-base1)}
+#fx-init-map .im-ramp{display:flex}
+#fx-init-map .im-ramp i{display:block;width:10px;height:10px}
+#fx-init-map .im-rl{white-space:nowrap}
+#fx-init-map .im-r1{background:color-mix(in oklab,var(--fx-base3) 14%,var(--bg))}
+#fx-init-map .im-r2{background:color-mix(in oklab,var(--fx-base3) 43%,var(--bg))}
+#fx-init-map .im-r3{background:color-mix(in oklab,var(--fx-base3) 71%,var(--bg))}
+#fx-init-map .im-ksw{display:block;overflow:visible}
+#fx-init-map .im-ksw line{stroke:var(--fg);stroke-opacity:.6;stroke-width:1.25;stroke-dasharray:4 3}
+#fx-init-map .im-ksw path.h{fill:none;stroke:var(--bg);stroke-width:3.2}
+#fx-init-map .im-ksw path.d{fill:none;stroke:var(--fg);stroke-width:1.4}
+#fx-init-map .im-hint,#fx-init-map .im-path{margin:0}
+#fx-init-map .im-path[hidden]{display:none}
+#fx-init-map .im-clear{font:300 11.5px/1.4 var(--mono);color:var(--fg);background:transparent;border:1px solid var(--line);
+  border-radius:2px;padding:1px 7px;margin-left:2px;cursor:pointer;white-space:nowrap}
+#fx-init-map .im-clear:hover{border-color:var(--accent)}
+#fx-init-map .im-clear:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+
+/* overlay marks */
+#fx-init-map .fx-svg .im-frame{fill:none;stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-init-map .fx-svg .im-tick{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+#fx-init-map .fx-svg .im-min{fill:none;stroke:var(--fg);stroke-opacity:.6;stroke-width:1.25;stroke-dasharray:5 4}
+#fx-init-map .fx-svg .im-dh{fill:none;stroke:var(--bg);stroke-width:3.4;stroke-linejoin:round}
+#fx-init-map .fx-svg .im-dd{fill:none;stroke:var(--fg);stroke-width:1.5;stroke-linejoin:round}
+#fx-init-map .fx-svg text.im-lab{fill:var(--fg);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+#fx-init-map .fx-svg tspan.tn{font-family:var(--sans);font-style:italic;font-size:14px;font-weight:400;fill:var(--fg)}
+#fx-init-map .fx-svg .im-cell{fill:none;stroke:var(--fg);stroke-width:1.25;pointer-events:none}
+#fx-init-map .fx-svg .im-cellh{fill:none;stroke:var(--bg);stroke-width:3;pointer-events:none}
+#fx-init-map .fx-svg .im-p0{fill:color-mix(in srgb,var(--fg) 70%,transparent);stroke:none}
+#fx-init-map .fx-svg .im-p1{fill:none;stroke:color-mix(in srgb,var(--fg) 70%,transparent);stroke-width:.8}
+#fx-init-map .fx-svg .im-ps{fill:none;stroke:var(--fg);stroke-width:1.5}
+#fx-init-map .fx-svg .im-psh{fill:none;stroke:var(--bg);stroke-width:3.5}
+
+/* tooltip */
+#fx-init-map .fx-tip .im-tt{display:grid;grid-template-columns:auto auto;column-gap:14px;margin-top:2px;font-variant-numeric:tabular-nums}
+#fx-init-map .fx-tip .im-tt span:nth-child(even){text-align:right}
+#fx-init-map .fx-tip .im-tt .v-band{color:var(--accent)}
+#fx-init-map .fx-tip .im-tt .v-div{color:var(--loss)}
+#fx-init-map .fx-tip .im-hintl{display:block;margin-top:3px}
+
+/* probe used to resolve token colours for the canvas */
+#fx-init-map .im-probe{position:absolute;width:1px;height:1px;left:0;top:0;opacity:0;pointer-events:none}

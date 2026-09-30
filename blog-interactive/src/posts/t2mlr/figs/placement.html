@@ -1,0 +1,34 @@
+<figure class="fx" id="fx-placement">
+  <div class="fx-bar">
+    <label class="fx-placement-ctl fx-placement-met"><span class="lab">metric</span><select class="fx-select" id="fx-placement-metric" aria-label="Metric shown in the dot plot">
+      <optgroup label="Zero-shot, 135M, 10B tokens">
+        <option value="avg" selected>Average</option>
+        <option value="arcc">ARC-C</option>
+        <option value="arce">ARC-E</option>
+        <option value="hs">HellaSwag</option>
+        <option value="obqa">OBQA</option>
+        <option value="piqa">PIQA</option>
+        <option value="sciq">SciQ</option>
+        <option value="wg">Winogrande</option>
+      </optgroup>
+      <optgroup label="Finetuned reasoning (pass@1)">
+        <option value="va">Variable Assignment</option>
+        <option value="prosqa">ProsQA-Hard</option>
+        <option value="hotpot">HotpotQA (Easy)</option>
+        <option value="gsms">GSM-Aug (Symbolic)</option>
+        <option value="gsmnl">GSM-Aug (Natural Language)</option>
+      </optgroup>
+    </select></label>
+    <span class="fx-placement-ctl fx-placement-grp"><span class="lab" id="fx-placement-rows-lab">rows</span><span class="fx-seg" role="group" aria-labelledby="fx-placement-rows-lab"><button type="button" aria-pressed="true" data-v="vary"><span class="l">vary the span</span><span class="s">vary span</span></button><button type="button" aria-pressed="false" data-v="move"><span class="l">move a fixed span</span><span class="s">move span</span></button><button type="button" aria-pressed="false" data-v="other"><span class="l">other ways to add compute</span><span class="s">other compute</span></button><button type="button" aria-pressed="false" data-v="all"><span class="l">all</span><span class="s">all</span></button></span></span>
+  </div>
+  <div class="fx-legend" aria-hidden="true">
+    <span><i class="fx-placement-sw rec"></i>recurrent block</span>
+    <span><i class="fx-placement-sw loop"></i>looped block</span>
+    <span><i class="fx-placement-dot up"></i>above baseline</span>
+    <span><i class="fx-placement-dot dn"></i>below</span>
+    <span><i class="fx-placement-bl"></i>baseline</span>
+  </div>
+  <div class="fx-placement-chart"></div>
+  <div class="fx-status" id="fx-placement-status" aria-live="polite"></div>
+  <figcaption>Figure 5. Where the recurrent block sits. Each row is a model of about 136M parameters, parameter-matched to the Transformer baseline and trained on the same 10B FineWeb-Edu tokens. The strip shows the 30 layers and which of them recur (blue) or are looped (hatched), and the dot shows the selected score, blue above the baseline (dashed) and red below it. Switch between varying the block's size, moving a block of fixed size, and other ways to spend more compute, which unlike T2MLR also cost more at inference. Hover a row, or focus the chart and use ↑/↓, to see all scores. The finetuned tasks were evaluated only for the first set, except T2MLR(15,16). Zero-shot values are from Tables 1, 2 and 11 (accuracy in percent, normalized where available), and finetuned values from the bar labels of Figure 6 (pass@1).</figcaption>
+</figure>
