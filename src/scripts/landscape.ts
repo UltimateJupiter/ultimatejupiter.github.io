@@ -19,7 +19,7 @@ type Particle = {
   nx: number; ny: number; // correlated noise state
   losses: number[]; // loss sampled every LOSS_EVERY frames, most recent last
   marks: number[]; // positions (x, y) sampled alongside
-  trail: number[]; age: number; alpha: number; dying: boolean;
+  trail: number[]; age: number; alpha: number; dying: boolean; fast?: boolean;
 };
 
 const GRID = 11; // css px between samples
@@ -27,8 +27,8 @@ const LEVEL0 = -3;
 const LEVEL_STEP = 0.1;
 const TRAIL = 140; // trail points, one every TRAIL_EVERY frames
 const TRAIL_EVERY = 2;
-const POPULATION = 2; // particles kept alive when nobody is clicking
-const MAX_PARTICLES = 2; // including ones dropped by clicking
+const POPULATION = 1; // particles kept alive when nobody is clicking
+const MAX_PARTICLES = 1; // including ones dropped by clicking
 const BOWL = 0.18; // weak confining quadratic
 const MAX_STEP = 0.00175; // world units per frame (height = 1)
 const NOISE = 1.2; // noise scale, in gradient units
@@ -226,14 +226,15 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
 
       const out = p.x < -0.1 || p.x > aspect + 0.1 || p.y < -0.1 || p.y > 1.1;
       if (p.age > MAX_AGE || out) p.dying = true;
-      p.alpha = p.dying ? p.alpha - 0.005 : Math.min(1, p.alpha + 0.01);
+      p.alpha = p.dying ? p.alpha - (p.fast ? 0.08 : 0.005) : Math.min(1, p.alpha + 0.01);
       if (p.dying && p.alpha <= 0) particles.splice(i, 1);
     }
     // Keep a small population, releasing replacements one at a time with a pause.
     pending = pending.map((n) => n - 1);
     while (pending.length && pending[0] <= 0) {
       pending.shift();
-      if (aliveCount() < MAX_PARTICLES) particles.push(spawn());
+      // wait until the previous one has fully faded, so only one is ever on screen
+      if (particles.length < MAX_PARTICLES) particles.push(spawn());
     }
     const alive = aliveCount();
     for (let k = alive + pending.length; k < POPULATION; k++) pending.push(Math.round(rand(90, 300)) + pending.length * 120);
@@ -380,7 +381,7 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
     const [x, y] = toWorld(e);
     // at most MAX_PARTICLES in play: the oldest one bows out for the new one
     const live = particles.filter((p) => !p.dying);
-    if (live.length >= MAX_PARTICLES) live[0].dying = true;
+    if (live.length >= MAX_PARTICLES) (live[0].dying = true), (live[0].fast = true);
     particles.push(spawn(x, y));
   });
 
