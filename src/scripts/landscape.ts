@@ -18,6 +18,7 @@ type Particle = {
   lr: number; beta: number;
   nx: number; ny: number; // correlated noise state
   losses: number[]; // loss sampled every LOSS_EVERY frames, most recent last
+  marks: number[]; // positions (x, y) sampled alongside
   trail: number[]; age: number; alpha: number; dying: boolean;
 };
 
@@ -32,11 +33,13 @@ const BOWL = 0.18; // weak confining quadratic
 const MAX_STEP = 0.00175; // world units per frame (height = 1)
 const NOISE = 1.2; // noise scale, in gradient units
 const NOISE_CORR = 0.995; // per-frame correlation of the noise (Ornstein–Uhlenbeck)
-// Settling: a particle whose loss has dropped by less than SETTLE_DROP over the last
-// LOSS_WINDOW samples (~3 s) has found its basin (or is circling it) and fades out.
+// Settling: a particle whose loss has dropped by less than SETTLE_DROP *and* that has moved
+// less than SETTLE_DIST over the last LOSS_WINDOW samples (~3 s) has come to rest (or is
+// circling / being carried along in the valley) and fades out.
 const LOSS_EVERY = 30;
 const LOSS_WINDOW = 6;
-const SETTLE_DROP = 0.03;
+const SETTLE_DROP = 0.015;
+const SETTLE_DIST = 0.025;
 const MAX_AGE = 60 * 90;
 const MOUSE_A = 0.7; // depth of the basin under the pointer
 const MOUSE_S = 0.07;
@@ -66,17 +69,16 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
   }
 
   function makeWells() {
-    // Three minima with different characters, laid out along the long side of the canvas:
-    // a wide flat basin, a curved narrow valley that slowly turns, and a small sharp (but
-    // deeper) basin — plus a low bump that makes a saddle. A weak bowl keeps
-    // particles on screen.
+    // One curved valley that slowly turns, sitting on a few very broad, low Gaussian swells.
+    // The swells tilt and bend the valley floor, so where a particle ends up along it varies.
+    // A weak bowl keeps particles on screen.
     const wide = aspect >= 1;
     const sc = Math.min(1, aspect / 0.9); // shrink features on portrait screens
     const at = (along: number, across: number): [number, number] =>
       wide ? [along * aspect, across] : [across * aspect, along];
     const well = (pos: [number, number], w: Partial<Well>): Well => ({
       bx: pos[0], by: pos[1],
-      rx: rand(0.04, 0.08) * sc, ry: rand(0.04, 0.08) * sc,
+      rx: rand(0.03, 0.06) * sc, ry: rand(0.03, 0.06) * sc,
       w: rand(0.05, 0.09) * (Math.random() < 0.5 ? -1 : 1),
       ph: rand(0, Math.PI * 2),
       bw: rand(0.03, 0.06),
@@ -84,20 +86,21 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
       ...w,
     });
     const j = () => rand(-0.05, 0.05);
-    const flip = Math.random() < 0.5; // mirror the arrangement for variety
-    const f = (v: number) => (flip ? 1 - v : v);
+    const swell = (a: number): Well =>
+      well(at(rand(0.1, 0.9), rand(0.15, 0.85)), {
+        a, sx: rand(0.45, 0.65), sy: rand(0.45, 0.65),
+        rx: rand(0.08, 0.15), ry: rand(0.06, 0.12), w: rand(0.03, 0.05) * (Math.random() < 0.5 ? -1 : 1),
+      });
     wells = [
-      // flat
-      well(at(f(0.22 + j()), 0.38 + j()), { a: -0.85, sx: 0.2 * sc, sy: 0.17 * sc, th: rand(0, Math.PI), spin: 0.02 }),
-      // curved valley
-      well(at(f(0.55 + j()), 0.6 + j()), {
-        a: -0.9, sx: 0.27 * sc, sy: 0.055 * sc, bend: 3 / sc,
-        th: rand(0, Math.PI * 2), spin: rand(0.03, 0.05) * (Math.random() < 0.5 ? -1 : 1),
+      // the valley
+      well(at(0.62 + j(), 0.5 + j()), {
+        a: -0.75, sx: 0.42 * sc, sy: 0.09 * sc, bend: 1.8 / sc,
+        th: rand(0, Math.PI * 2), spin: rand(0.025, 0.04) * (Math.random() < 0.5 ? -1 : 1),
       }),
-      // sharp
-      well(at(f(0.83 + j()), 0.35 + j()), { a: -1.15, sx: 0.06 * sc, sy: 0.06 * sc }),
-      // a low bump between the flat basin and the valley, making a saddle
-      well(at(f(0.38 + j()), 0.78 + j()), { a: 0.4, sx: 0.1 * sc, sy: 0.1 * sc }),
+      // large-scale structure
+      swell(-rand(0.25, 0.35)),
+      swell(rand(0.25, 0.35)),
+      swell(rand(-0.3, 0.3)),
     ];
     updateWells();
   }
@@ -171,8 +174,9 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
   function spawn(x?: number, y?: number): Particle {
     if (x === undefined || y === undefined) {
       let best = -Infinity;
-      for (let k = 0; k < 6; k++) {
-        const cx = rand(0.04, 0.96) * aspect, cy = rand(0.06, 0.94);
+      // (few candidates, away from the edges, where the confining bowl is always highest)
+      for (let k = 0; k < 3; k++) {
+        const cx = rand(0.15, 0.9) * aspect, cy = rand(0.12, 0.88);
         const f = potential(cx, cy);
         if (f > best) (best = f), (x = cx), (y = cy);
       }
@@ -182,7 +186,7 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
       lr: rand(0.0000125, 0.0000225),
       beta: rand(0.95, 0.97),
       nx: gauss(), ny: gauss(),
-      losses: [],
+      losses: [], marks: [],
       trail: [], age: 0, alpha: 0, dying: false,
     };
   }
@@ -213,9 +217,11 @@ export function mountLandscape(canvas: HTMLCanvasElement, dots: HTMLCanvasElemen
       // sitting in (or orbiting, or being carried along with) a basin does not.
       if (p.age % LOSS_EVERY === 0) {
         p.losses.push(potential(p.x, p.y));
-        if (p.losses.length > LOSS_WINDOW + 1) p.losses.shift();
+        p.marks.push(p.x, p.y);
+        if (p.losses.length > LOSS_WINDOW + 1) p.losses.shift(), p.marks.splice(0, 2);
         const n = p.losses.length;
-        if (n > LOSS_WINDOW && p.losses[0] - p.losses[n - 1] < SETTLE_DROP) p.dying = true;
+        const moved = Math.hypot(p.x - p.marks[0], p.y - p.marks[1]);
+        if (n > LOSS_WINDOW && p.losses[0] - p.losses[n - 1] < SETTLE_DROP && moved < SETTLE_DIST) p.dying = true;
       }
 
       const out = p.x < -0.1 || p.x > aspect + 0.1 || p.y < -0.1 || p.y > 1.1;
