@@ -15,6 +15,7 @@
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "astro": "^7.3.5",
     "katex": "^0.16.47",
+    "pdfjs-dist": "^6.5.438",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"
   }

@@ -55,9 +55,12 @@ event: Seminar Name
 event_url: https://...    # optional
 date: '2026-10-01'
 location: Princeton, NJ   # optional
-slides: https://...       # optional
-video: https://...        # optional
-image: ./featured.jpg     # optional, shown as a hover preview
+slides: /uploads/my-talk.pdf   # optional; a PDF in public/ opens in the inline slide viewer,
+                               # any other URL is a plain link
+video: https://...             # optional; bilibili, YouTube and Princeton Media Central links
+                               # play inline on the site
+video_lang: Chinese            # optional; shown as "Video (in Chinese)"
+                               # Each talk opens its video by default, or its slides if there is no video.
 ---
 ```
 

@@ -30,17 +30,20 @@ const publications = defineCollection({
 
 const talks = defineCollection({
   loader: glob({ pattern: '*/index.md', base: './src/content/talks', generateId: folderId }),
-  schema: ({ image }) =>
-    z.object({
-      title: z.string(),
-      event: z.string(),
-      event_url: z.string().url().optional(),
-      date: z.coerce.date(),
-      location: z.string().optional(),
-      slides: z.string().url().optional(),
-      video: z.string().url().optional(),
-      image: image().optional(),
-    }),
+  schema: z.object({
+    title: z.string(),
+    event: z.string(),
+    event_url: z.string().url().optional(),
+    date: z.coerce.date(),
+    location: z.string().optional(),
+    // A PDF under public/ (e.g. /uploads/my-talk.pdf) opens in the inline slide viewer;
+    // any other URL is a plain link.
+    slides: z.string().regex(/^(https?:\/\/|\/)/, 'absolute URL or /path').optional(),
+    // bilibili, YouTube and Princeton Media Central links play inline; anything else is a plain link.
+    video: z.string().url().optional(),
+    // Spoken language of the video when it isn't English, e.g. "Chinese" -> "Video (in Chinese)".
+    video_lang: z.string().optional(),
+  }),
 });
 
 const news = defineCollection({

@@ -1,78 +1,305 @@
 ---
-import { Image } from 'astro:assets';
 import { fmtMonth, isoDate, type Talk } from '../lib/content';
+import { videoEmbed } from '../lib/video';
 
 interface Props {
   items: Talk[];
 }
 const { items } = Astro.props;
+
+// Only PDFs we host ourselves can be drawn by the slide viewer (pdf.js needs same-origin access).
+const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.test(url);
 ---
 
-<ul class="dated talks" data-talks>
+<ul class="dated talks">
   {
-    items.map((t) => (
-      <li data-talk>
-        <time datetime={isoDate(t.data.date)}>{fmtMonth(t.data.date)}</time>
-        <div>
-          <span class="title">{t.data.title}</span>
-          <span class="sub">
-            {t.data.event_url ? <a href={t.data.event_url}>{t.data.event}</a> : t.data.event}
-            {t.data.location && <>, {t.data.location}</>}
-          </span>
-          {(t.data.slides || t.data.video) && (
-            <div class="chips">
-              {t.data.slides && <a href={t.data.slides}>Slides</a>}
-              {t.data.video && <a href={t.data.video}>Video</a>}
-            </div>
-          )}
-        </div>
-        {t.data.image && <Image class="preview" src={t.data.image} alt="" width={360} aria-hidden="true" />}
-      </li>
-    ))
+    items.map((t) => {
+      const embed = t.data.video ? videoEmbed(t.data.video) : undefined;
+      const deck = isLocalPdf(t.data.slides) ? t.data.slides : undefined;
+      const id = `talk-${t.id}`;
+      // Each talk starts with its video open, or its slides when there's no video.
+      const initial = embed ? 'video' : deck ? 'slides' : undefined;
+      const videoLabel = t.data.video_lang ? `Video (in ${t.data.video_lang})` : 'Video';
+      return (
+        <li data-talk>
+          <time datetime={isoDate(t.data.date)}>{fmtMonth(t.data.date)}</time>
+          <div class="body">
+            <span class="title">{t.data.title}</span>
+            <span class="sub">
+              {t.data.event_url ? <a href={t.data.event_url}>{t.data.event}</a> : t.data.event}
+              {t.data.location && <>, {t.data.location}</>}
+            </span>
+            {(t.data.slides || t.data.video) && (
+              <div class="chips">
+                {deck ? (
+                  <button type="button" aria-expanded={String(initial === 'slides')} aria-controls={`${id}-slides`} data-open="slides">
+                    Slides
+                  </button>
+                ) : (
+                  t.data.slides && <a href={t.data.slides}>Slides</a>
+                )}
+                {embed ? (
+                  <button type="button" aria-expanded={String(initial === 'video')} aria-controls={`${id}-video`} data-open="video">
+                    {videoLabel}
+                  </button>
+                ) : (
+                  t.data.video && <a href={t.data.video}>{videoLabel}</a>
+                )}
+              </div>
+            )}
+
+            {deck && (
+              <div class="pane slides" id={`${id}-slides`} hidden={initial !== 'slides'} data-pane="slides" data-pdf={deck} tabindex="-1" aria-label={`Slides: ${t.data.title}`}>
+                <div class="stage" data-stage>
+                  <canvas />
+                  <span class="status loading">Loading slides…</span>
+                  <span class="status error">
+                    Couldn't load the slides. <a href={deck}>Open the PDF</a>
+                  </span>
+                </div>
+                <div class="bar">
+                  <button type="button" data-prev aria-label="Previous slide">←</button>
+                  <span class="counter" data-counter aria-live="polite" />
+                  <button type="button" data-next aria-label="Next slide">→</button>
+                  <span class="spacer" />
+                  <button type="button" data-full aria-pressed="false">Fullscreen</button>
+                  <a href={deck}>PDF ↗</a>
+                </div>
+              </div>
+            )}
+
+            {embed && (
+              <div class="pane video" id={`${id}-video`} hidden={initial !== 'video'} data-pane="video">
+                <div class="frame" data-src={embed.src} data-title={`${t.data.title} (video)`} />
+                <div class="bar">
+                  <span class="spacer" />
+                  <a href={t.data.video}>Watch on {embed.site} ↗</a>
+                </div>
+              </div>
+            )}
+          </div>
+        </li>
+      );
+    })
   }
 </ul>
 
 <style>
-  .talks li {
-    position: relative;
+  .pane {
+    margin-top: 0.8rem;
   }
-  /* Slide preview that trails the pointer (fine pointers only). */
-  .preview {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 15rem;
-    height: auto;
-    pointer-events: none;
-    z-index: 40;
+  .stage,
+  .frame {
+    position: relative;
+    background: var(--bg-raised);
     border: 1px solid var(--rule);
     border-radius: 3px;
-    box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.35);
-    opacity: 0;
-    transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.94) rotate(-1.5deg);
-    transition:
-      opacity 0.25s,
-      transform 0.5s var(--ease);
-    display: none;
+    overflow: hidden;
   }
-  @media (hover: hover) and (pointer: fine) {
-    .preview {
-      display: block;
-    }
-    li:hover .preview {
-      opacity: 1;
-      transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(1) rotate(0);
-    }
+  .frame {
+    aspect-ratio: 16 / 9;
+  }
+  .frame :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Slides */
+  .stage {
+    aspect-ratio: var(--ratio, 16 / 9);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y pinch-zoom;
+  }
+  .stage canvas {
+    display: block;
+    grid-area: 1 / 1;
+    background: #fff;
+  }
+  .status {
+    grid-area: 1 / 1;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: none;
+    padding: 1rem;
+    text-align: center;
+  }
+  .slides[data-state='loading'] .loading,
+  .slides[data-state='error'] .error {
+    display: block;
+  }
+  .slides[data-state='loading'] canvas,
+  .slides[data-state='error'] canvas {
+    visibility: hidden;
+  }
+  .slides:focus {
+    outline: none;
+  }
+  .slides:focus-visible .stage {
+    outline: 1.5px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 0.45rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .bar button,
+  .bar a {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0.15rem 0;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .bar button:hover:not(:disabled),
+  .bar a:hover {
+    color: var(--accent);
+  }
+  .bar button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .bar [data-prev],
+  .bar [data-next] {
+    font-size: 0.85rem;
+  }
+  .counter {
+    min-width: 4.5em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .spacer {
+    flex: 1;
+  }
+
+  /* Fullscreen deck: slide fills the screen, controls along the bottom. */
+  .slides:fullscreen {
+    margin: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.25rem 0.75rem;
+    color-scheme: dark;
+  }
+  .slides:fullscreen .stage {
+    flex: 1;
+    aspect-ratio: auto;
+    min-height: 0;
+    background: transparent;
+    border: 0;
+  }
+  .slides:fullscreen .bar {
+    color: #aaa;
   }
 </style>
 
 <script>
+  type Viewer = { destroy(): void };
+
+  // Open panes only load their player once they come near the viewport, so a page of talks
+  // doesn't pull in every video and deck up front.
+  const pending = new Map<HTMLElement, () => void>();
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const pane = e.target as HTMLElement;
+        io.unobserve(pane);
+        const load = pending.get(pane);
+        pending.delete(pane);
+        if (load && !pane.hidden) load();
+      }
+    },
+    { rootMargin: '300px 0px' },
+  );
+
   document.querySelectorAll<HTMLElement>('[data-talk]').forEach((li) => {
-    const img = li.querySelector<HTMLElement>('.preview');
-    if (!img) return;
-    li.addEventListener('pointermove', (e) => {
-      img.style.setProperty('--x', `${e.clientX + 24}px`);
-      img.style.setProperty('--y', `${e.clientY - 60}px`);
+    const buttons = li.querySelectorAll<HTMLButtonElement>('[data-open]');
+    const paneFor = (b: HTMLButtonElement) => li.querySelector<HTMLElement>(`[data-pane="${b.dataset.open}"]`)!;
+    let viewer: Viewer | undefined;
+
+    const loadVideo = (pane: HTMLElement) => {
+      const frame = pane.querySelector<HTMLElement>('.frame')!;
+      const iframe = document.createElement('iframe');
+      iframe.src = frame.dataset.src!;
+      iframe.title = frame.dataset.title ?? 'Talk video';
+      iframe.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.replaceChildren(iframe);
+    };
+
+    const loadSlides = async (pane: HTMLElement) => {
+      try {
+        const { mountSlides } = await import('../scripts/slides');
+        if (pane.hidden) return; // closed while loading
+        const v = await mountSlides(pane, pane.dataset.pdf!);
+        if (pane.hidden) v.destroy();
+        else viewer = v;
+      } catch (err) {
+        if (!pane.hidden) pane.dataset.state = 'error';
+        console.error(err);
+      }
+    };
+
+    const close = (pane: HTMLElement, btn: HTMLButtonElement) => {
+      btn.setAttribute('aria-expanded', 'false');
+      pane.hidden = true;
+      io.unobserve(pane);
+      pending.delete(pane);
+      if (pane.dataset.pane === 'video') {
+        pane.querySelector('.frame')?.replaceChildren(); // stops playback
+      } else {
+        try {
+          viewer?.destroy();
+        } catch (err) {
+          console.error(err);
+        }
+        viewer = undefined;
+      }
+    };
+
+    const open = (pane: HTMLElement, btn: HTMLButtonElement, lazy: boolean) => {
+      btn.setAttribute('aria-expanded', 'true');
+      pane.hidden = false;
+      const load = pane.dataset.pane === 'video' ? () => loadVideo(pane) : () => void loadSlides(pane);
+      if (lazy) {
+        pending.set(pane, load);
+        io.observe(pane);
+      } else {
+        if (pane.dataset.pane === 'slides') pane.focus({ preventScroll: true });
+        load();
+      }
+    };
+
+    // Panes rendered open (video by default, else slides) load when scrolled near.
+    buttons.forEach((b) => {
+      if (b.getAttribute('aria-expanded') === 'true') open(paneFor(b), b, true);
+    });
+
+    // One pane per talk at a time: opening slides closes the video and vice versa.
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const wasOpen = btn.getAttribute('aria-expanded') === 'true';
+        buttons.forEach((b) => {
+          if (b.getAttribute('aria-expanded') === 'true') close(paneFor(b), b);
+        });
+        if (!wasOpen) open(paneFor(btn), btn, false);
+      });
     });
   });
 </script>
