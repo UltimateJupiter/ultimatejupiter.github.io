@@ -1,96 +1,124 @@
-/* Match the main site (ultimatejupiter.github.io): warm paper and ink, Newsreader + IBM Plex Mono,
-   vermilion accent for links and chrome, and the site's top bar.
-   Load after base.css, fx.css, select.css and post.css.
+/* Match the main site (ultimatejupiter.github.io): near-black ink on pale grey paper, STIX Two Text for
+   running text, Instrument Sans for headings, labels and figure UI, orange link underlines, an orange
+   highlighter on hover, and the site's top bar.
+   Load after base.css, fx.css, select.css and post.css. Fonts are declared in fonts.css.
 
-   Data colours keep their meaning from FIGURES.md: gain/highlight = --accent (blue), loss = --loss
-   (red; here the site's vermilion). Chrome that used --accent now uses --site-accent. */
+   Data colours keep their meaning from FIGURES.md: gain/highlighted series = --accent (blue),
+   loss = --loss (red), --good (green). Page chrome (links, focus rings, markers) uses --site-accent,
+   and the highlighter is --mark with --on-mark text. */
 
-/* Newsreader (SIL OFL 1.1), variable weight and optical size; same files the main site serves. */
-@font-face{font-family:'Newsreader Variable';font-style:normal;font-display:swap;font-weight:200 800;
-  src:url(fonts/newsreader-latin-ext-opsz-normal.woff2) format('woff2-variations');
-  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Newsreader Variable';font-style:normal;font-display:swap;font-weight:200 800;
-  src:url(fonts/newsreader-latin-opsz-normal.woff2) format('woff2-variations');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:'Newsreader Variable';font-style:italic;font-display:swap;font-weight:200 800;
-  src:url(fonts/newsreader-latin-ext-opsz-italic.woff2) format('woff2-variations');
-  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:'Newsreader Variable';font-style:italic;font-display:swap;font-weight:200 800;
-  src:url(fonts/newsreader-latin-opsz-italic.woff2) format('woff2-variations');
-  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-
-/* ---- tokens (same values as the main site's global.css) ---- */
+/* ---- tokens (same values as the main site's src/styles/global.css) ---- */
 :root{
-  --bg:#f4f2ec; --fg:#1a1916; --ink-2:#45433d; --muted:#76726a; --faint:#b3aea3; --rule:#dedad0;
-  --site-accent:#d1431a;
-  --accent:#2f5f9e;   /* data: gain / highlighted series */
-  --loss:#d1431a;     /* data: loss (red) */
-  --good:#2f7a55;
+  --bg:#f4f4f2; --bg-raised:#ffffff; --fg:#17181c; --ink-2:#3d4047; --muted:#6b6e76; --faint:#b3b5ba; --rule:#dcdcda;
+  --site-accent:#b54f00; --mark:#ff9a2e; --on-mark:#17181c; --selection:rgba(255,154,46,.45);
+  --accent:#2f67b8;   /* data: gain / highlighted series */
+  --loss:#c8372d;     /* data: loss (red) */
+  --good:#1f7a52;     /* data: good (green) */
   --figure-bg:#ffffff;
-  /* Greek falls back to Source Sans 3, which is still loaded by fonts.css */
-  --sans:'Newsreader Variable','Source Sans 3','Iowan Old Style',Georgia,serif;
-  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --serif:'STIX Two Text Variable','STIX Two Text','Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --sans:'Instrument Sans Variable','Instrument Sans','Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --radius:4px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11110f; --fg:#ebe7de; --ink-2:#c8c3b8; --muted:#979287; --faint:#57544d; --rule:#2a2925;
-  --site-accent:#ff6d42; --accent:#8db4ee; --loss:#ff6d42; --good:#6fcf9f}}
+  --bg:#111214; --bg-raised:#1a1b1f; --fg:#ecebe7; --ink-2:#c4c4c0; --muted:#92938f; --faint:#54555a; --rule:#2a2b30;
+  --site-accent:#ffa24d; --on-mark:#111214; --selection:rgba(255,154,46,.3);
+  --accent:#8db4ee; --loss:#ff7a66; --good:#6fcf9f; --figure-bg:#ecece9}}
 :root[data-theme="dark"]{
-  --bg:#11110f; --fg:#ebe7de; --ink-2:#c8c3b8; --muted:#979287; --faint:#57544d; --rule:#2a2925;
-  --site-accent:#ff6d42; --accent:#8db4ee; --loss:#ff6d42; --good:#6fcf9f}
+  --bg:#111214; --bg-raised:#1a1b1f; --fg:#ecebe7; --ink-2:#c4c4c0; --muted:#92938f; --faint:#54555a; --rule:#2a2b30;
+  --site-accent:#ffa24d; --on-mark:#111214; --selection:rgba(255,154,46,.3);
+  --accent:#8db4ee; --loss:#ff7a66; --good:#6fcf9f; --figure-bg:#ecece9}
 
-::selection{background:color-mix(in srgb,var(--site-accent) 20%,transparent)}
+::selection{background:var(--selection)}
 
-/* ---- type ---- */
-body{font:400 19px/1.65 var(--sans);font-optical-sizing:auto;padding-block:120px 96px}
+/* ---- type: serif for running text, Instrument Sans for everything that labels or titles ---- */
+body{font:400 19px/1.62 var(--serif);text-rendering:optimizeLegibility;padding-block:120px 96px}
 main{max-width:672px}
-h1{font-size:44px;font-weight:360;line-height:1.08;letter-spacing:-.028em}
-h2{font-size:25px;font-weight:420;letter-spacing:-.012em;margin-top:44px;scroll-margin-top:84px}
-h3{font-size:19px;font-weight:600}
+h1,h2,h3{font-family:var(--sans);font-weight:600}
+h1{font-size:40px;font-stretch:85%;line-height:1.06;letter-spacing:-.025em}
+h2{font-size:24px;line-height:1.2;letter-spacing:-.012em;margin-top:44px;scroll-margin-top:84px}
+h3{font-size:18px;line-height:1.3;letter-spacing:-.005em}
 b,strong{font-weight:600}
-figcaption{font-size:15px;line-height:1.55}
-@media (max-width:520px){body{font-size:17.5px;padding-block:92px 72px}h1{font-size:31px}h2{font-size:22px}}
+figcaption{font-family:var(--sans);font-size:14px;font-weight:400;line-height:1.5}
+table{font-family:var(--sans);font-weight:400;font-variant-numeric:tabular-nums}
+thead th{font-weight:500}
+.refs li::marker{font-family:var(--sans);font-weight:400}
+.refs li{scroll-margin-top:84px}
+@media (max-width:520px){body{font-size:17.5px;padding-block:92px 72px}h1{font-size:30px}h2{font-size:21.5px}}
 
-/* links: ink with a faint underline, vermilion on hover, as on the main site */
-a{color:inherit;border-bottom:0;text-decoration:underline;text-decoration-color:var(--faint);
-  text-decoration-thickness:1px;text-underline-offset:.18em;transition:color .2s,text-decoration-color .2s}
-a:hover{color:var(--site-accent);text-decoration-color:var(--site-accent)}
+/* links: ink with a thin orange underline; pointing at one runs the highlighter over it */
+a{color:inherit;border-bottom:0;text-decoration-line:underline;
+  text-decoration-color:color-mix(in srgb,var(--site-accent) 55%,transparent);
+  text-decoration-thickness:1px;text-underline-offset:.2em;border-radius:2px;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background-color .15s,color .15s}
+a:hover{background-color:var(--mark);color:var(--on-mark);text-decoration-color:transparent}
 .cite a,.toc a,.toc-inline a,.pill,a.pill,.authors a,.site-bar a{text-decoration:none}
+.refs a{border-bottom:0}
 .cite a{color:var(--site-accent)}
-:focus-visible{outline-color:var(--site-accent)}
+.cite a:hover{color:var(--on-mark)}
+:focus-visible{outline:2px solid var(--site-accent);outline-offset:3px;border-radius:2px}
 
 /* header chrome */
 header{border-bottom-color:var(--rule)}
-.authors{font-family:var(--sans);font-size:17px}
-.authors a:hover,.authors a:focus-visible{color:var(--site-accent);border-bottom-color:transparent}
-.affils,.notes{font-family:var(--mono);font-size:12px;letter-spacing:.01em}
-.pill{font-family:var(--mono);border-radius:3px;border-color:var(--rule)}
-.pill:hover{border-color:var(--site-accent);color:var(--site-accent)}
-.pill:focus-visible{outline-color:var(--site-accent)}
-.thm{border-color:color-mix(in srgb,var(--site-accent) 22%,var(--rule));background:color-mix(in srgb,var(--site-accent) 3%,var(--bg))}
-.thm .thm-k{color:var(--site-accent)}
+.authors{font-family:var(--sans);font-size:16px;font-weight:500}
+.authors a:hover,.authors a:focus-visible{color:var(--on-mark);border-bottom-color:transparent}
+.authors a:focus-visible:not(:hover){color:inherit}
+.affils,.notes{font-family:var(--sans);font-size:13px;font-weight:400;line-height:1.45}
+.pill{font:500 13px/1 var(--sans);color:var(--ink-2);border-radius:var(--radius);border-color:var(--rule);
+  transition:background-color .15s,border-color .15s,color .15s}
+.pill:hover{background-color:var(--mark);border-color:var(--mark);color:var(--on-mark)}
+.pill:hover .k{color:inherit}
+.pill:focus-visible{outline:2px solid var(--site-accent);outline-offset:2px}
 
-/* contents rail: below the top bar, a clear 72px gutter from the 672px text column, vermilion marker.
+/* boxed statements: a raised frame, as the site's figure frames */
+.thm{border-color:var(--rule);border-radius:var(--radius);background:var(--bg-raised)}
+.thm .thm-h{font:600 13.5px/1.2 var(--sans)}
+.thm .thm-k{color:var(--fg)}
+.thm .thm-i{font:italic 400 15px/1.2 var(--serif)}
+.thm .t{font-weight:600}
+
+/* figure UI: Instrument Sans throughout, 4px corners, raised popups, tabular figures in readouts */
+figure .frame{border-radius:var(--radius)}
+figure.fx,figure.ill{font-family:var(--sans)}
+.fx-bar,.fx-status,.fx-legend,.fx-note,.fx-scale,.fx-tip,.fx .fx-dd-pop,.ill-controls,.ill-status{font-variant-numeric:tabular-nums}
+.fx-select,.fx-seg,.ill-controls button{border-radius:var(--radius)}
+.fx-select:focus-visible,.fx-seg button:focus-visible,.ill-controls button:focus-visible{outline:2px solid var(--site-accent)}
+.fx-tip,.fx .fx-dd-pop{background:var(--bg-raised);border-radius:var(--radius)}
+
+/* contents rail: below the top bar, a clear 72px gutter from the 672px text column, orange marker.
    It needs >= 1220px of width for that; narrower screens keep the inline contents under the header. */
 @media (min-width:1060px) and (max-width:1219px){ .toc{display:none} .toc-inline{display:block} }
 @media (min-width:1220px){ .toc{top:calc(120px + env(safe-area-inset-top,0px));left:calc(50vw - 336px - 72px - 180px);width:180px} }
-.toc a.on{border-left-color:var(--site-accent)}
 .toc,.toc-inline{font-family:var(--sans)}
+.toc a:hover{background:none;color:var(--fg)}
+.toc a.on{border-left-color:var(--site-accent)}
+.toc-inline a:hover{color:var(--on-mark)}
 
-/* ---- the main site's top bar (static copy of src/components/Nav.astro) ---- */
-.site-bar{position:fixed;inset:0 0 auto 0;z-index:50;height:60px;display:flex;align-items:center;
-  background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px) saturate(1.2);
-  -webkit-backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid var(--rule)}
-.site-bar .in{width:100%;max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px);display:flex;align-items:center;justify-content:space-between}
-.site-bar .brand{display:inline-flex;align-items:center;gap:10px;font:400 17px/1 var(--sans);color:var(--fg)}
-.site-bar .brand svg{width:24px;height:24px;stroke:var(--fg);fill:none;stroke-width:1}
-.site-bar .brand svg circle{fill:var(--site-accent);stroke:none}
-.site-bar ul{display:flex;flex-direction:row;align-items:center;gap:clamp(14px,2.5vw,28px);list-style:none;margin:0;padding:0;font:400 12px/1 var(--mono)}
+/* ---- the main site's top bar (static copy of src/components/Nav.astro) ----
+   Clear at the top of the page, paper-coloured blur once scrolled (theme.js sets .at-top; without
+   scripts the bar simply keeps its background). */
+.site-bar{position:fixed;inset:0 0 auto 0;z-index:50;font-family:var(--sans);
+  background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);transition:background .25s,border-color .25s}
+.site-bar.at-top{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent}
+.site-bar .in{box-sizing:border-box;width:100%;max-width:1152px;height:60px;margin:0 auto;padding:0 clamp(16px,4vw,40px);
+  display:flex;align-items:center;justify-content:space-between}
+.site-bar .brand{display:inline-flex;align-items:center;gap:8.8px;font-size:16px;font-weight:600;line-height:1.62;letter-spacing:-.01em;color:var(--fg)}
+.site-bar .brand:hover{background:none;color:var(--fg)}
+.site-bar .fork{display:block;flex:none}
+.site-bar .fork path{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.site-bar .fork circle{fill:var(--mark);stroke:var(--fg);stroke-width:1.4;transition:r .3s cubic-bezier(.22,1,.36,1)}
+.site-bar .brand:hover .fork circle{r:3.8px}
+.site-bar ul{display:flex;flex-direction:row;align-items:center;gap:clamp(13.6px,2.4vw,28px);list-style:none;margin:0;padding:0;
+  font-size:14px;font-weight:500;line-height:1.62}
 .site-bar ul li::marker{content:none}
-.site-bar ul a{color:var(--ink-2);position:relative}
-.site-bar ul a::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--site-accent);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.22,1,.36,1)}
-.site-bar ul a:hover,.site-bar ul a[aria-current="page"]{color:var(--fg)}
-.site-bar ul a:hover::after,.site-bar ul a[aria-current="page"]::after{transform:scaleX(1)}
+.site-bar ul a{color:var(--ink-2);padding:.1em .3em;margin:0 -.3em}
+.site-bar ul a:hover{background:none;color:var(--fg)}
+.site-bar ul a[aria-current="page"],.site-bar ul a[aria-current="page"]:hover{background:var(--mark);color:var(--on-mark)}
+.site-bar .theme{display:grid;place-items:center;background:none;border:0;padding:4px;color:var(--ink-2);cursor:pointer;border-radius:50%}
+.site-bar .theme:hover{color:var(--fg)}
 @media (max-width:560px){.site-bar .brand span{display:none}}
+@media (max-width:380px){.site-bar ul{gap:11.2px;font-size:13px}}
 
 /* ---- no horizontal scrolling anywhere on the page ----
    Content fits the column instead: long BibTeX lines wrap, display equations scale down when they
@@ -107,9 +135,6 @@ pre.bib{white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:hidden}
   .tablewrap th:first-child,.tablewrap td:first-child{white-space:normal}
 }
 @media (max-width:360px){ .tablewrap table{font-size:10.5px} .tablewrap th,.tablewrap td{padding:5px 3px} }
-@media (max-width:400px){
-  .site-bar ul{gap:11px;font-size:11px}
-}
 /* MathJax's visually hidden MathML copy (for screen readers) takes the full width of long inline
    formulas and can poke past the viewport; keep it a 1px box (still read by screen readers). */
 mjx-container mjx-assistive-mml{width:1px !important;height:1px !important}

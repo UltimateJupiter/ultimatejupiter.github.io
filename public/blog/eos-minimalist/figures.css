@@ -9,7 +9,7 @@
 #fx-eos-playground .eosp-act{margin-left:auto;gap:10px}
 #fx-eos-playground .fx-seg button{white-space:nowrap}
 #fx-eos-playground .eosp-prog:empty{display:none}
-#fx-eos-playground .eosp-prog{order:-1;text-align:right;font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em}
+#fx-eos-playground .eosp-prog{order:-1;text-align:right;font:300 11.5px/1.4 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em}
 #fx-eos-playground .eosp-legend{gap:4px 14px}
 #fx-eos-playground .eosp-legend[hidden]{display:none}
 #fx-eos-playground .eosp-legend span{white-space:nowrap}
@@ -26,7 +26,7 @@
 /* 2/η slider: native range over a drawn rail (keyboard, touch and a11y come from the input) */
 #fx-eos-playground .eosp-kctl{align-items:flex-start;gap:10px}
 #fx-eos-playground .eosp-kctl .lab,#fx-eos-playground .eosp-kval{padding-top:5px}
-#fx-eos-playground .eosp-kval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:7.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-eos-playground .eosp-kval{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:7.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
 #fx-eos-playground .eosp-slider{--tw:28px;position:relative;width:190px;height:42px;flex:0 1 190px;min-width:150px}
 #fx-eos-playground .eosp-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
 #fx-eos-playground .eosp-fill{position:absolute;left:0;top:0;height:2px;width:50%;border-radius:1px;background:var(--accent)}
@@ -45,7 +45,7 @@
 #fx-eos-playground .eosp-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-eos-playground .eosp-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
-#fx-eos-playground .eosp-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-eos-playground .eosp-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--sans);color:var(--muted);cursor:pointer;padding:0 2px 4px}
 #fx-eos-playground .eosp-ticks span:nth-child(1){left:0}
 #fx-eos-playground .eosp-ticks span:nth-child(2){left:25%}
 #fx-eos-playground .eosp-ticks span:nth-child(3){left:50%}
@@ -151,7 +151,7 @@
 #fx-init-map .im-ksw path.d{fill:none;stroke:var(--fg);stroke-width:1.4}
 #fx-init-map .im-hint,#fx-init-map .im-path{margin:0}
 #fx-init-map .im-path[hidden]{display:none}
-#fx-init-map .im-clear{font:300 11.5px/1.4 var(--mono);color:var(--fg);background:transparent;border:1px solid var(--line);
+#fx-init-map .im-clear{font:300 11.5px/1.4 var(--sans);color:var(--fg);background:transparent;border:1px solid var(--line);
   border-radius:2px;padding:1px 7px;margin-left:2px;cursor:pointer;white-space:nowrap}
 #fx-init-map .im-clear:hover{border-color:var(--accent)}
 #fx-init-map .im-clear:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
@@ -192,7 +192,7 @@
 /* a0 slider: native range (keyboard, touch, a11y) over a drawn rail; --tw = thumb box = hit area */
 #fx-two-step .tws-actl{align-items:flex-start;gap:10px;flex:0 1 auto}
 #fx-two-step .tws-actl .lab,#fx-two-step .tws-aval{padding-top:5px}
-#fx-two-step .tws-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:2.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-two-step .tws-aval{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:2.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
 #fx-two-step .tws-slider{--tw:28px;position:relative;width:220px;flex:0 1 220px;min-width:150px;height:42px}
 #fx-two-step .tws-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
 #fx-two-step .tws-fill{position:absolute;left:0;top:0;height:2px;width:0;border-radius:1px;background:var(--accent)}
@@ -216,7 +216,7 @@
 #fx-two-step .tws-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-two-step .tws-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
-#fx-two-step .tws-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 2px 4px;font:400 10.5px/1 var(--mono);color:var(--muted);
+#fx-two-step .tws-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 2px 4px;font:400 10.5px/1 var(--sans);color:var(--muted);
   cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
 #fx-two-step .tws-ticks span:hover,#fx-two-step .tws-ticks span.on{color:var(--fg)}
 
@@ -280,7 +280,7 @@
 #fx-bifurcation .bif-bar{align-items:flex-start;gap:8px 18px}
 #fx-bifurcation .bif-ctl{display:inline-flex;align-items:flex-start;gap:10px;min-width:0;max-width:100%}
 #fx-bifurcation .bif-ctl .lab{white-space:nowrap;padding-top:5px}
-#fx-bifurcation .bif-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:6.2em;white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:5px}
+#fx-bifurcation .bif-aval{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:6.2em;white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:5px}
 #fx-bifurcation .bif-seg{margin-top:2px}
 #fx-bifurcation .bif-seg button{white-space:nowrap}
 #fx-bifurcation .bif-play{min-width:4.6em}
@@ -306,7 +306,7 @@
 #fx-bifurcation .bif-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-bifurcation .bif-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
-#fx-bifurcation .bif-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-bifurcation .bif-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--sans);color:var(--muted);cursor:pointer;padding:0 2px 4px}
 #fx-bifurcation .bif-ticks span:nth-child(1){left:0}
 #fx-bifurcation .bif-ticks span:nth-child(2){left:16.129%}
 #fx-bifurcation .bif-ticks span:nth-child(3){left:32.258%}
@@ -384,7 +384,7 @@
 #fx-coupling .fx-bar .fx-select{max-width:calc(100vw - 44px)}
 #fx-coupling .cpl-bar2{margin-top:-4px;min-height:30px}
 #fx-coupling .cpl-act{margin-left:auto;gap:10px}
-#fx-coupling .cpl-prog{font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:8.5em}
+#fx-coupling .cpl-prog{font:300 11.5px/1.4 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:8.5em}
 #fx-coupling .cpl-legend{gap:4px 14px}
 #fx-coupling .cpl-legend span{white-space:nowrap}
 #fx-coupling .cpl-legend .sw{border-top-width:2px}

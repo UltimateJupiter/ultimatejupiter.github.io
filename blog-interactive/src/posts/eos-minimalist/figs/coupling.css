@@ -5,7 +5,7 @@
 #fx-coupling .fx-bar .fx-select{max-width:calc(100vw - 44px)}
 #fx-coupling .cpl-bar2{margin-top:-4px;min-height:30px}
 #fx-coupling .cpl-act{margin-left:auto;gap:10px}
-#fx-coupling .cpl-prog{font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:8.5em}
+#fx-coupling .cpl-prog{font:300 11.5px/1.4 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:8.5em}
 #fx-coupling .cpl-legend{gap:4px 14px}
 #fx-coupling .cpl-legend span{white-space:nowrap}
 #fx-coupling .cpl-legend .sw{border-top-width:2px}

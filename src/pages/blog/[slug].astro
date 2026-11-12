@@ -25,24 +25,23 @@ const { title, date, updated, description, tags, draft } = post.data;
 <Base title={title} description={description}>
   <article class="wrap post">
     <header>
-      <a class="back mono" href="/blog/">← Blog</a>
-      <p class="label meta">
-        <time datetime={isoDate(date)}>{fmtDay(date)}</time>
-        <span aria-hidden="true">·</span>
-        <span>{readingTime(post.body)} min read</span>
-        {updated && <span>· Updated {fmtDay(updated)}</span>}
-        {draft && <span class="draft">· Draft</span>}
-      </p>
+      <a class="back" href="/blog/">All posts</a>
       <h1>{title}</h1>
       <p class="lede">{description}</p>
-      {tags.length > 0 && <p class="tags mono">{tags.map((t) => <span>{t}</span>)}</p>}
+      <p class="meta small">
+        <time datetime={isoDate(date)}>{fmtDay(date)}</time>
+        <span>{readingTime(post.body)} min read</span>
+        {updated && <span>Updated {fmtDay(updated)}</span>}
+        {tags.length > 0 && <span>{tags.join(', ')}</span>}
+        {draft && <span class="marked">Draft</span>}
+      </p>
     </header>
 
     <div class="layout">
       {
         toc.length >= 3 && (
           <nav class="toc" aria-label="On this page">
-            <p class="label">Contents</p>
+            <p class="toc-title">Contents</p>
             <ol>
               {toc.map((h) => (
                 <li class={`d${h.depth}`}>
@@ -63,7 +62,7 @@ const { title, date, updated, description, tags, draft } = post.data;
         <nav class="pager" aria-label="More posts">
           {older ? (
             <a href={postUrl(older)} class="prev">
-              <span class="label">← Older</span>
+              <span class="dir">Older</span>
               <span>{older.data.title}</span>
             </a>
           ) : (
@@ -71,7 +70,7 @@ const { title, date, updated, description, tags, draft } = post.data;
           )}
           {newer && (
             <a href={postUrl(newer)} class="next">
-              <span class="label">Newer →</span>
+              <span class="dir">Newer</span>
               <span>{newer.data.title}</span>
             </a>
           )}
@@ -96,45 +95,26 @@ const { title, date, updated, description, tags, draft } = post.data;
     margin-left: auto;
     margin-right: auto;
   }
-  .back {
-    font-size: 0.75rem;
-    text-decoration: none;
-    color: var(--muted);
-  }
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6em;
-    margin-top: 2.5rem;
-  }
-  .draft {
-    color: var(--accent);
+    gap: 0.3rem 1.1rem;
+    margin: 1.25rem 0 0;
+    font-weight: 500;
+    color: var(--muted);
   }
   h1 {
     font-size: clamp(2.1rem, 5vw, 3.25rem);
-    font-weight: 380;
+    font-stretch: 85%;
     letter-spacing: -0.025em;
-    line-height: 1.08;
-    margin: 0.75rem 0 1.1rem;
+    line-height: 1.05;
+    margin: 2.25rem 0 1.1rem;
   }
   .lede {
     font-size: 1.2em;
     line-height: 1.5;
     color: var(--ink-2);
     margin: 0;
-  }
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 1.25rem 0 0;
-  }
-  .tags span {
-    font-size: 0.66rem;
-    color: var(--muted);
-    border: 1px solid var(--rule);
-    border-radius: 2px;
-    padding: 0.1em 0.5em;
   }
 
   .layout {
@@ -174,10 +154,22 @@ const { title, date, updated, description, tags, draft } = post.data;
       max-width: 13rem;
     }
   }
+  .toc-title,
+  .dir {
+    font-family: var(--sans);
+    font-size: var(--small);
+    font-weight: 600;
+    margin: 0;
+  }
+  .dir {
+    color: var(--muted);
+    font-weight: 500;
+  }
   .toc ol {
     list-style: none;
     margin: 0.75rem 0 0;
     padding: 0;
+    font-family: var(--sans);
     font-size: 0.85rem;
     line-height: 1.4;
   }
@@ -192,7 +184,7 @@ const { title, date, updated, description, tags, draft } = post.data;
     text-decoration: none;
     color: var(--muted);
     display: block;
-    border-left: 1px solid transparent;
+    border-left: 2px solid transparent;
     padding-left: 0.6rem;
     margin-left: -0.6rem;
     transition:
@@ -201,8 +193,9 @@ const { title, date, updated, description, tags, draft } = post.data;
   }
   .toc a:hover,
   .toc a.active {
+    background: none;
     color: var(--ink);
-    border-left-color: var(--accent);
+    border-left-color: var(--mark);
   }
 
   .pager {
@@ -224,8 +217,9 @@ const { title, date, updated, description, tags, draft } = post.data;
     text-align: right;
     grid-column: 2;
   }
-  .pager a:hover span:last-child {
-    color: var(--accent);
+  .pager a {
+    font-family: var(--sans);
+    font-weight: 600;
   }
 </style>
 

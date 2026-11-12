@@ -27,7 +27,7 @@
 
 /* Rules used, one line per level. */
 #fx-mlt-task .fx-mlt-task-rules{display:flex;flex-direction:column;gap:4px;min-width:0}
-#fx-mlt-task .fx-mlt-task-rlist{display:flex;flex-direction:column;gap:3px;font:300 11px/1.55 var(--mono);color:var(--fg)}
+#fx-mlt-task .fx-mlt-task-rlist{display:flex;flex-direction:column;gap:3px;font:300 11px/1.55 var(--sans);color:var(--fg)}
 #fx-mlt-task .fx-mlt-task-rlist .ln{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:baseline}
 #fx-mlt-task .fx-mlt-task-rlist .lv{color:var(--muted)}
 #fx-mlt-task .fx-mlt-task-rlist .rs{display:flex;flex-wrap:wrap;gap:0 7px;min-width:0}

@@ -12,8 +12,12 @@ const items = [
 
 <header class="nav" data-nav>
   <div class="wrap nav-inner">
-    <a class="brand" href="/" aria-label="Home">
-      <canvas class="mark" width="28" height="28" aria-hidden="true" data-mark></canvas>
+    <a class="brand plain" href="/" aria-label={`${profile.name}, home`}>
+      <!-- the site mark: one line forking in two, as in the home page figure -->
+      <svg class="fork" viewBox="0 0 26 24" width="26" height="24" aria-hidden="true">
+        <path d="M1 12h9c5 0 4-7 9-7h6M10 12c5 0 4 7 9 7h6"></path>
+        <circle cx="10" cy="12" r="2.8"></circle>
+      </svg>
       <span>{profile.name}</span>
     </a>
     <nav aria-label="Primary">
@@ -21,17 +25,17 @@ const items = [
         {
           items.map((i) => (
             <li>
-              <a href={i.href} aria-current={path.startsWith(i.href) ? 'page' : undefined}>
+              <a class="plain" href={i.href} aria-current={path.startsWith(i.href) ? 'page' : undefined}>
                 {i.label}
               </a>
             </li>
           ))
         }
-        <li><a href={profile.cv}>CV</a></li>
+        <li><a class="plain" href={profile.cv}>CV</a></li>
         <li>
-          <button class="theme" type="button" aria-label="Toggle dark mode" data-theme-toggle>
-            <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
-              <circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" stroke-width="1.3"></circle>
+          <button class="theme" type="button" aria-label="Switch between light and dark" data-theme-toggle>
+            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+              <circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
               <path d="M10 2.75a7.25 7.25 0 0 1 0 14.5z" fill="currentColor"></path>
             </svg>
           </button>
@@ -46,16 +50,16 @@ const items = [
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 50;
-    transition:
-      background 0.3s,
-      border-color 0.3s,
-      backdrop-filter 0.3s;
+    font-family: var(--sans);
     border-bottom: 1px solid transparent;
+    transition:
+      background 0.25s,
+      border-color 0.25s;
   }
   .nav.scrolled {
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    backdrop-filter: blur(10px) saturate(1.2);
-    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom-color: var(--rule);
   }
   .nav-inner {
@@ -67,51 +71,49 @@ const items = [
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.55rem;
     text-decoration: none;
-    font-size: 1.05rem;
-    letter-spacing: -0.005em;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
-  .brand:hover {
-    color: var(--ink);
+  .fork path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
   }
-  .mark {
-    width: 28px;
-    height: 28px;
+  .fork circle {
+    fill: var(--mark);
+    stroke: var(--ink);
+    stroke-width: 1.4;
+    transition: r 0.3s var(--ease);
+  }
+  .brand:hover .fork circle {
+    r: 3.8px;
   }
   ul {
     display: flex;
     align-items: center;
-    gap: clamp(0.9rem, 2.5vw, 1.75rem);
+    gap: clamp(0.85rem, 2.4vw, 1.75rem);
     list-style: none;
     margin: 0;
     padding: 0;
-    font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
   }
   ul a {
     text-decoration: none;
     color: var(--ink-2);
-    position: relative;
-  }
-  ul a::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -4px;
-    height: 1px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.35s var(--ease);
-  }
-  ul a:hover::after,
-  ul a[aria-current='page']::after {
-    transform: scaleX(1);
+    padding: 0.1em 0.3em;
+    margin: 0 -0.3em;
   }
   ul a:hover {
     color: var(--ink);
+  }
+  ul a[aria-current='page'] {
+    background: var(--mark);
+    color: var(--on-mark);
   }
   .theme {
     display: grid;
@@ -121,11 +123,10 @@ const items = [
     padding: 4px;
     color: var(--ink-2);
     cursor: pointer;
-    transition: transform 0.5s var(--ease);
+    border-radius: 50%;
   }
   .theme:hover {
-    color: var(--accent);
-    transform: rotate(180deg);
+    color: var(--ink);
   }
   @media (max-width: 560px) {
     .brand span {
@@ -135,14 +136,12 @@ const items = [
   @media (max-width: 380px) {
     ul {
       gap: 0.7rem;
-      font-size: 0.7rem;
+      font-size: 0.8125rem;
     }
   }
 </style>
 
 <script>
-  import { mountMark } from '../scripts/mark';
-
   const nav = document.querySelector<HTMLElement>('[data-nav]')!;
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 12);
   onScroll();
@@ -158,7 +157,4 @@ const items = [
     } catch (_) {}
     window.dispatchEvent(new CustomEvent('themechange'));
   });
-
-  const mark = document.querySelector<HTMLCanvasElement>('[data-mark]');
-  if (mark) mountMark(mark);
 </script>

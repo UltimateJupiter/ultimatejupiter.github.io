@@ -35,7 +35,7 @@
 #fx-grad .fx-scale i{flex:0 0 72px;height:9px;box-shadow:inset 0 0 0 1px var(--rule);
   background:linear-gradient(90deg,var(--bg),var(--loss));background:linear-gradient(90deg in oklab,var(--bg),var(--loss))}
 #fx-grad .grad-snote{margin-top:-3px}
-#fx-grad .grad-mk{display:flex;align-items:center;gap:8px;font:300 12px/1.5 var(--mono);color:var(--muted)}
+#fx-grad .grad-mk{display:flex;align-items:center;gap:8px;font:300 12px/1.5 var(--sans);color:var(--muted)}
 #fx-grad .grad-box{flex:none;width:16px;height:11px;box-sizing:border-box}
 #fx-grad .grad-box.tr{border:1.5px solid var(--accent)}
 #fx-grad .grad-box.an{border:1px solid var(--rule);background:linear-gradient(135deg,var(--muted) 0 6px,transparent 6px)}

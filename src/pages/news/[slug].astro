@@ -16,9 +16,9 @@ const { Content } = await render(item);
 
 <Base title={item.data.title} description={item.data.summary}>
   <article class="wrap post">
-    <a class="back mono" href="/news/">← News</a>
-    <p class="label date">{fmtDay(item.data.date)}</p>
+    <a class="back" href="/news/">All news</a>
     <h1>{item.data.title}</h1>
+    <p class="date small muted">{fmtDay(item.data.date)}</p>
     {item.data.summary && <p class="summary">{item.data.summary}</p>}
     <div class="prose"><Content /></div>
   </article>
@@ -30,20 +30,16 @@ const { Content } = await render(item);
     padding-top: clamp(6.5rem, 12vw, 9rem);
     padding-bottom: 4rem;
   }
-  .back {
-    font-size: 0.75rem;
-    text-decoration: none;
-    color: var(--muted);
-  }
-  .date {
-    margin-top: 2.5rem;
-  }
   h1 {
     font-size: clamp(1.9rem, 4vw, 2.75rem);
-    font-weight: 380;
+    font-stretch: 85%;
     letter-spacing: -0.02em;
-    line-height: 1.12;
-    margin: 0.75rem 0 1.25rem;
+    line-height: 1.1;
+    margin: 2.25rem 0 0.8rem;
+  }
+  .date {
+    font-weight: 500;
+    margin-bottom: 1.25rem;
   }
   .summary {
     font-size: 1.15em;

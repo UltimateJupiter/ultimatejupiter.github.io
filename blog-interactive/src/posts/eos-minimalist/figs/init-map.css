@@ -41,7 +41,7 @@
 #fx-init-map .im-ksw path.d{fill:none;stroke:var(--fg);stroke-width:1.4}
 #fx-init-map .im-hint,#fx-init-map .im-path{margin:0}
 #fx-init-map .im-path[hidden]{display:none}
-#fx-init-map .im-clear{font:300 11.5px/1.4 var(--mono);color:var(--fg);background:transparent;border:1px solid var(--line);
+#fx-init-map .im-clear{font:300 11.5px/1.4 var(--sans);color:var(--fg);background:transparent;border:1px solid var(--line);
   border-radius:2px;padding:1px 7px;margin-left:2px;cursor:pointer;white-space:nowrap}
 #fx-init-map .im-clear:hover{border-color:var(--accent)}
 #fx-init-map .im-clear:focus-visible{outline:1px solid var(--accent);outline-offset:2px}

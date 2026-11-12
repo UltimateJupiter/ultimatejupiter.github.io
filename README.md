@@ -28,7 +28,7 @@ authors:            # "*" marks equal contribution; your own name is bolded auto
 date: '2026-10-01'
 venue: NeurIPS 2026
 award: Oral         # optional, shown as a small tag
-featured: true      # optional, shows a figure card under "Selected work"
+featured: true      # optional; kept for your own bookkeeping (any paper with an image shows it)
 image: ./featured.png
 caption: One-line description of the figure.
 links:
@@ -60,7 +60,8 @@ slides: /uploads/my-talk.pdf   # optional; a PDF in public/ opens in the inline 
 video: https://...             # optional; bilibili, YouTube and Princeton Media Central links
                                # play inline on the site
 video_lang: Chinese            # optional; shown as "Video (in Chinese)"
-                               # Each talk opens its video by default, or its slides if there is no video.
+                               # On /talks/ each talk opens its video by default, or its slides if
+                               # there is no video. On the home page they stay closed until clicked.
 ---
 ```
 
@@ -85,9 +86,14 @@ home page shows before linking to the full list is `homeLimits` in the same file
 
 ## Design notes
 
-- Type: Newsreader (text) + IBM Plex Mono (labels), self-hosted via Fontsource.
-- Colours are CSS variables at the top of `src/styles/global.css` (light + dark).
-- The hero figure (`src/scripts/landscape.ts`) draws level sets of a slowly drifting sum of
-  Gaussians with marching squares, plus a few heavy-ball SGD particles; the pointer raises a soft hill.
-  It pauses off-screen and renders a static frame under `prefers-reduced-motion`.
-- The nav mark is a wireframe icosahedron (`src/scripts/mark.ts`).
+- Type: STIX Two Text (reading text) + Instrument Sans (names, titles, labels), self-hosted via Fontsource.
+- Colours are CSS variables at the top of `src/styles/global.css` (light + dark): near-black ink on pale
+  grey paper, dark orange for actions, and an orange highlighter (`--mark`) for hover, the current page and awards.
+- The hero shows one of the paper illustrations in `src/scripts/plates/` (one file per picture,
+  captions and paper links in `meta.ts`). Each visit starts on the next one; "Next picture" steps
+  through them, and each also heads its own paper page. They are drawn left to right once
+  (instantly under `prefers-reduced-motion`), and pointing at one highlights part of it. On wide
+  screens your name, bio and the picture's caption sit in a title block docked under it (`Hero.astro`).
+  To add one: write a `Plate` (a `render` and a `pick`), list it in `meta.ts` and in `DRAW` in `index.ts`.
+- The nav mark is the same fork as an inline SVG in `src/components/Nav.astro`. The interactive posts
+  carry a static copy of the nav in `blog-interactive/src/shared/site-theme.css` and each `page.html`.

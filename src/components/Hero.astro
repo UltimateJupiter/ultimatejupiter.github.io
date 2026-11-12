@@ -1,234 +1,293 @@
 ---
 import { Image } from 'astro:assets';
 import avatar from '../assets/avatar.jpg';
+import PlatePlot from './PlatePlot.astro';
 import { profile } from '../data/profile';
 ---
 
-<section class="hero" data-hero>
-  <canvas class="field" aria-hidden="true" data-field></canvas>
-  <canvas class="dots" aria-hidden="true" data-dots></canvas>
-  <div class="wrap hero-inner">
-    <div class="intro">
-      <p class="label kicker">
-        {profile.role} · <a href={profile.affiliation.url}>{profile.affiliation.name}</a>
-      </p>
-      <h1>
-        <span class="name">{profile.name}</span>
-        <span class="native" lang="zh">{profile.nameNative}</span>
-      </h1>
-      <div class="bio-row">
-        <Image src={avatar} alt={`Portrait of ${profile.name}`} width={480} class="avatar" loading="eager" fetchpriority="high" />
-        <p class="bio" set:html={profile.bio} />
+<!-- The opening screen is laid out like a plate in a book of engravings: the picture fills the
+     page, and a title block docked along the bottom says whose book it is and what the picture
+     shows. Nothing sits on top of the picture. -->
+<section class="hero" data-plates>
+  <PlatePlot />
+
+  <div class="wrap dock">
+    <div class="block" data-quiet>
+      <Image src={avatar} alt={`Portrait of ${profile.name}`} width={400} class="photo" loading="eager" fetchpriority="high" />
+
+      <div class="cell who">
+        <h1>
+          <span class="name">{profile.name}</span>
+          <span class="native" lang="zh">{profile.nameNative}</span>
+        </h1>
+        <p class="role">
+          {profile.role}, <a href={profile.affiliation.url}>{profile.affiliation.name}</a>
+        </p>
+        <ul class="links">
+          <li><a class="cv" href={profile.cv}>CV</a></li>
+          {profile.links.map((l) => <li><a href={l.url}>{l.label}</a></li>)}
+        </ul>
       </div>
-      <ul class="links">
-        <li><a class="cv" href={profile.cv}>Curriculum Vitae <span aria-hidden="true">↗</span></a></li>
-        {profile.links.map((l) => <li><a href={l.url}>{l.label}</a></li>)}
-      </ul>
+
+      <p class="cell bio" set:html={profile.bio} />
+
+      <!-- what the picture is, the paper it is drawn after, and a way to see the others -->
+      <div class="cell plate" data-plate-bar>
+        <p class="stepper">
+          <span>Picture <span data-plate-count></span></span>
+          <button type="button" data-plate-next>Next</button>
+        </p>
+        <p class="caption" data-plate-caption></p>
+      </div>
     </div>
   </div>
-  <p class="caption mono" aria-hidden="true">
-    <span class="fig">Fig. 0</span><span class="long">Noisy heavy-ball descent into a slowly drifting, curved valley</span><span
-      class="short">Noisy descent into a drifting valley</span><span class="hint"
-      ><span class="sep">·</span>move to raise a hill, click to drop a particle</span
-    >
-  </p>
 </section>
 
 <style>
   .hero {
     position: relative;
-    min-height: min(100svh, 60rem);
+    /* the opening screen is the picture and its title block, nothing else; research starts on scroll */
+    height: 100svh;
+    min-height: 40rem;
     display: flex;
     align-items: flex-end;
-    padding-top: 6rem;
-    padding-bottom: clamp(5rem, 9vw, 7rem);
-    overflow: hidden;
-    cursor: crosshair;
   }
-  .field,
-  .dots {
-    position: absolute;
+  /* `--pb` (the margin the picture keeps clear at the bottom) is set by the script from the
+     title block's measured height. */
+  /* The picture is pinned to the viewport: the title block and then the page slide up over it.
+     Once the page has moved it fades back, so it reads as a backdrop rather than as content. */
+  .hero :global(.plate-plot) {
+    --pt: 92px;
+    position: fixed;
     inset: 0;
+    opacity: calc(1 - 0.72 * var(--scrolled, 0));
+  }
+  .hero :global(.plate-readout) {
+    top: 64px;
+  }
+
+  .dock {
+    position: relative;
+    z-index: 1;
+    padding-bottom: 2rem;
+    pointer-events: none;
+  }
+  .block {
+    display: grid;
+    /* the photo is as wide as the section labels below, so the name lines up with the page's text column */
+    grid-template-columns: calc(var(--label-col) + 2rem) minmax(22rem, 1.2fr) minmax(0, 1.3fr) minmax(15rem, 0.95fr);
+    background: var(--bg-raised);
+    border: 1px solid var(--ink);
+    box-shadow: 10px 10px 0 color-mix(in srgb, var(--ink) 12%, transparent);
+    pointer-events: auto;
+  }
+  .cell {
+    margin: 0;
+    padding: 1.5rem 1.75rem;
+    border-left: 1px solid var(--ink);
+    min-width: 0;
+  }
+  .photo {
     width: 100%;
     height: 100%;
+    min-height: 12rem;
+    object-fit: cover;
+    object-position: 50% 30%;
   }
-  .dots {
-    -webkit-mask-image: linear-gradient(100deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.55) 40%, #000 65%);
-    mask-image: linear-gradient(100deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.55) 40%, #000 65%);
-  }
-  .field {
-    /* keep the lines out from under the text */
-    -webkit-mask-image: linear-gradient(100deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.35) 38%, #000 70%);
-    mask-image: linear-gradient(100deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.35) 38%, #000 70%);
-  }
-  .hero-inner {
-    position: relative;
-    cursor: auto;
-  }
-  .intro {
-    max-width: 40rem;
-  }
-  .intro > * {
-    animation: rise 1.1s var(--ease) both;
-  }
-  .intro > :nth-child(2) {
-    animation-delay: 0.08s;
-  }
-  .intro > :nth-child(3) {
-    animation-delay: 0.16s;
-  }
-  .intro > :nth-child(4) {
-    animation-delay: 0.24s;
-  }
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-  }
-  .kicker {
-    margin-bottom: 1.25rem;
-  }
-  .kicker a {
-    color: inherit;
+
+  .who {
+    display: flex;
+    flex-direction: column;
   }
   h1 {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.1em 0.4em;
-    font-size: clamp(3rem, 8vw, 6.25rem);
-    font-weight: 350;
-    letter-spacing: -0.035em;
-    line-height: 0.95;
-    margin-bottom: 2rem;
+    font-size: clamp(2.75rem, 3.9vw, 3.3rem);
+    font-stretch: 80%;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 0.92;
   }
   .native {
-    font-size: 0.36em;
-    letter-spacing: 0.05em;
-    color: var(--muted);
+    font-size: 0.32em;
+    font-stretch: 100%;
     font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--muted);
   }
-  .bio-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 1.75rem;
-    align-items: center;
-  }
-  .avatar {
-    width: 8.5rem;
-    height: 8.5rem;
-    object-fit: cover;
-    object-position: 50% 30%;
-    border-radius: 50%;
-    filter: saturate(0.8);
-    transition:
-      filter 0.6s var(--ease),
-      transform 0.6s var(--ease);
-  }
-  .bio-row:hover .avatar {
-    filter: none;
-    transform: scale(1.03);
-  }
-  .bio {
+  .role {
+    font-family: var(--sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
     color: var(--ink-2);
-    margin: 0;
-    max-width: 34rem;
+    margin: 0.75rem 0 1.25rem;
   }
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1.4rem;
+    gap: 0.35rem 0.7rem;
     list-style: none;
     padding: 0;
-    margin: 2rem 0 0;
-    font-family: var(--mono);
-    font-size: 0.75rem;
+    margin: auto 0 0;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 500;
   }
   .links a {
     text-decoration: none;
-    color: var(--ink-2);
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: 2px;
-    transition:
-      border-color 0.2s,
-      color 0.2s;
-  }
-  .links a:hover {
     color: var(--accent);
-    border-color: var(--accent);
   }
   .links .cv {
-    color: var(--ink);
-    border-color: var(--ink);
+    background: var(--mark);
+    color: var(--on-mark);
+    padding: 0.05em 0.5em;
   }
-  /* one-line figure caption, centred on the bottom edge of the hero */
-  .caption {
-    position: absolute;
-    left: var(--gutter);
-    right: var(--gutter);
-    bottom: 1.5rem;
-    margin: 0;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .links .cv:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .bio {
+    font-size: 1rem;
+    line-height: 1.58;
+    color: var(--ink-2);
+  }
+
+  .plate {
+    font-family: var(--sans);
+    font-size: var(--small);
+    line-height: 1.45;
     color: var(--muted);
-    font-size: 0.66rem;
-    animation: rise 1.4s 0.5s var(--ease) both;
   }
-  .caption .fig {
+  .stepper {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.6rem;
+    font-weight: 600;
     color: var(--ink);
-    margin-right: 0.75em;
+    font-variant-numeric: tabular-nums;
   }
-  .hint {
-    color: var(--faint);
+  .stepper button {
+    font: inherit;
+    font-weight: 500;
+    color: var(--accent);
+    background: none;
+    border: 0;
+    padding: 0.05em 0.3em;
+    margin: 0 -0.3em;
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
   }
-  .sep {
-    margin: 0 0.75em;
+  .stepper button:hover {
+    background: var(--mark);
+    color: var(--on-mark);
   }
-  .short {
-    display: none;
+  .caption {
+    margin: 0;
   }
-  @media (max-width: 560px) {
-    .long {
-      display: none;
+  .caption :global(i) {
+    font-family: var(--serif);
+    font-size: 1.1em;
+  }
+  .caption :global(a) {
+    color: var(--ink-2);
+  }
+
+  /* Below this width the title block cannot sit on one line. The picture becomes a band across
+     the top, with its caption under it, and the rest follows as ordinary page content. */
+  @media (max-width: 1099px) {
+    .hero {
+      height: auto;
+      min-height: 0;
+      display: block;
+      padding-top: 3.75rem;
+      overflow: visible;
     }
-    .short {
-      display: inline;
+    .hero :global(.plate-plot) {
+      --pt: 30px;
+      --pb: 14px;
+      position: relative;
+      inset: auto;
+      height: clamp(15rem, 46vw, 24rem);
+      opacity: 1;
     }
-  }
-  @media (max-width: 860px) {
-    .field,
-    .dots {
-      -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0.15) 75%);
-      mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0.15) 75%);
+    .hero :global(.plate-readout) {
+      top: 4px;
     }
-    .hint {
-      display: none;
+    .dock {
+      padding-bottom: 3.5rem;
+    }
+    .block {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        'plate plate'
+        'photo who'
+        'bio bio';
+      align-items: center;
+      column-gap: 1.25rem;
+      background: none;
+      border: 0;
+      box-shadow: none;
+    }
+    .cell {
+      padding: 0;
+      border: 0;
+    }
+    .plate {
+      grid-area: plate;
+      padding: 0.8rem 0 2.25rem;
+    }
+    .stepper {
+      justify-content: flex-start;
+    }
+    .photo {
+      grid-area: photo;
+      width: 5.5rem;
+      height: 5.5rem;
+      min-height: 0;
+    }
+    .who {
+      grid-area: who;
+    }
+    .role {
+      margin-bottom: 0.6rem;
+    }
+    .bio {
+      grid-area: bio;
+      max-width: 38rem;
+      margin-top: 1.5rem;
+      font-size: 1em;
     }
   }
   @media (max-width: 480px) {
-    .bio-row {
-      grid-template-columns: 1fr;
+    .photo {
+      width: 4.25rem;
+      height: 4.25rem;
+      align-self: start;
     }
-    .avatar {
-      width: 7rem;
-      height: 7rem;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .intro > *,
-    .caption {
-      animation: none;
+    h1 {
+      font-size: 2.4rem;
     }
   }
 </style>
 
 <script>
-  import { mountLandscape } from '../scripts/landscape';
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-field]');
-  const dots = document.querySelector<HTMLCanvasElement>("[data-dots]");
-  if (hero && canvas && dots) mountLandscape(canvas, dots, hero);
+  import { mountPlates } from '../scripts/plates';
+  const hero = document.querySelector<HTMLElement>('[data-plates]');
+  if (hero) {
+    mountPlates(hero);
+    // how far the page has scrolled off the opening screen, 0 to 1, for the picture's fade
+    const plot = hero.querySelector<HTMLElement>('[data-plot]')!;
+    const onScroll = () =>
+      plot.style.setProperty('--scrolled', Math.min(1, window.scrollY / (window.innerHeight * 0.7)).toFixed(3));
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
 </script>

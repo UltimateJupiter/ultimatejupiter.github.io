@@ -8,7 +8,7 @@ const talks = await getTalks();
 ---
 
 <Base title="Talks" description="Talks by Xingyu Zhu.">
-  <PageHeader kicker={`${talks.length} talks`} title="Talks" />
+  <PageHeader title="Talks" count={`${talks.length} talks`} />
   <div class="wrap body">
     <TalkList items={talks} />
   </div>

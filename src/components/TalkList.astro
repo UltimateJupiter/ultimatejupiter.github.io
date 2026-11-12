@@ -4,8 +4,10 @@ import { videoEmbed } from '../lib/video';
 
 interface Props {
   items: Talk[];
+  /** Start with every video and slide deck closed (the home page); they open on click. */
+  collapsed?: boolean;
 }
-const { items } = Astro.props;
+const { items, collapsed = false } = Astro.props;
 
 // Only PDFs we host ourselves can be drawn by the slide viewer (pdf.js needs same-origin access).
 const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.test(url);
@@ -17,8 +19,9 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
       const embed = t.data.video ? videoEmbed(t.data.video) : undefined;
       const deck = isLocalPdf(t.data.slides) ? t.data.slides : undefined;
       const id = `talk-${t.id}`;
-      // Each talk starts with its video open, or its slides when there's no video.
-      const initial = embed ? 'video' : deck ? 'slides' : undefined;
+      // Each talk starts with its video open, or its slides when there's no video,
+      // unless the list is collapsed.
+      const initial = collapsed ? undefined : embed ? 'video' : deck ? 'slides' : undefined;
       const videoLabel = t.data.video_lang ? `Video (in ${t.data.video_lang})` : 'Video';
       return (
         <li data-talk>
@@ -58,12 +61,12 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
                   </span>
                 </div>
                 <div class="bar">
-                  <button type="button" data-prev aria-label="Previous slide">←</button>
+                  <button type="button" data-prev aria-label="Previous slide">Previous</button>
                   <span class="counter" data-counter aria-live="polite" />
-                  <button type="button" data-next aria-label="Next slide">→</button>
+                  <button type="button" data-next aria-label="Next slide">Next</button>
                   <span class="spacer" />
                   <button type="button" data-full aria-pressed="false">Fullscreen</button>
-                  <a href={deck}>PDF ↗</a>
+                  <a href={deck}>Open PDF</a>
                 </div>
               </div>
             )}
@@ -73,7 +76,7 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
                 <div class="frame" data-src={embed.src} data-title={`${t.data.title} (video)`} />
                 <div class="bar">
                   <span class="spacer" />
-                  <a href={t.data.video}>Watch on {embed.site} ↗</a>
+                  <a href={t.data.video}>Watch on {embed.site}</a>
                 </div>
               </div>
             )}
@@ -85,15 +88,24 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
 </ul>
 
 <style>
+  .talks :global(.title),
+  .talks .title {
+    display: block;
+    font-family: var(--sans);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+  }
   .pane {
-    margin-top: 0.8rem;
+    margin-top: 0.9rem;
   }
   .stage,
   .frame {
     position: relative;
     background: var(--bg-raised);
     border: 1px solid var(--rule);
-    border-radius: 3px;
+    border-radius: var(--radius);
     overflow: hidden;
   }
   .frame {
@@ -124,8 +136,8 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
   }
   .status {
     grid-area: 1 / 1;
-    font-family: var(--mono);
-    font-size: 0.72rem;
+    font-family: var(--sans);
+    font-size: var(--small);
     color: var(--muted);
     display: none;
     padding: 1rem;
@@ -143,7 +155,7 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
     outline: none;
   }
   .slides:focus-visible .stage {
-    outline: 1.5px solid var(--accent);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
@@ -151,10 +163,11 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    margin-top: 0.45rem;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--muted);
+    margin-top: 0.5rem;
+    font-family: var(--sans);
+    font-size: var(--small);
+    font-weight: 500;
+    color: var(--ink-2);
   }
   .bar button,
   .bar a {
@@ -162,24 +175,24 @@ const isLocalPdf = (url?: string) => !!url && url.startsWith('/') && /\.pdf$/i.t
     color: inherit;
     background: none;
     border: 0;
-    padding: 0.15rem 0;
+    padding: 0.1rem 0.3rem;
+    margin: 0 -0.3rem;
     cursor: pointer;
     text-decoration: none;
   }
   .bar button:hover:not(:disabled),
   .bar a:hover {
-    color: var(--accent);
+    background: var(--mark);
+    color: var(--on-mark);
   }
   .bar button:disabled {
     opacity: 0.35;
     cursor: default;
   }
-  .bar [data-prev],
-  .bar [data-next] {
-    font-size: 0.85rem;
-  }
   .counter {
     min-width: 4.5em;
+    font-weight: 400;
+    color: var(--muted);
     text-align: center;
     font-variant-numeric: tabular-nums;
   }

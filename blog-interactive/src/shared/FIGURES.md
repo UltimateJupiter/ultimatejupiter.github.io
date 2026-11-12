@@ -45,7 +45,7 @@ Preview a figure alone with `tools/harness.html?f=<name>&post=<slug>` (served fr
 - No console output except genuine errors. Keep each figure under ~6,000 SVG nodes.
 
 ## Visual language
-Axis labels and ticks: mono 10.5px, `--muted`. Panel titles: `.fx-ptitle` (sans 13px). Numbers: mono.
+Axis labels and ticks: `--sans` (Instrument Sans) 10.5px, `--muted`. Panel titles: `.fx-ptitle` (sans 13px). Numbers: sans with tabular figures. `--mono` is for code only; `--serif` is the running text.
 Lines 1.75px (selected) / 1.25px (context); markers ≥ 6px when used; CI bands: series colour at ~15–20% opacity.
 Axes as single hairlines (`.ax`), light gridlines (`.gr`) only where they aid reading; no chart borders, boxes or shadows.
 Reserve red (`--loss`) for accuracy lost and blue (`--accent`) for gains/selection; use greys (`--fx-base*`) for context

@@ -7,7 +7,7 @@
 #fx-eos-playground .eosp-act{margin-left:auto;gap:10px}
 #fx-eos-playground .fx-seg button{white-space:nowrap}
 #fx-eos-playground .eosp-prog:empty{display:none}
-#fx-eos-playground .eosp-prog{order:-1;text-align:right;font:300 11.5px/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em}
+#fx-eos-playground .eosp-prog{order:-1;text-align:right;font:300 11.5px/1.4 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em}
 #fx-eos-playground .eosp-legend{gap:4px 14px}
 #fx-eos-playground .eosp-legend[hidden]{display:none}
 #fx-eos-playground .eosp-legend span{white-space:nowrap}
@@ -24,7 +24,7 @@
 /* 2/η slider: native range over a drawn rail (keyboard, touch and a11y come from the input) */
 #fx-eos-playground .eosp-kctl{align-items:flex-start;gap:10px}
 #fx-eos-playground .eosp-kctl .lab,#fx-eos-playground .eosp-kval{padding-top:5px}
-#fx-eos-playground .eosp-kval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:7.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-eos-playground .eosp-kval{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:7.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
 #fx-eos-playground .eosp-slider{--tw:28px;position:relative;width:190px;height:42px;flex:0 1 190px;min-width:150px}
 #fx-eos-playground .eosp-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
 #fx-eos-playground .eosp-fill{position:absolute;left:0;top:0;height:2px;width:50%;border-radius:1px;background:var(--accent)}
@@ -43,7 +43,7 @@
 #fx-eos-playground .eosp-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-eos-playground .eosp-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
-#fx-eos-playground .eosp-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-eos-playground .eosp-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--sans);color:var(--muted);cursor:pointer;padding:0 2px 4px}
 #fx-eos-playground .eosp-ticks span:nth-child(1){left:0}
 #fx-eos-playground .eosp-ticks span:nth-child(2){left:25%}
 #fx-eos-playground .eosp-ticks span:nth-child(3){left:50%}

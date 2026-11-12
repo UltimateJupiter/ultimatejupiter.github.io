@@ -6,7 +6,7 @@
 #fx-jacobi .jb-sl{display:flex;align-items:flex-start;gap:10px;flex:1 1 250px;min-width:0;max-width:300px}
 #fx-jacobi .jb-sl .lab,#fx-jacobi .jb-val{padding-top:5px;white-space:nowrap}
 #fx-jacobi .jb-sl .lab{min-width:2.9em}
-#fx-jacobi .jb-val{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:3.2em;text-align:right;font-variant-numeric:tabular-nums}
+#fx-jacobi .jb-val{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:3.2em;text-align:right;font-variant-numeric:tabular-nums}
 #fx-jacobi .jb-slider{--tw:28px;position:relative;flex:1 1 auto;min-width:120px;height:40px}
 #fx-jacobi .jb-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
 #fx-jacobi .jb-fill{position:absolute;top:0;height:2px;left:50%;width:0;border-radius:1px;background:var(--accent)}
@@ -33,7 +33,7 @@
 #fx-jacobi .jb-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-jacobi .jb-ticks{position:absolute;left:0;right:0;top:24px;height:14px}
-#fx-jacobi .jb-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);white-space:nowrap}
+#fx-jacobi .jb-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--sans);color:var(--muted);white-space:nowrap}
 #fx-jacobi .jb-ticks span:nth-child(1){left:calc(var(--tw) / 2)}
 #fx-jacobi .jb-ticks span:nth-child(2){left:50%}
 #fx-jacobi .jb-ticks span:nth-child(3){left:calc(100% - var(--tw) / 2)}
@@ -60,7 +60,7 @@
 #fx-jacobi .jb-ramp i{display:block;height:8px;width:100%;border-radius:1px;background:linear-gradient(in oklab 90deg,var(--loss),var(--bg));
   box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--fg) 8%,transparent)}
 #fx-jacobi .jb-rl{position:relative;height:14px;margin-top:3px}
-#fx-jacobi .jb-rl span{position:absolute;top:0;font:300 10.5px/1 var(--mono);color:var(--muted);white-space:nowrap}
+#fx-jacobi .jb-rl span{position:absolute;top:0;font:300 10.5px/1 var(--sans);color:var(--muted);white-space:nowrap}
 #fx-jacobi .jb-rl span:nth-child(1){left:0}
 #fx-jacobi .jb-rl span:nth-child(2){left:33.33%;transform:translateX(-50%)}
 #fx-jacobi .jb-rl span:nth-child(3){left:66.67%;transform:translateX(-50%)}

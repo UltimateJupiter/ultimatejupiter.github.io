@@ -14,19 +14,18 @@ const groups = grouped ? groupByYear(posts) : [[null, posts] as const];
   {
     groups.map(([year, items]) => (
       <section class:list={['group', { grouped }]}>
-        {year && <h2 class="year mono">{year}</h2>}
+        {year && <h2 class="year">{year}</h2>}
         <ul>
           {items.map((p) => (
             <li>
-              <a class="post" href={postUrl(p)}>
-                <span class="meta mono">
-                  <time datetime={isoDate(p.data.date)}>{fmtDay(p.data.date)}</time>
-                  <span aria-hidden="true">·</span>
-                  <span>{p.data.href ? 'Interactive' : `${readingTime(p.body)} min read`}</span>
-                  {p.data.draft && <span class="draft">Draft</span>}
-                </span>
-                <span class="title">{p.data.title}</span>
+              <a class="post plain" href={postUrl(p)}>
+                <span class="title"><span>{p.data.title}</span></span>
                 <span class="desc">{p.data.description}</span>
+                <span class="meta small">
+                  <time datetime={isoDate(p.data.date)}>{fmtDay(p.data.date)}</time>
+                  <span>{p.data.href ? 'Interactive figures' : `${readingTime(p.body)} min read`}</span>
+                  {p.data.draft && <span class="marked">Draft</span>}
+                </span>
               </a>
             </li>
           ))}
@@ -37,6 +36,9 @@ const groups = grouped ? groupByYear(posts) : [[null, posts] as const];
 </div>
 
 <style>
+  .posts {
+    max-width: 46rem;
+  }
   ul {
     list-style: none;
     margin: 0;
@@ -44,68 +46,79 @@ const groups = grouped ? groupByYear(posts) : [[null, posts] as const];
   }
   .group.grouped {
     display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr);
+    grid-template-columns: 3.25rem minmax(0, 1fr);
     gap: 1.25rem;
+  }
+  .group.grouped + .group.grouped ul {
     border-top: 1px solid var(--rule);
   }
-  .group.grouped:first-child {
-    border-top: 0;
-  }
   .year {
-    font-size: 0.72rem;
+    font-size: var(--small);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.45;
     color: var(--muted);
     padding-top: 1.55rem;
   }
   .group.grouped:first-child .year {
-    padding-top: 0.35rem;
+    padding-top: 0.28rem;
   }
   li + li {
     border-top: 1px solid var(--rule);
   }
   .post {
     display: block;
-    padding: 1.2rem 0;
+    padding: 1.25rem 0;
     text-decoration: none;
     color: inherit;
   }
   li:first-child .post {
     padding-top: 0;
   }
-  .meta {
-    display: flex;
-    gap: 0.6em;
-    color: var(--muted);
-    font-size: 0.7rem;
-  }
-  .draft {
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
   .title {
     display: block;
-    margin-top: 0.35rem;
-    font-size: 1.3em;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    transition: color 0.2s;
+    font-family: var(--sans);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
   }
-  .post:hover .title {
-    color: var(--accent);
+  .title span {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+  }
+  .post:hover .title span {
+    background: var(--mark);
+    color: var(--on-mark);
   }
   .desc {
     display: block;
     margin-top: 0.35rem;
-    color: var(--muted);
+    color: var(--ink-2);
+    font-size: 0.95em;
     line-height: 1.5;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1.1rem;
+    margin-top: 0.5rem;
+    color: var(--muted);
   }
   @media (max-width: 520px) {
     .group.grouped {
       grid-template-columns: 1fr;
-      gap: 0;
+      gap: 0.75rem;
     }
-    .year {
-      padding-top: 1rem;
+    .year,
+    .group.grouped:first-child .year {
+      padding-top: 0;
+    }
+    .group.grouped + .group.grouped {
+      margin-top: 1.5rem;
     }
   }
 </style>

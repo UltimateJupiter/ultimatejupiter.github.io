@@ -25,7 +25,7 @@
   #fx-acc .fx-panel{display:grid;grid-row:span 3;grid-template-rows:subgrid;align-content:start}
 }
 #fx-acc .fxa-head{display:flex;flex-direction:column;min-width:0}
-#fx-acc .fxa-sub{margin:0;font:300 12px/1.45 var(--mono);color:var(--muted)}
+#fx-acc .fxa-sub{margin:0;font:300 12px/1.45 var(--sans);color:var(--muted)}
 #fx-acc .fxa-plot{min-width:0}
 #fx-acc .fx-psub .l{display:block}
 #fx-acc .fx-psub .s,#fx-acc .fxa-sub .s{white-space:nowrap}

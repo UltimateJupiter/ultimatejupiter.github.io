@@ -3,7 +3,7 @@
 /* Algorithm 1 as a numbered list */
 ol.algo{list-style:none;counter-reset:algo;margin:14px 0 18px;padding:12px 0 12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 ol.algo > li{counter-increment:algo;position:relative;padding-left:2.1em;margin:6px 0}
-ol.algo > li::before{content:counter(algo);position:absolute;left:.2em;top:.12em;font-family:var(--mono);font-size:12.5px;font-weight:400;color:var(--accent)}
+ol.algo > li::before{content:counter(algo);position:absolute;left:.2em;top:.12em;font-family:var(--sans);font-size:12.5px;font-weight:400;color:var(--accent)}
 ol.algo .math-block{margin-top:4px}
 
 /* compact result tables */

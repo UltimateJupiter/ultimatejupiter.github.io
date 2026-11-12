@@ -8,23 +8,18 @@ const pubs = await getPublications();
 ---
 
 <Base title="Publications" description="Papers by Xingyu Zhu.">
-  <PageHeader kicker={`${pubs.length} papers`} title="Publications">
-    <p class="note muted">
+  <PageHeader title="Publications" count={`${pubs.length} papers`}>
+    <p class="note">
       Also on <a href="https://scholar.google.com/citations?user=Dlya3HMAAAAJ&hl=en">Google Scholar</a>.
     </p>
   </PageHeader>
   <div class="wrap body">
-    <PubList pubs={pubs} />
+    <PubList pubs={pubs} cards />
   </div>
 </Base>
 
 <style>
-  .note {
-    margin-top: 1rem;
-  }
   .body {
-    max-width: calc(52rem + 2 * var(--gutter));
-    margin-left: max(0px, calc((100vw - var(--wide)) / 2));
     padding-bottom: 4rem;
   }
 </style>

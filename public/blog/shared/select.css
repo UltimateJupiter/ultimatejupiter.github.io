@@ -11,7 +11,7 @@ select.fx-select.fx-dd-native{display:none !important}
 .fx .fx-dd-pop{position:absolute;z-index:30;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;
   background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:6px 0;
   box-shadow:0 12px 32px color-mix(in srgb,var(--fg) 14%,transparent),0 1px 3px color-mix(in srgb,var(--fg) 8%,transparent);
-  font:300 13px/1.35 var(--mono);color:var(--fg);
+  font:300 13px/1.35 var(--sans);color:var(--fg);
   opacity:0;transform:translateY(-4px);pointer-events:none;visibility:hidden;
   transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s}
 .fx .fx-dd-pop.up{transform:translateY(4px)}

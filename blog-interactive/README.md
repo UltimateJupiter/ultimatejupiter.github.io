@@ -13,10 +13,11 @@ src/
     fx.css                   data-figure frame: toolbars, panels, tooltips, status line
     select.js, select.css    custom menu: upgrades any <select class="fx-select"> inside <figure class="fx">
     theme-init.js            in <head>: light by default, dark if the reader chose it
-    theme.js                 the ◐ toggle (<button id="theme-btn"><span class="t"></span>)
+    theme.js                 the top bar: theme toggle (<button id="theme-btn">) and the clear-at-top state
+    site-theme.css           the main site's look: tokens, type, links, top bar (.site-bar); load it last
     toc.js                   contents rail that highlights the section in view
     mathjax-config.js        MathJax settings
-    fonts.css, fonts/        self-hosted Source Sans 3 and IBM Plex Mono
+    fonts.css, fonts/        self-hosted STIX Two Text (running text) and Instrument Sans (headings, labels, figure UI)
     vendor/mathjax/          MathJax 3.2.2 (tex-svg) and the boldsymbol extension
     FIGURES.md               conventions for writing a data figure
   posts/<slug>/

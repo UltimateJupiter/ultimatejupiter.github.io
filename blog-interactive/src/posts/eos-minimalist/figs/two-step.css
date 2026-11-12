@@ -8,7 +8,7 @@
 /* a0 slider: native range (keyboard, touch, a11y) over a drawn rail; --tw = thumb box = hit area */
 #fx-two-step .tws-actl{align-items:flex-start;gap:10px;flex:0 1 auto}
 #fx-two-step .tws-actl .lab,#fx-two-step .tws-aval{padding-top:5px}
-#fx-two-step .tws-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:2.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
+#fx-two-step .tws-aval{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:2.6em;white-space:nowrap;font-variant-numeric:tabular-nums}
 #fx-two-step .tws-slider{--tw:28px;position:relative;width:220px;flex:0 1 220px;min-width:150px;height:42px}
 #fx-two-step .tws-rail{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:13px;height:2px;border-radius:1px;background:var(--line)}
 #fx-two-step .tws-fill{position:absolute;left:0;top:0;height:2px;width:0;border-radius:1px;background:var(--accent)}
@@ -32,7 +32,7 @@
 #fx-two-step .tws-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-two-step .tws-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
-#fx-two-step .tws-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 2px 4px;font:400 10.5px/1 var(--mono);color:var(--muted);
+#fx-two-step .tws-ticks span{position:absolute;top:0;transform:translateX(-50%);padding:0 2px 4px;font:400 10.5px/1 var(--sans);color:var(--muted);
   cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
 #fx-two-step .tws-ticks span:hover,#fx-two-step .tws-ticks span.on{color:var(--fg)}
 

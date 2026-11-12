@@ -29,7 +29,7 @@
 
 /* detail */
 #fx-gate .fxg-detail{display:flex;flex-direction:column;gap:8px;margin-top:10px;min-width:0}
-#fx-gate .fxg-picks{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:300 12.5px/1.4 var(--mono);color:var(--muted)}
+#fx-gate .fxg-picks{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font:300 12.5px/1.4 var(--sans);color:var(--muted)}
 #fx-gate .fxg-title{font-variant-numeric:tabular-nums}
 #fx-gate .fxg-leg{gap:4px 18px}
 #fx-gate .fxg-leg span{display:inline-flex;align-items:center;gap:6px}

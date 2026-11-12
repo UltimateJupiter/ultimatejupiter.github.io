@@ -5,7 +5,7 @@
 #fx-bifurcation .bif-bar{align-items:flex-start;gap:8px 18px}
 #fx-bifurcation .bif-ctl{display:inline-flex;align-items:flex-start;gap:10px;min-width:0;max-width:100%}
 #fx-bifurcation .bif-ctl .lab{white-space:nowrap;padding-top:5px}
-#fx-bifurcation .bif-aval{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:6.2em;white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:5px}
+#fx-bifurcation .bif-aval{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:6.2em;white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:5px}
 #fx-bifurcation .bif-seg{margin-top:2px}
 #fx-bifurcation .bif-seg button{white-space:nowrap}
 #fx-bifurcation .bif-play{min-width:4.6em}
@@ -31,7 +31,7 @@
 #fx-bifurcation .bif-range:focus-visible::-moz-range-thumb{
   background:radial-gradient(circle closest-side,var(--bg) 5.3px,var(--accent) 5.9px 6.7px,color-mix(in srgb,var(--accent) 24%,transparent) 7.3px 10.4px,transparent 11px)}
 #fx-bifurcation .bif-ticks{position:absolute;left:calc(var(--tw) / 2);right:calc(var(--tw) / 2);top:24px;height:16px}
-#fx-bifurcation .bif-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--mono);color:var(--muted);cursor:pointer;padding:0 2px 4px}
+#fx-bifurcation .bif-ticks span{position:absolute;top:0;transform:translateX(-50%);font:400 10.5px/1 var(--sans);color:var(--muted);cursor:pointer;padding:0 2px 4px}
 #fx-bifurcation .bif-ticks span:nth-child(1){left:0}
 #fx-bifurcation .bif-ticks span:nth-child(2){left:16.129%}
 #fx-bifurcation .bif-ticks span:nth-child(3){left:32.258%}

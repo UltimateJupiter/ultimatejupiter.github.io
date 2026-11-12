@@ -7,7 +7,7 @@
 #fx-flow .flw-rng[hidden]{display:none}
 #fx-flow .flw-sl{display:inline-flex;align-items:center;gap:8px}
 #fx-flow .flw-sl .lab sub{font-size:.78em;vertical-align:-.25em;line-height:0}
-#fx-flow .flw-val{font:400 13px/1.4 var(--mono);color:var(--fg);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+#fx-flow .flw-val{font:400 13px/1.4 var(--sans);color:var(--fg);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
 
 /* ℓ sliders: native range (keyboard, touch, a11y) over a drawn rail. --tw = thumb box = hit area. */
 #fx-flow .flw-slider{--tw:26px;position:relative;width:118px;height:var(--tw);flex:0 0 auto}

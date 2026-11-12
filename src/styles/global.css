@@ -1,29 +1,35 @@
-@import '@fontsource-variable/newsreader/opsz.css';
-@import '@fontsource-variable/newsreader/opsz-italic.css';
-@import '@fontsource/ibm-plex-mono/400.css';
-@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource-variable/stix-two-text/wght.css';
+@import '@fontsource-variable/stix-two-text/wght-italic.css';
+@import '@fontsource-variable/instrument-sans/wdth.css';
 
-/* ---------------------------------------------------------------- tokens */
+/* ---------------------------------------------------------------- tokens
+   Near-black ink on pale grey paper, with an orange highlighter (Princeton orange, give or take). The highlighter is the only
+   decoration: it marks what you point at and what won an award. */
 
 :root {
-  --bg: #f4f2ec;
-  --bg-raised: #faf9f5;
-  --ink: #1a1916;
-  --ink-2: #45433d;
-  --muted: #76726a;
-  --faint: #b3aea3;
-  --rule: #dedad0;
-  --accent: #d1431a;
-  --accent-soft: rgba(209, 67, 26, 0.1);
-  --selection: rgba(209, 67, 26, 0.18);
+  --bg: #f4f4f2;
+  --bg-raised: #ffffff;
+  --ink: #17181c;
+  --ink-2: #3d4047;
+  --muted: #6b6e76;
+  --faint: #b3b5ba;
+  --rule: #dcdcda;
+  --accent: #b54f00;
+  --mark: #ff9a2e;
+  --on-mark: #17181c;
+  --figure-bg: #ffffff;
+  --selection: rgba(255, 154, 46, 0.45);
 
-  --serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* STIX Two is the face of typeset mathematics; Instrument Sans carries names, titles and labels. */
+  --serif: 'STIX Two Text Variable', 'STIX Two Text', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --sans: 'Instrument Sans Variable', 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  --measure: 42rem;
-  --wide: 70rem;
+  --small: 0.8125rem;
+  --wide: 72rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
-  --label-col: 11rem;
+  --label-col: 10rem;
+  --radius: 0px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   color-scheme: light;
@@ -31,30 +37,32 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #11110f;
-    --bg-raised: #181815;
-    --ink: #ebe7de;
-    --ink-2: #c8c3b8;
-    --muted: #979287;
-    --faint: #57544d;
-    --rule: #2a2925;
-    --accent: #ff6d42;
-    --accent-soft: rgba(255, 109, 66, 0.12);
-    --selection: rgba(255, 109, 66, 0.25);
+    --bg: #111214;
+    --bg-raised: #1a1b1f;
+    --ink: #ecebe7;
+    --ink-2: #c4c4c0;
+    --muted: #92938f;
+    --faint: #54555a;
+    --rule: #2a2b30;
+    --accent: #ffa24d;
+    --on-mark: #111214;
+    --figure-bg: #ecece9;
+    --selection: rgba(255, 154, 46, 0.3);
     color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --bg: #11110f;
-  --bg-raised: #181815;
-  --ink: #ebe7de;
-  --ink-2: #c8c3b8;
-  --muted: #979287;
-  --faint: #57544d;
-  --rule: #2a2925;
-  --accent: #ff6d42;
-  --accent-soft: rgba(255, 109, 66, 0.12);
-  --selection: rgba(255, 109, 66, 0.25);
+  --bg: #111214;
+  --bg-raised: #1a1b1f;
+  --ink: #ecebe7;
+  --ink-2: #c4c4c0;
+  --muted: #92938f;
+  --faint: #54555a;
+  --rule: #2a2b30;
+  --accent: #ffa24d;
+  --on-mark: #111214;
+  --figure-bg: #ecece9;
+  --selection: rgba(255, 154, 46, 0.3);
   color-scheme: dark;
 }
 
@@ -78,9 +86,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--serif);
-  font-size: clamp(1.0625rem, 0.4vw + 0.98rem, 1.1875rem);
-  line-height: 1.6;
-  font-optical-sizing: auto;
+  font-size: clamp(1.0625rem, 0.35vw + 1rem, 1.1875rem);
+  line-height: 1.62;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
@@ -90,29 +97,36 @@ body {
   background: var(--selection);
 }
 
+/* Links are ink with an orange underline. Pointing at one runs the highlighter over it. */
 a {
   color: inherit;
   text-decoration-line: underline;
-  text-decoration-color: var(--faint);
+  text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
-  transition: text-decoration-color 0.2s, color 0.2s;
+  text-underline-offset: 0.2em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
-a:hover {
-  text-decoration-color: var(--accent);
-  color: var(--accent);
+/* `.plain` opts a link out (block links, thumbnails); they style their own hover. */
+a:where(:not(.plain)):hover {
+  background-color: var(--mark);
+  color: var(--on-mark);
+  text-decoration-color: transparent;
 }
 :focus-visible {
-  outline: 1.5px solid var(--accent);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-weight: 400;
+  font-family: var(--sans);
+  font-weight: 600;
   line-height: 1.15;
   margin: 0;
 }
@@ -125,20 +139,23 @@ img {
   display: block;
 }
 
-.mono,
-.label {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.02em;
-  line-height: 1.5;
-}
-.label {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
+.small {
+  font-family: var(--sans);
+  font-size: var(--small);
+  line-height: 1.45;
 }
 .muted {
   color: var(--muted);
+}
+.marked {
+  background: var(--mark);
+  color: var(--on-mark);
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.08em 0.4em;
+  white-space: nowrap;
 }
 
 .wrap {
@@ -157,59 +174,45 @@ img {
   white-space: nowrap;
 }
 
-/* ---------------------------------------------------------------- sections */
+/* ---------------------------------------------------------------- home sections
+   Each section opens with the same thin ink line the hero figure starts from. */
 
 .section {
   display: grid;
   grid-template-columns: var(--label-col) minmax(0, 1fr);
   gap: 2rem;
-  padding-block: clamp(3rem, 7vw, 5.5rem);
-  border-top: 1px solid var(--rule);
+  padding-block: 1.1rem clamp(3.5rem, 7vw, 5.5rem);
+  border-top: 1px solid var(--ink);
 }
-.section > .section-head {
+.section-head {
   position: sticky;
-  top: 5.5rem;
+  top: 4.75rem;
   align-self: start;
 }
-.section-body {
-  max-width: 48rem;
-  min-width: 0;
-}
 .section-title {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: -0.005em;
 }
-.section-title .idx {
-  color: var(--muted);
+.section-body {
+  min-width: 0;
+  padding-top: 0.1rem;
 }
 .section-more {
   display: inline-block;
-  margin-top: 1.75rem;
-  font-family: var(--mono);
-  font-size: 0.75rem;
+  margin-top: 1.5rem;
+  font-family: var(--sans);
+  font-size: var(--small);
+  font-weight: 500;
+  color: var(--accent);
   text-decoration: none;
-  color: var(--muted);
-}
-.section-more span {
-  display: inline-block;
-  transition: transform 0.3s var(--ease);
-}
-.section-more:hover span {
-  transform: translateX(4px);
 }
 
 @media (max-width: 760px) {
   .section {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
-  .section > .section-head {
+  .section-head {
     position: static;
   }
 }
@@ -220,12 +223,13 @@ img {
   list-style: none;
   margin: 0;
   padding: 0;
+  max-width: 46rem;
 }
 .dated > li {
   display: grid;
-  grid-template-columns: 6.5rem minmax(0, 1fr);
+  grid-template-columns: 5.5rem minmax(0, 1fr);
   gap: 1.25rem;
-  padding-block: 0.85rem;
+  padding-block: 0.9rem;
   border-bottom: 1px solid var(--rule);
 }
 .dated > li:first-child {
@@ -235,15 +239,15 @@ img {
   border-bottom: 0;
 }
 .dated time {
-  font-family: var(--mono);
-  font-size: 0.72rem;
+  font-family: var(--sans);
+  font-size: var(--small);
+  font-variant-numeric: tabular-nums;
   color: var(--muted);
-  padding-top: 0.32rem;
+  padding-top: 0.28rem;
   white-space: nowrap;
 }
 .dated .title {
-  display: block;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 .dated .sub {
   display: block;
@@ -262,72 +266,128 @@ img {
   }
 }
 
-/* ---------------------------------------------------------------- inline link chips */
+/* ---------------------------------------------------------------- action rows
+   Links out (arXiv, slides) and toggles that open something in place (abstract, BibTeX, video). */
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 1rem;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  margin-top: 0.45rem;
+  gap: 0.3rem 1.1rem;
+  font-family: var(--sans);
+  font-size: var(--small);
+  font-weight: 500;
+  margin-top: 0.55rem;
 }
 .chips a,
 .chips button {
   font: inherit;
-  color: var(--muted);
+  color: var(--accent);
   background: none;
   border: 0;
   padding: 0;
   cursor: pointer;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
 }
-.chips a::before,
-.chips button::before {
-  content: '';
-  width: 0.42em;
-  height: 0.42em;
-  border: 1px solid currentColor;
-  transform: rotate(45deg);
-  transition: background 0.2s, transform 0.4s var(--ease);
+.chips button:hover {
+  background-color: var(--mark);
+  color: var(--on-mark);
 }
-.chips a:hover,
-.chips button:hover,
+.chips button::after {
+  content: '+';
+  display: inline-block;
+  width: 0.7em;
+  margin-left: 0.25em;
+  text-align: center;
+}
 .chips button[aria-expanded='true'] {
-  color: var(--accent);
+  color: var(--ink);
 }
-.chips a:hover::before,
-.chips button:hover::before,
-.chips button[aria-expanded='true']::before {
-  background: currentColor;
-  transform: rotate(135deg);
+.chips button[aria-expanded='true']::after {
+  content: '\2212';
 }
 
-/* ---------------------------------------------------------------- misc */
+/* ---------------------------------------------------------------- paper illustrations
+   Drawn by src/scripts/plates/. `--pt` and `--pb` are the margins the drawing keeps clear; the
+   script reads them, so they are in px. */
+
+.plate-plot {
+  --pt: 30px;
+  --pb: 16px;
+  position: relative;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+.plate-plot canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.plate-readout {
+  position: absolute;
+  top: 4px;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: var(--ink-2);
+  pointer-events: none;
+}
+.plate-readout b {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.35em;
+}
+
+/* ---------------------------------------------------------------- shared bits for detail pages */
+
+.back {
+  font-family: var(--sans);
+  font-size: var(--small);
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+.figure-frame {
+  background: var(--figure-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.copy {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  color: var(--ink-2);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.copy:hover {
+  background: var(--mark);
+  border-color: var(--mark);
+  color: var(--on-mark);
+}
 
 .katex {
   font-size: 1em;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
-}
-.reveal.in {
-  opacity: 1;
-  transform: none;
-}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  * {
+    transition-duration: 0.01ms !important;
   }
 }

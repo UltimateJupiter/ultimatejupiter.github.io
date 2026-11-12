@@ -24,8 +24,7 @@
 .prose h2,
 .prose h3,
 .prose h4 {
-  font-weight: 450;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
   line-height: 1.25;
   scroll-margin-top: 5.5rem;
 }
@@ -39,15 +38,11 @@
 }
 .prose h4 {
   font-size: 1em;
-  font-weight: 600;
   margin: 1.6em 0 0.5em;
 }
 
-.prose a {
-  text-decoration-color: var(--accent);
-}
 .prose strong {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .prose ul,
@@ -66,9 +61,8 @@
 
 .prose blockquote {
   padding-left: 1.25rem;
-  border-left: 1px solid var(--accent);
+  border-left: 3px solid var(--mark);
   color: var(--ink-2);
-  font-style: italic;
 }
 
 .prose hr {
@@ -80,7 +74,7 @@
 
 .prose img,
 .prose video {
-  border-radius: 3px;
+  border-radius: var(--radius);
   margin-inline: auto;
 }
 .prose figure img {
@@ -89,8 +83,8 @@
 .prose figcaption,
 .prose img + em {
   display: block;
-  font-family: var(--mono);
-  font-size: 0.7rem;
+  font-family: var(--sans);
+  font-size: var(--small);
   font-style: normal;
   color: var(--muted);
   text-align: center;
@@ -103,7 +97,7 @@
   padding: 0.12em 0.35em;
   background: var(--bg-raised);
   border: 1px solid var(--rule);
-  border-radius: 3px;
+  border-radius: var(--radius);
 }
 .prose pre {
   font-family: var(--mono);
@@ -111,7 +105,7 @@
   line-height: 1.65;
   padding: 1rem 1.2rem;
   border: 1px solid var(--rule);
-  border-radius: 3px;
+  border-radius: var(--radius);
   /* no horizontal scrolling: long lines wrap */
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -167,19 +161,18 @@
   border-bottom: 1px solid var(--rule);
 }
 .prose th {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
+  font-family: var(--sans);
+  font-size: var(--small);
+  font-weight: 600;
+  border-bottom-color: var(--ink);
 }
 
 /* footnotes */
 .prose sup a,
 .prose .data-footnote-backref {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 0.75em;
+  font-weight: 600;
   text-decoration: none;
   color: var(--accent);
 }
@@ -191,11 +184,6 @@
   color: var(--ink-2);
 }
 .prose .footnotes h2 {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
+  font-size: var(--small);
   margin: 0 0 1em;
 }

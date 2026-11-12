@@ -2,6 +2,8 @@
 import 'katex/dist/katex.min.css';
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
+import PlatePlot from '../../components/PlatePlot.astro';
+import { plateForPaper } from '../../scripts/plates/meta';
 import { authorsHtml, fmtMonth, getBibtex, getPublications, hasEqualContribution, mathHtml, type Publication } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -12,17 +14,27 @@ export async function getStaticPaths() {
 const { pub } = Astro.props as { pub: Publication };
 const { title, authors, venue, award, date, image, caption, links, abstract } = pub.data;
 const bib = getBibtex(pub.id);
+// papers with an illustration open with it
+const plate = plateForPaper(pub.id);
 ---
 
 <Base title={title} description={abstract.slice(0, 180)}>
-  <article class="wrap paper">
-    <a class="back mono" href="/publications/">← Publications</a>
-    <p class="label meta">
-      {venue}{award && <span class="award"> · {award}</span>} · {fmtMonth(date)}
-    </p>
+  {
+    plate && (
+      <div class="plate-band" data-plates data-plate={plate.id}>
+        <PlatePlot />
+      </div>
+    )
+  }
+  <article class:list={['wrap', 'paper', { 'after-plate': !!plate }]}>
+    <a class="back" href="/publications/">All publications</a>
     <h1>{title}</h1>
+    <p class="meta small">
+      <span>{venue}, {fmtMonth(date)}</span>
+      {award && <span class="marked">{award}</span>}
+    </p>
     <p class="authors" set:html={authorsHtml(authors)} />
-    {hasEqualContribution(authors) && <p class="mono muted eq">* Equal contribution</p>}
+    {hasEqualContribution(authors) && <p class="small muted eq">* Equal contribution</p>}
     <div class="chips">
       {links.map((l) => <a href={l.url}>{l.name}</a>)}
     </div>
@@ -30,13 +42,11 @@ const bib = getBibtex(pub.id);
     {
       image && (
         <figure>
-          <div class="frame">
+          <div class="frame figure-frame">
             <Image src={image} alt={caption ?? title} widths={[600, 1000, 1600]} sizes="(max-width: 900px) 92vw, 860px" />
           </div>
           {caption && (
-            <figcaption class="mono">
-              <span class="fig">Figure.</span> {caption}
-            </figcaption>
+            <figcaption class="small">{caption}</figcaption>
           )}
         </figure>
       )
@@ -45,7 +55,7 @@ const bib = getBibtex(pub.id);
     {
       abstract && (
         <section>
-          <h2 class="label">Abstract</h2>
+          <h2>Abstract</h2>
           <p class="abstract" set:html={mathHtml(abstract)} />
         </section>
       )
@@ -54,10 +64,10 @@ const bib = getBibtex(pub.id);
     {
       bib && (
         <section>
-          <h2 class="label">Citation</h2>
+          <h2>Citation</h2>
           <div class="bibwrap">
             <pre><code>{bib}</code></pre>
-            <button type="button" class="copy mono" data-copy>Copy</button>
+            <button type="button" class="copy" data-copy>Copy</button>
           </div>
         </section>
       )
@@ -71,23 +81,31 @@ const bib = getBibtex(pub.id);
     padding-top: clamp(6.5rem, 12vw, 9rem);
     padding-bottom: 4rem;
   }
-  .back {
-    font-size: 0.75rem;
-    text-decoration: none;
-    color: var(--muted);
+  .plate-band {
+    padding-top: 3.75rem;
   }
-  .meta {
-    margin-top: 2.5rem;
+  .plate-band :global(.plate-plot) {
+    height: clamp(11rem, 26vw, 16rem);
+    border-bottom: 1px solid var(--rule);
   }
-  .award {
-    color: var(--accent);
+  .paper.after-plate {
+    padding-top: 2rem;
   }
   h1 {
-    font-size: clamp(2rem, 4.5vw, 3.25rem);
-    font-weight: 380;
+    font-size: clamp(2rem, 4.6vw, 3.25rem);
+    font-stretch: 85%;
     letter-spacing: -0.025em;
-    line-height: 1.08;
-    margin: 0.75rem 0 1.25rem;
+    line-height: 1.05;
+    margin: 2.25rem 0 0.9rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.75rem;
+    margin: 0 0 1.5rem;
+    font-weight: 500;
+    color: var(--muted);
   }
   .authors {
     font-size: 1.1em;
@@ -96,51 +114,37 @@ const bib = getBibtex(pub.id);
   }
   .authors :global(.me) {
     color: var(--ink);
-    font-weight: 600;
+    font-weight: 700;
   }
   .authors :global(.eq) {
     color: var(--muted);
     font-size: 0.7em;
   }
   .eq {
-    margin: 0.25rem 0 0;
+    margin: 0.35rem 0 0;
   }
   .chips {
     margin-top: 1.1rem;
-    font-size: 0.8rem;
+    font-size: 0.9375rem;
   }
   figure {
     margin: 3rem 0 0;
   }
   .frame {
-    background: #fff;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
     padding: clamp(0.75rem, 3vw, 2rem);
-  }
-  :global([data-theme='dark']) .frame {
-    background: #ecebe6;
-  }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .frame {
-      background: #ecebe6;
-    }
   }
   figcaption {
     margin-top: 0.75rem;
-    font-size: 0.7rem;
     color: var(--muted);
     max-width: 40rem;
-  }
-  .fig {
-    color: var(--ink);
   }
   section {
     margin-top: 3rem;
     max-width: 42rem;
   }
   section h2 {
-    margin-bottom: 0.9rem;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
   }
   .abstract {
     color: var(--ink-2);
@@ -150,34 +154,24 @@ const bib = getBibtex(pub.id);
     position: relative;
     background: var(--bg-raised);
     border: 1px solid var(--rule);
-    border-radius: 3px;
+    border-radius: var(--radius);
     padding: 1rem 1.2rem;
   }
   pre {
     margin: 0;
     font-family: var(--mono);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     line-height: 1.6;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  .copy {
-    position: absolute;
-    top: 0.6rem;
-    right: 0.6rem;
-    background: var(--bg);
-    border: 1px solid var(--rule);
-    color: var(--muted);
-    font-size: 0.66rem;
-    padding: 0.2rem 0.55rem;
-    border-radius: 2px;
-    cursor: pointer;
-  }
-  .copy:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-  }
 </style>
+
+<script>
+  import { mountPlates } from '../../scripts/plates';
+  const band = document.querySelector<HTMLElement>('[data-plates]');
+  if (band) mountPlates(band);
+</script>
 
 <script>
   document.querySelector<HTMLButtonElement>('[data-copy]')?.addEventListener('click', async (e) => {
@@ -186,7 +180,7 @@ const bib = getBibtex(pub.id);
       await navigator.clipboard.writeText(btn.parentElement?.querySelector('code')?.textContent ?? '');
       btn.textContent = 'Copied';
     } catch {
-      btn.textContent = 'Select & copy';
+      btn.textContent = 'Select and copy';
     }
     setTimeout(() => (btn.textContent = 'Copy'), 1600);
   });

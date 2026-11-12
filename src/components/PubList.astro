@@ -4,60 +4,87 @@ import { groupByYear, hasEqualContribution, type Publication } from '../lib/cont
 
 interface Props {
   pubs: Publication[];
+  /** Draw each paper as a card with its illustration (the publications page). */
+  cards?: boolean;
 }
-const { pubs } = Astro.props;
+const { pubs, cards = false } = Astro.props;
 const groups = groupByYear(pubs);
 const anyEqual = pubs.some((p) => hasEqualContribution(p.data.authors));
 ---
 
-<div class="pub-list">
+<div class:list={['pub-list', { cards }]}>
   {
     groups.map(([year, items]) => (
       <section class="year-group">
-        <h3 class="year mono">{year}</h3>
+        <h3 class="year">{year}</h3>
         <div class="items">
           {items.map((p) => (
-            <PubItem pub={p} headingLevel="h4" />
+            <PubItem pub={p} headingLevel="h4" card={cards} />
           ))}
         </div>
       </section>
     ))
   }
-  {anyEqual && <p class="footnote mono">* Equal contribution</p>}
+  {anyEqual && <p class="footnote small muted">* Equal contribution</p>}
 </div>
 
 <style>
-  .year-group {
-    display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr);
-    gap: 1.25rem;
-    border-top: 1px solid var(--rule);
+  /* card form: the cards carry their own borders, so the groups are set apart by space alone */
+  .cards .year-group + .year-group {
+    margin-top: 1.75rem;
   }
-  .year-group:first-child {
+  .cards .year-group + .year-group .items {
     border-top: 0;
   }
-  .year-group:first-child .year,
+  .cards .year,
+  .cards .year-group:first-child .year {
+    padding-top: 0.2rem;
+  }
+  .year-group {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+  .year {
+    font-size: var(--small);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.45;
+    color: var(--muted);
+    padding-top: 1.6rem;
+  }
+  .year-group:first-child .year {
+    padding-top: 0.28rem;
+  }
   .year-group:first-child .items > :global(:first-child) {
     padding-top: 0;
   }
-  .year {
-    font-size: 0.72rem;
-    font-weight: 400;
-    color: var(--muted);
-    padding-top: 1.45rem;
-    margin: 0;
+  .year-group + .year-group .items {
+    border-top: 1px solid var(--rule);
   }
   .footnote {
-    color: var(--muted);
-    margin-top: 1.25rem;
+    margin: 1.25rem 0 0;
   }
   @media (max-width: 520px) {
     .year-group {
       grid-template-columns: 1fr;
       gap: 0;
     }
-    .year {
-      padding-top: 1rem;
+    .year,
+    .year-group:first-child .year {
+      padding-top: 1.25rem;
+    }
+    .year-group:first-child .year {
+      padding-top: 0;
+    }
+    .year-group .items > :global(:first-child) {
+      padding-top: 0.5rem;
+    }
+    .year-group + .year-group .items {
+      border-top: 0;
+    }
+    .year-group + .year-group {
+      border-top: 1px solid var(--rule);
     }
   }
 </style>
