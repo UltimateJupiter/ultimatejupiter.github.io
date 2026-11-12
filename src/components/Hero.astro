@@ -33,11 +33,19 @@ import { profile } from '../data/profile';
 
       <!-- what the picture is, the paper it is drawn after, and a way to see the others -->
       <div class="cell plate" data-plate-bar>
-        <p class="stepper">
-          <span>Picture <span data-plate-count></span></span>
-          <button type="button" data-plate-next>Next</button>
-        </p>
+        <p class="label">Figure <span data-plate-count></span></p>
         <p class="caption" data-plate-caption></p>
+        <!-- drawn like dimension lines on a drawing: a hairline shaft the width of its cell, a slender solid head -->
+        <div class="arrows">
+          <button type="button" data-plate-prev aria-label="Previous figure">
+            <svg viewBox="0 0 9 7" width="9" height="7" aria-hidden="true"><path d="M0 3.5 9 0v7z" fill="currentColor" /></svg>
+            <span class="shaft"></span>
+          </button>
+          <button type="button" data-plate-next aria-label="Next figure">
+            <span class="shaft"></span>
+            <svg viewBox="0 0 9 7" width="9" height="7" aria-hidden="true"><path d="M9 3.5 0 0v7z" fill="currentColor" /></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -75,7 +83,7 @@ import { profile } from '../data/profile';
   .block {
     display: grid;
     /* the photo is as wide as the section labels below, so the name lines up with the page's text column */
-    grid-template-columns: calc(var(--label-col) + 2rem) minmax(22rem, 1.2fr) minmax(0, 1.3fr) minmax(15rem, 0.95fr);
+    grid-template-columns: calc(var(--label-col) + 2rem) minmax(22rem, 1.2fr) minmax(0, 1.5fr) minmax(14rem, 0.75fr);
     background: var(--bg-raised);
     border: 1px solid var(--ink);
     box-shadow: 10px 10px 0 color-mix(in srgb, var(--ink) 12%, transparent);
@@ -156,41 +164,65 @@ import { profile } from '../data/profile';
     color: var(--ink-2);
   }
 
+  /* a footnote to the picture: it is the smallest type on the page, so the profile reads first */
   .plate {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
     font-family: var(--sans);
-    font-size: var(--small);
-    line-height: 1.45;
+    font-size: 0.71875rem;
+    line-height: 1.4;
     color: var(--muted);
   }
-  .stepper {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0 0 0.6rem;
+  .label {
+    margin: 0;
+    padding: 1.3rem 1.5rem 0.4rem;
     font-weight: 600;
     color: var(--ink);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
-  .stepper button {
-    font: inherit;
-    font-weight: 500;
-    color: var(--accent);
+  .caption {
+    margin: 0;
+    padding: 0 1.5rem 1.2rem;
+  }
+  /* The two arrows are the bottom row of the title block: one cell each, ruled like the rest. */
+  .arrows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: auto;
+    border-top: 1px solid var(--ink);
+  }
+  .arrows button {
+    display: flex;
+    align-items: center;
+    height: 2.6rem;
+    padding: 0 1.1rem;
+    color: var(--ink);
     background: none;
     border: 0;
-    padding: 0.05em 0.3em;
-    margin: 0 -0.3em;
     cursor: pointer;
     transition:
       background-color 0.15s,
       color 0.15s;
   }
-  .stepper button:hover {
+  .arrows button + button {
+    border-left: 1px solid var(--ink);
+  }
+  .arrows button:hover {
     background: var(--mark);
     color: var(--on-mark);
   }
-  .caption {
-    margin: 0;
+  .arrows svg {
+    flex: none;
+  }
+  .shaft {
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+  }
+  .caption :global(.short) {
+    display: none;
   }
   .caption :global(i) {
     font-family: var(--serif);
@@ -240,12 +272,57 @@ import { profile } from '../data/profile';
       padding: 0;
       border: 0;
     }
+    /* under the figure: its number and the arrows, then one line saying what it shows */
     .plate {
       grid-area: plate;
-      padding: 0.8rem 0 2.25rem;
+      flex-flow: row wrap;
+      align-items: center;
+      gap: 0.45rem 0.6rem;
+      padding: 0.55rem 0 1.5rem;
+      font-size: 0.65625rem;
     }
-    .stepper {
-      justify-content: flex-start;
+    .label,
+    .caption {
+      padding: 0;
+    }
+    .label {
+      flex: 1;
+    }
+    .caption {
+      order: 1;
+      flex: 0 0 100%;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .caption :global(.long) {
+      display: none;
+    }
+    .caption :global(.short) {
+      display: inline;
+    }
+    /* the paper's own phrase, run over with the highlighter; it links to the paper */
+    .caption :global(.short a) {
+      background: var(--mark);
+      color: var(--on-mark);
+      font-weight: 500;
+      text-decoration: none;
+      padding: 0.05em 0.3em;
+    }
+    .caption :global(.short a:hover) {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .arrows {
+      flex: none;
+      grid-template-columns: 2.9rem 2.9rem;
+      margin: 0;
+      border: 1px solid var(--ink);
+    }
+    .arrows button {
+      height: 1.75rem;
+      padding: 0 0.6rem;
     }
     .photo {
       grid-area: photo;

@@ -25,6 +25,7 @@ export function mountPlates(host: HTMLElement) {
   const caption = host.querySelector<HTMLElement>('[data-plate-caption]');
   const count = host.querySelector<HTMLElement>('[data-plate-count]');
   const next = host.querySelector<HTMLButtonElement>('[data-plate-next]');
+  const prev = host.querySelector<HTMLButtonElement>('[data-plate-prev]');
   const quiet = host.querySelector<HTMLElement>('[data-quiet]');
   const bctx = base.getContext('2d')!;
   const octx = over.getContext('2d')!;
@@ -93,11 +94,16 @@ export function mountPlates(host: HTMLElement) {
   function describe() {
     const p = list[index];
     base.setAttribute('aria-label', p.text.replace(/<[^>]+>/g, ''));
-    if (caption) caption.innerHTML = `${p.text} Drawn after <a href="/publications/${p.slug}/">${p.paper}</a>.`;
+    if (caption) {
+      const href = `/publications/${p.slug}/`;
+      caption.innerHTML =
+        `<span class="long">${p.text} Drawn after <a href="${href}">${p.paper}</a>.</span>` +
+        `<span class="short">${p.short.replace(/\[(.+?)\]/, `<a href="${href}">$1</a>`)}</span>`;
+    }
     if (count) count.textContent = `${index + 1} of ${list.length}`;
   }
 
-  function draw(animate: boolean) {
+  function draw(animate: boolean, back = false) {
     cancelAnimationFrame(raf);
     sctx.clearRect(0, 0, env.W, env.H);
     sctx.save();
@@ -105,10 +111,14 @@ export function mountPlates(host: HTMLElement) {
     sctx.restore();
     // The new picture slides in from the left over the old one, which stays until it is covered.
     const keep = animate && old.width === base.width && old.height === base.height;
+    // Going back, it comes in from the right instead.
     const show = (w: number) => {
-      bctx.clearRect(0, 0, base.width, base.height);
-      if (keep && w < base.width) bctx.drawImage(old, w, 0, base.width - w, old.height, w, 0, base.width - w, old.height);
-      if (w > 0) bctx.drawImage(sheet, 0, 0, w, sheet.height, 0, 0, w, sheet.height);
+      const W = base.width;
+      const from = back ? W - w : 0; // left edge of the new picture's visible strip
+      const rest = back ? 0 : w; // left edge of what is still showing of the old one
+      bctx.clearRect(0, 0, W, base.height);
+      if (keep && w < W) bctx.drawImage(old, rest, 0, W - w, old.height, rest, 0, W - w, old.height);
+      if (w > 0) bctx.drawImage(sheet, from, 0, w, sheet.height, from, 0, w, sheet.height);
     };
     if (!animate) return show(sheet.width);
     // The one piece of choreography on the site: the picture is drawn left to right, once.
@@ -137,7 +147,7 @@ export function mountPlates(host: HTMLElement) {
     readout.style.left = `${Math.min(env.W - half, Math.max(half, got.x))}px`;
   }
 
-  function redraw(animate = false) {
+  function redraw(animate = false, back = false) {
     if (animate) {
       // remember what is on screen before the canvases are resized (which clears them)
       old.width = base.width;
@@ -146,7 +156,7 @@ export function mountPlates(host: HTMLElement) {
     }
     measure();
     describe();
-    draw(animate);
+    draw(animate, back);
     drawPick();
   }
 
@@ -171,14 +181,16 @@ export function mountPlates(host: HTMLElement) {
     drawPick();
   });
 
-  next?.addEventListener('click', () => {
-    index = (index + 1) % list.length;
+  const step = (by: number) => {
+    index = (index + by + list.length) % list.length;
     try {
       localStorage.setItem('plate', String(index));
     } catch (_) {}
     picked = null;
-    redraw(!reduce);
-  });
+    redraw(!reduce, by < 0);
+  };
+  next?.addEventListener('click', () => step(1));
+  prev?.addEventListener('click', () => step(-1));
 
   let ready = false;
   let timer = 0;
