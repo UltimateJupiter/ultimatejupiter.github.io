@@ -12,9 +12,8 @@ export const profile = {
 
   // Short bio in the hero. Markdown-style links are not parsed; use HTML.
   bio: `I am a fourth year PhD Candidate in Computer Science at Princeton University working on
-    theoretical machine learning and language modeling. I am fortunate to be advised by Professor
-    <a href="https://www.cs.princeton.edu/~arora/">Sanjeev Arora</a>. I did my undergrad at Duke,
-    where I was fortunate to be advised by Professor <a href="https://users.cs.duke.edu/~rongge/">Rong Ge</a>.`,
+    theoretical machine learning and language modeling. I am fortunate to be advised by Professor&nbsp;<a href="https://www.cs.princeton.edu/~arora/">Sanjeev&nbsp;Arora</a>. I did my undergrad at Duke,
+    where I was fortunate to be advised by Professor&nbsp;<a href="https://users.cs.duke.edu/~rongge/">Rong&nbsp;Ge</a>.`,
 
   research: `My interest spans across both theoretical and empirical ML. Recently I am especially
     interested in understanding the power of large language models through a semi-theoretical lens.
@@ -33,12 +32,12 @@ export const profile = {
     },
   ],
 
+  // `icon` draws the service's logo (see Hero.astro); `iconOnly` drops the text beside it.
   links: [
     { label: 'Email', url: 'mailto:xingyu.zhu@princeton.edu' },
-    { label: 'Scholar', url: 'https://scholar.google.com/citations?user=Dlya3HMAAAAJ&hl=en' },
-    { label: 'GitHub', url: 'https://github.com/UltimateJupiter' },
-    { label: 'X', url: 'https://x.com/XingyuZhu_' },
-    { label: 'ORCID', url: 'https://orcid.org/0000-0003-1997-4668' },
+    { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=Dlya3HMAAAAJ&hl=en', icon: 'scholar', iconOnly: true },
+    { label: 'GitHub', url: 'https://github.com/UltimateJupiter', icon: 'github', iconOnly: true },
+    { label: 'X', url: 'https://x.com/XingyuZhu_', icon: 'x', iconOnly: true },
   ],
 };
 

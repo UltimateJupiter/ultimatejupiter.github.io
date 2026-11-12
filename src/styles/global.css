@@ -133,6 +133,20 @@ h4 {
 p {
   margin: 0 0 1em;
 }
+/* No paragraph ends on a single stranded word, and headings break into even lines. */
+p,
+li,
+dd,
+figcaption,
+blockquote {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
 img {
   max-width: 100%;
   height: auto;

@@ -3,15 +3,43 @@ import { Image } from 'astro:assets';
 import avatar from '../assets/avatar.jpg';
 import PlatePlot from './PlatePlot.astro';
 import { profile } from '../data/profile';
+
+// Logos for the profile links, as 24 x 24 paths.
+const ICONS: Record<string, string> = {
+  scholar:
+    'M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z',
+  github:
+    'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12',
+  x: 'M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z',
+};
+type Link = { label: string; url: string; icon?: string; iconOnly?: boolean };
+const links: Link[] = profile.links;
 ---
 
 <!-- The opening screen is laid out like a plate in a book of engravings: the picture fills the
-     page, and a title block docked along the bottom says whose book it is and what the picture
-     shows. Nothing sits on top of the picture. -->
+     page, and a title block docked along the bottom says whose book it is. A small card at the
+     picture's bottom right corner says what it shows and steps to the others. -->
 <section class="hero" data-plates>
   <PlatePlot />
 
   <div class="wrap dock">
+    <!-- what the picture is, the paper it is drawn after, and a way to see the others -->
+    <div class="plate" data-plate-bar>
+      <p class="label">Figure <span data-plate-count></span></p>
+      <p class="caption" data-plate-caption></p>
+      <!-- drawn like dimension lines on a drawing: a hairline shaft the width of its cell, a slender solid head -->
+      <div class="arrows">
+        <button type="button" data-plate-prev aria-label="Previous figure">
+          <svg viewBox="0 0 9 7" width="9" height="7" aria-hidden="true"><path d="M0 3.5 9 0v7z" fill="currentColor" /></svg>
+          <span class="shaft"></span>
+        </button>
+        <button type="button" data-plate-next aria-label="Next figure">
+          <span class="shaft"></span>
+          <svg viewBox="0 0 9 7" width="9" height="7" aria-hidden="true"><path d="M9 3.5 0 0v7z" fill="currentColor" /></svg>
+        </button>
+      </div>
+    </div>
+
     <div class="block" data-quiet>
       <Image src={avatar} alt={`Portrait of ${profile.name}`} width={400} class="photo" loading="eager" fetchpriority="high" />
 
@@ -25,28 +53,24 @@ import { profile } from '../data/profile';
         </p>
         <ul class="links">
           <li><a class="cv" href={profile.cv}>CV</a></li>
-          {profile.links.map((l) => <li><a href={l.url}>{l.label}</a></li>)}
+          {
+            links.map((l) => (
+              <li>
+                <a href={l.url} aria-label={l.iconOnly ? l.label : undefined} title={l.iconOnly ? l.label : undefined}>
+                  {l.icon && (
+                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                      <path d={ICONS[l.icon]} fill="currentColor" />
+                    </svg>
+                  )}
+                  {!l.iconOnly && l.label}
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </div>
 
       <p class="cell bio" set:html={profile.bio} />
-
-      <!-- what the picture is, the paper it is drawn after, and a way to see the others -->
-      <div class="cell plate" data-plate-bar>
-        <p class="label">Figure <span data-plate-count></span></p>
-        <p class="caption" data-plate-caption></p>
-        <!-- drawn like dimension lines on a drawing: a hairline shaft the width of its cell, a slender solid head -->
-        <div class="arrows">
-          <button type="button" data-plate-prev aria-label="Previous figure">
-            <svg viewBox="0 0 9 7" width="9" height="7" aria-hidden="true"><path d="M0 3.5 9 0v7z" fill="currentColor" /></svg>
-            <span class="shaft"></span>
-          </button>
-          <button type="button" data-plate-next aria-label="Next figure">
-            <span class="shaft"></span>
-            <svg viewBox="0 0 9 7" width="9" height="7" aria-hidden="true"><path d="M9 3.5 0 0v7z" fill="currentColor" /></svg>
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -83,7 +107,9 @@ import { profile } from '../data/profile';
   .block {
     display: grid;
     /* the photo is as wide as the section labels below, so the name lines up with the page's text column */
-    grid-template-columns: calc(var(--label-col) + 2rem) minmax(22rem, 1.2fr) minmax(0, 1.5fr) minmax(14rem, 0.75fr);
+    grid-template-columns: calc(var(--label-col) + 2rem) minmax(24rem, 1fr) minmax(0, 1.35fr);
+    /* the card is a third of the opening screen, the picture the other two */
+    min-height: max(19rem, 34svh);
     background: var(--bg-raised);
     border: 1px solid var(--ink);
     box-shadow: 10px 10px 0 color-mix(in srgb, var(--ink) 12%, transparent);
@@ -91,7 +117,7 @@ import { profile } from '../data/profile';
   }
   .cell {
     margin: 0;
-    padding: 1.5rem 1.75rem;
+    padding: 2.1rem 2.4rem;
     border-left: 1px solid var(--ink);
     min-width: 0;
   }
@@ -112,7 +138,7 @@ import { profile } from '../data/profile';
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.1em 0.4em;
-    font-size: clamp(2.75rem, 3.9vw, 3.3rem);
+    font-size: clamp(3.25rem, 4.9vw, 4.5rem);
     font-stretch: 80%;
     font-weight: 600;
     letter-spacing: -0.03em;
@@ -127,26 +153,39 @@ import { profile } from '../data/profile';
   }
   .role {
     font-family: var(--sans);
-    font-size: 0.9375rem;
+    font-size: 1.0625rem;
     font-weight: 500;
     line-height: 1.4;
     color: var(--ink-2);
-    margin: 0.75rem 0 1.25rem;
+    margin: 1rem 0 1.5rem;
   }
   .links {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.35rem 0.7rem;
     list-style: none;
     padding: 0;
     margin: auto 0 0;
     font-family: var(--sans);
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 500;
   }
   .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
     text-decoration: none;
     color: var(--accent);
+  }
+  .links svg {
+    width: 1.1em;
+    height: 1.1em;
+    flex: none;
+  }
+  /* a logo on its own gets a little room, so it is as easy to hit as a word */
+  .links a[aria-label] {
+    padding: 0.15em 0.2em;
   }
   .links .cv {
     background: var(--mark);
@@ -159,45 +198,60 @@ import { profile } from '../data/profile';
   }
 
   .bio {
-    font-size: 1rem;
-    line-height: 1.58;
+    font-size: 1.1875rem;
+    line-height: 1.6;
     color: var(--ink-2);
   }
 
-  /* a footnote to the picture: it is the smallest type on the page, so the profile reads first */
+  /* The figure's own card, at its bottom right corner: number, one line on what it shows, and the
+     two arrows, ruled into cells like the title block. The smallest type on the page. */
   .plate {
     display: flex;
-    flex-direction: column;
-    padding: 0;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 0 1rem auto;
+    background: var(--bg-raised);
+    border: 1px solid var(--ink);
+    box-shadow: 6px 6px 0 color-mix(in srgb, var(--ink) 12%, transparent);
     font-family: var(--sans);
-    font-size: 0.71875rem;
+    font-size: 0.75rem;
     line-height: 1.4;
     color: var(--muted);
+    pointer-events: auto;
+  }
+  .label,
+  .caption {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0 0.9rem;
+    white-space: nowrap;
   }
   .label {
-    margin: 0;
-    padding: 1.3rem 1.5rem 0.4rem;
+    gap: 0.3em;
     font-weight: 600;
     color: var(--ink);
     font-variant-numeric: tabular-nums;
-    white-space: nowrap;
+    border-right: 1px solid var(--ink);
   }
   .caption {
-    margin: 0;
-    padding: 0 1.5rem 1.2rem;
+    display: block;
+    align-self: center;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  /* The two arrows are the bottom row of the title block: one cell each, ruled like the rest. */
   .arrows {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-top: auto;
-    border-top: 1px solid var(--ink);
+    grid-template-columns: 3.4rem 3.4rem;
+    flex: none;
+    border-left: 1px solid var(--ink);
   }
   .arrows button {
     display: flex;
     align-items: center;
-    height: 2.6rem;
-    padding: 0 1.1rem;
+    height: 2.25rem;
+    padding: 0 0.75rem;
     color: var(--ink);
     background: none;
     border: 0;
@@ -221,8 +275,21 @@ import { profile } from '../data/profile';
     height: 1px;
     background: currentColor;
   }
-  .caption :global(.short) {
+  /* the longer description is kept for screen readers (the canvas label), not shown here */
+  .caption :global(.long) {
     display: none;
+  }
+  /* the paper's own phrase, run over with the highlighter; it links to the paper */
+  .caption :global(.short a) {
+    background: var(--mark);
+    color: var(--on-mark);
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0.05em 0.3em;
+  }
+  .caption :global(.short a:hover) {
+    background: var(--ink);
+    color: var(--bg);
   }
   .caption :global(i) {
     font-family: var(--serif);
@@ -256,101 +323,87 @@ import { profile } from '../data/profile';
     .dock {
       padding-bottom: 3.5rem;
     }
-    .block {
-      grid-template-columns: auto minmax(0, 1fr);
-      grid-template-areas:
-        'plate plate'
-        'photo who'
-        'bio bio';
-      align-items: center;
-      column-gap: 1.25rem;
-      background: none;
-      border: 0;
-      box-shadow: none;
-    }
-    .cell {
-      padding: 0;
-      border: 0;
-    }
-    /* under the figure: its number and the arrows, then one line saying what it shows */
+    /* The figure's card sits clear below the figure, the full width of the column:
+       number and arrows on the first row, one line on what it shows on the second. */
     .plate {
-      grid-area: plate;
-      flex-flow: row wrap;
-      align-items: center;
-      gap: 0.45rem 0.6rem;
-      padding: 0.55rem 0 1.5rem;
-      font-size: 0.65625rem;
-    }
-    .label,
-    .caption {
-      padding: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      width: auto;
+      margin: 0.5rem 0 1.25rem;
+      font-size: 0.6875rem;
     }
     .label {
-      flex: 1;
-    }
-    .caption {
-      order: 1;
-      flex: 0 0 100%;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .caption :global(.long) {
-      display: none;
-    }
-    .caption :global(.short) {
-      display: inline;
-    }
-    /* the paper's own phrase, run over with the highlighter; it links to the paper */
-    .caption :global(.short a) {
-      background: var(--mark);
-      color: var(--on-mark);
-      font-weight: 500;
-      text-decoration: none;
-      padding: 0.05em 0.3em;
-    }
-    .caption :global(.short a:hover) {
-      background: var(--ink);
-      color: var(--bg);
+      grid-area: 1 / 1;
+      padding: 0 0.85rem;
+      border: 0;
     }
     .arrows {
-      flex: none;
-      grid-template-columns: 2.9rem 2.9rem;
-      margin: 0;
-      border: 1px solid var(--ink);
+      grid-area: 1 / 2;
+      grid-template-columns: 3.1rem 3.1rem;
     }
     .arrows button {
-      height: 1.75rem;
-      padding: 0 0.6rem;
+      height: 2rem;
+    }
+    .caption {
+      grid-area: 2 / 1 / 3 / 3;
+      padding: 0.5rem 0.85rem;
+      border-top: 1px solid var(--ink);
+    }
+
+    /* The title block keeps its rules but stacks: photo beside the name, the bio underneath. */
+    .block {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+      grid-template-areas:
+        'photo who'
+        'bio bio';
+      min-height: 0;
+      box-shadow: 6px 6px 0 color-mix(in srgb, var(--ink) 12%, transparent);
+    }
+    .cell {
+      padding: 1.1rem 1.2rem;
     }
     .photo {
       grid-area: photo;
-      width: 5.5rem;
-      height: 5.5rem;
-      min-height: 0;
+      /* takes the height of the name cell rather than setting it */
+      height: 0;
+      min-height: 100%;
     }
     .who {
       grid-area: who;
     }
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 3.3rem);
+    }
     .role {
-      margin-bottom: 0.6rem;
+      font-size: 0.9375rem;
+      margin: 0.6rem 0 1rem;
+    }
+    .links {
+      font-size: 0.875rem;
     }
     .bio {
       grid-area: bio;
-      max-width: 38rem;
-      margin-top: 1.5rem;
+      border-left: 0;
+      border-top: 1px solid var(--ink);
       font-size: 1em;
     }
   }
   @media (max-width: 480px) {
-    .photo {
-      width: 4.25rem;
-      height: 4.25rem;
-      align-self: start;
+    .block {
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+    }
+    .cell {
+      padding: 0.95rem 1rem;
     }
     h1 {
-      font-size: 2.4rem;
+      font-size: 2.3rem;
+    }
+    .role {
+      font-size: 0.875rem;
+    }
+    .links {
+      gap: 0.3rem 0.5rem;
+      font-size: 0.8125rem;
     }
   }
 </style>
